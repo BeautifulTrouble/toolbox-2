@@ -4,9 +4,9 @@ module.exports = {
   },
   css: {
     loaderOptions: {
-      sass: { // Expose NODE_ENV to scss
-        data: '$NODE_ENV: ' + process.env.NODE_ENV + ';'
-      }
+      // Expose NODE_ENV to scss
+      sass: {prependData: '$NODE_ENV: ' + process.env.NODE_ENV + ';'}
     }
-  }
+  },
+  outputDir: 'wp-content/themes/bt'
 }

@@ -1,6 +1,5 @@
 .DS_Store
 node_modules
-/dist
 
 # local env files
 .env.local
@@ -23,3 +22,4 @@ yarn-error.log*
 # Wordpress stuff
 uploads
 wp-config.php
+wp-content/themes/bt
