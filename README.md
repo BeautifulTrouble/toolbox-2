@@ -2,8 +2,6 @@
 
 ## Install Wordpress and local build environment
 ```
-git submodule init
-git submodule update
 yarn install
 ```
 

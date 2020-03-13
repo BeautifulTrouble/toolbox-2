@@ -3,14 +3,17 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "postinstall": "yarn wp-cli-install",
+    "postinstall": "yarn git-submodule && yarn wp-link && yarn wp-cli-install",
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
-    "wp-cli-install": "curl -o node_modules/.bin/wp https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar && chmod +x node_modules/.bin/wp",
-    "wp": "\"$(yarn bin)/wp\" --path=\"$(pwd)/wordpress\""
+    "wp": "cd wordpress && php wp-cli.phar",
+    "wp-cli-install": "cd wordpress && curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar",
+    "wp-link": "cd wordpress && rm -rf {wp-content,wp-config.php} && ln -s ../wp-content && ln -s ../wp-config.php",
+    "git-submodule": "git submodule init && git submodule update"
   },
   "dependencies": {
+    "axios": "^0.19.2",
     "core-js": "^2.6.5",
     "vue": "^2.6.10",
     "vue-router": "^3.0.3"
