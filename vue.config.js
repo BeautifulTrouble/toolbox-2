@@ -1,6 +1,9 @@
 module.exports = {
   configureWebpack: {
-    //output: {filename: ''}
+    output: {
+      // Add querystring so webpackChunkName will get reloaded
+      chunkFilename: '[name].js?id=[chunkhash]'
+    }
   },
   css: {
     loaderOptions: {
