@@ -2,9 +2,15 @@
   <div id="app">
     <div id="nav">
       <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
+      <router-link to="/en/about">English About</router-link> |
+      <router-link to="/es/about">Spanish About</router-link> |
+      <router-link to="/ar/about">Arabic About</router-link> |
+      <router-link to="/about">About</router-link> |
+      <router-link to="/blog">Some WordPress page</router-link>
     </div>
     <router-view/>
+    <div v-if="$store.state.langRequested">
+      Loading...</div>
   </div>
 </template>
 
