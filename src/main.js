@@ -27,12 +27,16 @@ const router = new Router({
   ],
 })
 
-const languageUrlPrefix = new RegExp(`^/(${config.langs.join("|")})/`)
+const languageUrlPrefix = new RegExp(`^/(${config.langs.join("|")})(/|$)`)
 router.beforeEach((to, from, next) => {
+  // TODO: Implement: specific route w/guard + SET_LANG dispatcher on App component
   // Capture language-specific urls and set the site language
   if (languageUrlPrefix.test(to.path)) {
     store.dispatch('SET_LANG', to.path.slice(1,3))
     next({path: to.path.slice(3)})
+  } else if (!store.state.lang) {
+    store.dispatch('SET_LANG')
+    next()
   } else {
     next()
   }

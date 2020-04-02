@@ -55,6 +55,9 @@ export default new Vuex.Store({
     },
     // Set language and get (cached) API data
     SET_LANG(context, lang) {
+      if (!lang) {
+        lang = Storage.getItem('bt-lang') || navigator.language.slice(0,2)
+      }
       let cache = getCache(`${cachePrefix}-${lang}`)
       if (cache) {
         // eslint-disable-next-line
@@ -69,12 +72,13 @@ export default new Vuex.Store({
   },
   mutations: {
     setContent(state, [content, lang, cache]) {
-      state.content = content
-      state.lang = lang
-      state.langRequested = null
+      Storage.setItem('bt-lang', lang)
       if (cache) {
         setCache(`${cachePrefix}-${lang}`, content)
       }
+      state.content = content
+      state.lang = lang
+      state.langRequested = null
 
       // eslint-disable-next-line
       console.log(`got content e.g.`, state.content[1].title)
