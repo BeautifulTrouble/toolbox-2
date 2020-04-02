@@ -44,24 +44,22 @@ export default new Vuex.Store({
   },
   actions: {
     // This action can be used directly to force a content load
-    FETCH_CONTENT(context, payload) {
-      let lang = payload
-      Axios.get(`${config.api}/modules?lang=${payload}`)
+    FETCH_CONTENT(context, lang) {
+      Axios.get(`${config.api}/modules?lang=${lang}`)
         .then(r => {
-          context.commit('setContent', [r.data, lang])
+          context.commit('setContent', [r.data, lang, true])
         })
         .catch(e => { // eslint-disable-next-line
           console.error("Couldn't get API content!", e)
         })
     },
     // Set language and get (cached) API data
-    SET_LANG(context, payload) {
-      let lang = payload
+    SET_LANG(context, lang) {
       let cache = getCache(`${cachePrefix}-${lang}`)
       if (cache) {
         // eslint-disable-next-line
         console.log('using cached content')
-        context.commit('setContent', [cache, lang])
+        context.commit('setContent', [cache, lang, false])
       } else if (![context.state.lang, context.state.langRequested].includes(lang)) {
         // If language is already set, or there's an outstanding request, don't FETCH_CONTENT
         context.commit('setLangRequested', lang)
@@ -70,12 +68,13 @@ export default new Vuex.Store({
     },
   },
   mutations: {
-    setContent(state, payload) {
-      let [content, lang] = payload
+    setContent(state, [content, lang, cache]) {
       state.content = content
       state.lang = lang
       state.langRequested = null
-      setCache(`${cachePrefix}-${lang}`, content)
+      if (cache) {
+        setCache(`${cachePrefix}-${lang}`, content)
+      }
 
       // eslint-disable-next-line
       console.log(`got content e.g.`, state.content[1].title)
