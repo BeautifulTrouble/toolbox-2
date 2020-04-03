@@ -10,10 +10,11 @@ import App from './App'
 import Home from './views/Home'
 import WordPress from './WordPress'
 
-import store from './store'
+import { store } from './store'
 import config from '../bt.config'
 
 
+// ROUTER
 Vue.use(Router)
 
 const router = new Router({
@@ -27,11 +28,22 @@ const router = new Router({
   ],
 })
 
-const languageUrlPrefix = new RegExp(`^/(${config.langs.join("|")})(/|$)`)
+const languageSelectionPrefix = new RegExp(`^/(${config.langs.join("|")})(/|$)`)
 router.beforeEach((to, from, next) => {
-  // TODO: Implement: specific route w/guard + SET_LANG dispatcher on App component
-  // Capture language-specific urls and set the site language
-  if (languageUrlPrefix.test(to.path)) {
+  // NAVIGATION GUARD TO SELECT A LANGUAGE FOR THE USER
+  //
+  // Capture language prefixes like /en and /ar/tool/civil-disobedience, remove them, and set the
+  // site language.
+  //
+  // While we're at it, set a language if one isn't already set. You might think such logic goes
+  // somewhere more general, like site initialization in a lifecycle hook of the App component. I'd
+  // agree with that, but getting the language detection heuristic right is tricky, and easier to
+  // reason about when it's all in one place.
+  //
+  // Why not a route like... `/:lang(${config.langs.join("|")})/`... I couldn't find a way to match
+  // arbitrary paths against a prefix without a lot of extra boilerplate (extra paths and aliases).
+
+  if (languageSelectionPrefix.test(to.path)) {
     store.dispatch('SET_LANG', to.path.slice(1,3))
     next({path: to.path.slice(3)})
   } else if (!store.state.lang) {
@@ -43,6 +55,7 @@ router.beforeEach((to, from, next) => {
 })
 
 
+// EXTEND VUE
 const showdown = new Showdown.Converter({
   extensions: [ShowdownTargetBlank],
 })
@@ -58,6 +71,7 @@ Vue.mixin({
 })
 
 
+// START VUE
 new Vue({
   router,
   store,

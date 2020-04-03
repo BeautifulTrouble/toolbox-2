@@ -6,41 +6,39 @@ import Vuex from 'vuex'
 import config from '../bt.config'
 
 
-// TODO: to help fit more data in localStorage, remove top-level key-whatever, document_whatever
-const cachePrefix = 'bt-content'
-
-const setCache = (key, value, nestedCall = false) => {
+// TODO: to help fit more data in localStorage, remove top-level key-modules, document_whatever
+const setCache = (lang, data, nestedCall = false) => {
   try {
-    Storage.setItem(key, JSON.stringify({'timestamp': (new Date).getTime(), data: value}))
+    Storage.setItem(`bt-content-${lang}`, JSON.stringify({'timestamp': (new Date).getTime(), data: data}))
   } catch(e) {
     if (!nestedCall) { // eslint-disable-next-line
       console.warn('Trying to make room for localStorage cache...')
-      config.langs.forEach(lang => Storage.removeItem(`${cachePrefix}-${lang}`))
-      setCache(key, value, true)
+      config.langs.forEach(lang => Storage.removeItem(`bt-content-${lang}`))
+      setCache(lang, data, true)
     }
   }
 }
-
-const getCache = (key) => {
+const getCache = (lang) => {
   try {
-    let value = JSON.parse(Storage.getItem(key))
-    if (value && value.timestamp && ((new Date).getTime() - value.timestamp < config.cacheLifespan)) {
-      return value.data
+    let data = JSON.parse(Storage.getItem(`bt-content-${lang}`))
+    if (data && data.timestamp && ((new Date).getTime() - data.timestamp < config.cacheLifespan)) {
+      return data.data
     }
   } catch(e) { // eslint-disable-next-line
-    console.warn('Removing bad localStorage cache...')
-    Storage.removeItem(key)
+    console.warn('Removing bad localStorage content cache...')
+    Storage.removeItem(`bt-content-${lang}`)
   }
 }
 
 
 Vue.use(Vuex)
 
-export default new Vuex.Store({
+export const store = new Vuex.Store({
   state: {
     lang: null,
     langRequested: null,
     content: {},
+    wpHTML: '',
   },
   actions: {
     // This action can be used directly to force a content load
@@ -58,7 +56,7 @@ export default new Vuex.Store({
       if (!lang) {
         lang = Storage.getItem('bt-lang') || navigator.language.slice(0,2)
       }
-      let cache = getCache(`${cachePrefix}-${lang}`)
+      let cache = getCache(lang)
       if (cache) {
         // eslint-disable-next-line
         console.log('using cached content')
@@ -69,12 +67,25 @@ export default new Vuex.Store({
         context.dispatch('FETCH_CONTENT', lang)
       }
     },
+
+    // Get WordPress page
+    GET_WP(context, path) {
+      let slug =
+      Axios.get(`${config.wpapi}/pages?slug=${slug}`)
+        .then(r => {
+          console.log(r.data)
+          context.commit('setWP', r.data.content.rendered)
+        })
+        .catch(e => { // eslint-disable-next-line
+          console.error("WordPress 404", e)
+        })
+    }
   },
   mutations: {
     setContent(state, [content, lang, cache]) {
       Storage.setItem('bt-lang', lang)
       if (cache) {
-        setCache(`${cachePrefix}-${lang}`, content)
+        setCache(lang, content)
       }
       state.content = content
       state.lang = lang
@@ -83,9 +94,13 @@ export default new Vuex.Store({
       // eslint-disable-next-line
       console.log(`got content e.g.`, state.content[1].title)
     },
-    setLangRequested(state, payload) {
-      state.langRequested = payload
+    setLangRequested(state, lang) {
+      state.langRequested = lang
     },
+    setWP(state, html) {
+      state.wpHTML = html
+    }
+
   },
 })
 

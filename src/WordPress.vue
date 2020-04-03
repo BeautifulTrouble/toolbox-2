@@ -1,5 +1,8 @@
 <template>
-  <h1>WordPress</h1>
+  <div>
+    <h1>WordPress</h1>
+    {{ $store.state.wpHTML }}
+  </div>
 </template>
 
 <script>

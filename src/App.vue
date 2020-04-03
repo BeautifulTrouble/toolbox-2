@@ -6,9 +6,10 @@
       <router-link to="/es/about">Spanish About</router-link> |
       <router-link to="/ar/about">Arabic About</router-link> |
       <router-link to="/about">About</router-link> |
-      <router-link to="/blog">Some WordPress page</router-link>
+      <router-link to="/privacy-policy">Some WordPress page</router-link>
     </div>
     <router-view/>
+    <h1>{{ $store.state.lang }}</h1>
     <div v-if="$store.state.langRequested">
       Loading...</div>
   </div>
