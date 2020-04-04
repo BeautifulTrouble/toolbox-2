@@ -2,11 +2,16 @@
   <div id="app">
     <div id="nav">
       <router-link to="/">Home</router-link> |
-      <router-link to="/en/about">English About</router-link> |
-      <router-link to="/es/about">Spanish About</router-link> |
-      <router-link to="/ar/about">Arabic About</router-link> |
+      <router-link to="/en/about">En About</router-link> |
+      <router-link to="/es/about">Sp About</router-link> |
+      <router-link to="/ar/about">Ar About</router-link> |
       <router-link to="/about">About</router-link> |
-      <router-link to="/privacy-policy">Some WordPress page</router-link>
+      <router-link to="/privacy-policy">pp</router-link> |
+      <router-link to="/privacy-policy/another">pp another</router-link> |
+      <router-link to="/top">top</router-link> |
+      <router-link to="/top/">top/</router-link> |
+      <router-link to="/top/another">top another</router-link> |
+      <router-link to="/does/not/exist">404</router-link>
     </div>
     <router-view/>
     <h1>{{ $store.state.lang }}</h1>

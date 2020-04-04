@@ -44,7 +44,8 @@ export const store = new Vuex.Store({
     lang: null,
     langRequested: null,
     content: {},
-    wpHTML: '',
+    wordPress: '',
+    wordPressRequested: true,
   },
   actions: {
     // SET LANGUAGE AND GET [UNEXPIRED CACHE OF] API DATA
@@ -75,18 +76,36 @@ export const store = new Vuex.Store({
 
     // GET WORDPRESS CONTENT
     GET_WP(context, path) {
-      let slug =
-      Axios.get(`${config.wpapi}/pages?slug=${slug}`)
-        .then(r => {
-          console.log(r.data)
-          context.commit('setWP', r.data.content.rendered)
-        })
-        .catch(e => { // eslint-disable-next-line
-          console.error("WordPress 404", e)
-        })
+      // Ensure a trailing slash so paths can be manipulated consistently
+      path = path.replace(/([^/])$/, '$1/')
+      let lastComponent = path.match('/([^/]+)/$')[1]
+      if (lastComponent) {
+        context.commit('setWordPressRequested')
+        Axios.get(`${config.wpapi}/pages?slug=${lastComponent}/`)
+          .then(r => {
+            let pages = r.data
+            let foundPage = false
+            if (pages.length) {
+              pages.forEach(p => {
+                if (p.link && p.link.endsWith(path)) {
+                  // XXX: ensure there are no corner cases with overlapping link endings
+                  context.commit('setWordPress', p.content.rendered)
+                  foundPage = true
+                }
+              })
+            }
+            if (!foundPage && path != config.errorPage) {
+              context.dispatch('GET_WP', config.errorPage)
+            }
+          })
+          .catch(e => { // eslint-disable-next-line
+            console.error("WordPress API Unavailable", e)
+          })
+      }
     }
   },
   mutations: {
+    // STORE API CONTENT
     setContent(state, [content, lang, cache]) {
       Storage.setItem(storedLangKey, lang)
       if (cache) {
@@ -101,10 +120,15 @@ export const store = new Vuex.Store({
     setLangRequested(state, lang) {
       state.langRequested = lang
     },
-    setWP(state, html) {
-      state.wpHTML = html
+    // STORE WORDPRESS CONTENT
+    setWordPressRequested(state) {
+      state.wordPress = ''
+      state.wordPressRequested = true
+    },
+    setWordPress(state, html) {
+      state.wordPressRequested = false
+      state.wordPress = html
     }
-
   },
 })
 
