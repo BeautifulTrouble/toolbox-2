@@ -75,32 +75,42 @@ export const store = new Vuex.Store({
     },
 
     // GET WORDPRESS CONTENT
-    GET_WP(context, path) {
-      // Ensure a trailing slash so paths can be manipulated consistently
-      path = path.replace(/([^/])$/, '$1/')
-      let lastComponent = path.match('/([^/]+)/$')[1]
-      if (lastComponent) {
+    GET_WP(context, { path, query }) {
+      if (query.preview_id && query._wpnonce) {
+        // A page preview has been requested
         context.commit('setWordPressRequested')
-        Axios.get(`${config.wpapi}/pages?slug=${lastComponent}/`)
+        Axios.get(`${config.wpapi}/pages/${query.preview_id}/revisions?per_page=1&_wpnonce=${query._wpnonce}`)
           .then(r => {
-            let pages = r.data
-            let foundPage = false
-            if (pages.length) {
-              pages.forEach(p => {
-                if (p.link && p.link.endsWith(path)) {
-                  // XXX: ensure there are no corner cases with overlapping link endings
-                  context.commit('setWordPress', p.content.rendered)
-                  foundPage = true
-                }
-              })
-            }
-            if (!foundPage && path != config.errorPage) {
-              context.dispatch('GET_WP', config.errorPage)
-            }
+            console.log('...', r)
+            context.commit('setWordPress', r.data[0].content.rendered)
           })
-          .catch(e => { // eslint-disable-next-line
-            console.error("WordPress API Unavailable", e)
-          })
+      } else {
+        // Ensure a trailing slash so paths can be manipulated consistently
+        path = path.replace(/([^/])$/, '$1/')
+        let lastComponent = path.match('/([^/]+)/$')[1]
+        if (lastComponent) {
+          context.commit('setWordPressRequested')
+          Axios.get(`${config.wpapi}/pages?slug=${lastComponent}/`)
+            .then(r => {
+              let pages = r.data
+              let foundPage = false
+              if (pages.length) {
+                pages.forEach(p => {
+                  if (p.link && p.link.endsWith(path)) {
+                    // XXX: ensure there are no corner cases with overlapping link endings
+                    context.commit('setWordPress', p.content.rendered)
+                    foundPage = true
+                  }
+                })
+              }
+              if (!foundPage && path != config.errorPage) {
+                context.dispatch('GET_WP', {path: config.errorPage, query: {}})
+              }
+            })
+            .catch(e => { // eslint-disable-next-line
+              console.error("WordPress API Unavailable", e)
+            })
+        }
       }
     }
   },

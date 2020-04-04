@@ -6,7 +6,7 @@
 </template>
 
 <script>
-import config from '../bt.config'
+//import config from '../bt.config'
 
 export default {
   name: 'WordPress',
@@ -18,12 +18,12 @@ export default {
     //path: {type: String, default: config.fallbackPage},
   },
   watch: {
-    $route(to, from) {
-      this.$store.dispatch('GET_WP', to.path)
+    $route(to) {
+      this.$store.dispatch('GET_WP', to)
     },
   },
   created() {
-    this.$store.dispatch('GET_WP', this.$route.path)
+    this.$store.dispatch('GET_WP', this.$route)
   },
 };
 </script>

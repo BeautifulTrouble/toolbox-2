@@ -1,5 +1,6 @@
 <template>
   <div id="app">
+    <h1>Site Language set to: {{ $store.state.lang }}</h1>
     <div id="nav">
       <router-link to="/">Home</router-link> |
       <router-link to="/en/about">En About</router-link> |
@@ -14,7 +15,6 @@
       <router-link to="/does/not/exist">404</router-link>
     </div>
     <router-view/>
-    <h1>{{ $store.state.lang }}</h1>
     <div v-if="$store.state.langRequested">
       Loading...</div>
   </div>
