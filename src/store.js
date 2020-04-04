@@ -6,15 +6,18 @@ import Vuex from 'vuex'
 import config from '../bt.config'
 
 
+const storedCacheKey = lang => `bt-content-${lang}`
+const storedLangKey = 'bt-lang'
+
 // TODO: to help fit more data in localStorage, remove top-level key-modules, document_whatever
 const setCache = (lang, data, nestedCall = false) => {
-  let name = `bt-content-${lang}`
   try {
-    Storage.setItem(name, JSON.stringify({'timestamp': (new Date).getTime(), data: data}))
+    Storage.setItem(storedCacheKey(lang), JSON.stringify({'timestamp': (new Date).getTime(), data: data}))
   } catch(e) {
+    console.log(e)
     if (!nestedCall) { // eslint-disable-next-line
       console.warn("Trying to make room for localStorage cache...")
-      config.langs.forEach(lang => Storage.removeItem(name))
+      config.langs.forEach(lang => Storage.removeItem(storedCacheKey(lang)))
       setCache(lang, data, true)
     } else { // eslint-disable-next-line
       console.warn("Couldn't save cache")
@@ -23,14 +26,13 @@ const setCache = (lang, data, nestedCall = false) => {
 }
 const getCache = (lang) => {
   try {
-    let name = `bt-content-${lang}`
-    let data = JSON.parse(Storage.getItem(name))
+    let data = JSON.parse(Storage.getItem(storedCacheKey(lang)))
     if (data && data.timestamp && ((new Date).getTime() - data.timestamp < config.cacheLifespan)) {
       return data.data
     }
   } catch(e) { // eslint-disable-next-line
     console.warn("Removing bad localStorage content cache...")
-    Storage.removeItem(name)
+    Storage.removeItem(storedCacheKey(lang))
   }
 }
 
@@ -45,14 +47,14 @@ export const store = new Vuex.Store({
     wpHTML: '',
   },
   actions: {
-    // Set language and get (cached) API data
+    // SET LANGUAGE AND GET [UNEXPIRED CACHE OF] API DATA
     SET_LANG(context, [lang, reload]) {
       // No language was requested, so detect the browser language from storage or navigator.
       if (!lang) {
-        lang = Storage.getItem('bt-lang') || navigator.language.slice(0,2)
+        lang = Storage.getItem(storedLangKey) || navigator.language.slice(0,2)
       }
       // If language isn't already set and there's no outstanding request for this language already
-      if (![context.state.lang, context.state.langRequested].includes(lang)) {
+      if (context.state.lang != lang && context.state.langRequested != lang) {
         let cache = getCache(lang)
         if (cache && !reload) {
           console.log('using cached content')
@@ -71,7 +73,7 @@ export const store = new Vuex.Store({
       }
     },
 
-    // Get WordPress page
+    // GET WORDPRESS CONTENT
     GET_WP(context, path) {
       let slug =
       Axios.get(`${config.wpapi}/pages?slug=${slug}`)
@@ -86,7 +88,7 @@ export const store = new Vuex.Store({
   },
   mutations: {
     setContent(state, [content, lang, cache]) {
-      Storage.setItem('bt-lang', lang)
+      Storage.setItem(storedLangKey, lang)
       if (cache) {
         setCache(lang, content)
       }
@@ -94,7 +96,6 @@ export const store = new Vuex.Store({
       state.lang = lang
       state.langRequested = null
 
-      // eslint-disable-next-line
       console.log(`got content e.g.`, state.content[1].title)
     },
     setLangRequested(state, lang) {
