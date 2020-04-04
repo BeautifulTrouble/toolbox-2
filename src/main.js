@@ -44,10 +44,11 @@ router.beforeEach((to, from, next) => {
   // arbitrary paths against a prefix without a lot of extra boilerplate (extra paths and aliases).
 
   if (languageSelectionPrefix.test(to.path)) {
-    store.dispatch('SET_LANG', to.path.slice(1,3))
+    let lang = to.path.slice(1,3)
+    store.dispatch('SET_LANG', [lang, false])
     next({path: to.path.slice(3)})
   } else if (!store.state.lang) {
-    store.dispatch('SET_LANG')
+    store.dispatch('SET_LANG', [null, false])
     next()
   } else {
     next()

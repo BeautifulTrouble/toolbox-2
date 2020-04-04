@@ -8,25 +8,29 @@ import config from '../bt.config'
 
 // TODO: to help fit more data in localStorage, remove top-level key-modules, document_whatever
 const setCache = (lang, data, nestedCall = false) => {
+  let name = `bt-content-${lang}`
   try {
-    Storage.setItem(`bt-content-${lang}`, JSON.stringify({'timestamp': (new Date).getTime(), data: data}))
+    Storage.setItem(name, JSON.stringify({'timestamp': (new Date).getTime(), data: data}))
   } catch(e) {
     if (!nestedCall) { // eslint-disable-next-line
-      console.warn('Trying to make room for localStorage cache...')
-      config.langs.forEach(lang => Storage.removeItem(`bt-content-${lang}`))
+      console.warn("Trying to make room for localStorage cache...")
+      config.langs.forEach(lang => Storage.removeItem(name))
       setCache(lang, data, true)
+    } else { // eslint-disable-next-line
+      console.warn("Couldn't save cache")
     }
   }
 }
 const getCache = (lang) => {
   try {
-    let data = JSON.parse(Storage.getItem(`bt-content-${lang}`))
+    let name = `bt-content-${lang}`
+    let data = JSON.parse(Storage.getItem(name))
     if (data && data.timestamp && ((new Date).getTime() - data.timestamp < config.cacheLifespan)) {
       return data.data
     }
   } catch(e) { // eslint-disable-next-line
-    console.warn('Removing bad localStorage content cache...')
-    Storage.removeItem(`bt-content-${lang}`)
+    console.warn("Removing bad localStorage content cache...")
+    Storage.removeItem(name)
   }
 }
 
@@ -41,30 +45,29 @@ export const store = new Vuex.Store({
     wpHTML: '',
   },
   actions: {
-    // This action can be used directly to force a content load
-    FETCH_CONTENT(context, lang) {
-      Axios.get(`${config.api}/modules?lang=${lang}`)
-        .then(r => {
-          context.commit('setContent', [r.data, lang, true])
-        })
-        .catch(e => { // eslint-disable-next-line
-          console.error("Couldn't get API content!", e)
-        })
-    },
     // Set language and get (cached) API data
-    SET_LANG(context, lang) {
+    SET_LANG(context, [lang, reload]) {
+      // No language was requested, so detect the browser language from storage or navigator.
       if (!lang) {
         lang = Storage.getItem('bt-lang') || navigator.language.slice(0,2)
       }
-      let cache = getCache(lang)
-      if (cache) {
-        // eslint-disable-next-line
-        console.log('using cached content')
-        context.commit('setContent', [cache, lang, false])
-      } else if (![context.state.lang, context.state.langRequested].includes(lang)) {
-        // If language is already set, or there's an outstanding request, don't FETCH_CONTENT
-        context.commit('setLangRequested', lang)
-        context.dispatch('FETCH_CONTENT', lang)
+      // If language isn't already set and there's no outstanding request for this language already
+      if (![context.state.lang, context.state.langRequested].includes(lang)) {
+        let cache = getCache(lang)
+        if (cache && !reload) {
+          console.log('using cached content')
+          context.commit('setContent', [cache, lang, false])
+        } else {
+          console.log('fetching fresh content')
+          context.commit('setLangRequested', lang)
+          Axios.get(`${config.api}/modules?lang=${lang}`)
+            .then(r => {
+              context.commit('setContent', [r.data, lang, true])
+            })
+            .catch(e => {
+              console.error("Couldn't get API content!", e)
+            })
+        }
       }
     },
 
