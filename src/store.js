@@ -19,7 +19,7 @@ export const store = new Vuex.Store({
   },
   actions: {
     // SET LANGUAGE AND GET [UNEXPIRED CACHE OF] API DATA
-    SET_LANG(context, [lang, reload]) {
+    SET_LANG(context, [lang, forceReload]) {
       // No language was requested, so detect the browser language from storage or navigator.
       if (!lang) {
         lang = Storage.getItem(storedLangKey) || navigator.language.slice(0,2)
@@ -27,7 +27,7 @@ export const store = new Vuex.Store({
       // If language isn't already set and there's no outstanding request for this language already
       if (context.state.lang != lang && context.state.langRequested != lang) {
         let cache = getCache(lang)
-        if (cache && !reload) {
+        if (cache && !forceReload) {
           console.log('using cached content')
           context.commit('setContent', [cache, lang, false])
         } else {
@@ -44,7 +44,8 @@ export const store = new Vuex.Store({
       }
     },
     // GET WORDPRESS CONTENT
-    GET_WP(context, { path, query }) {
+    GET_WP(context, {path, query}) {
+      // TODO: Reload WordPress content
       // Look for permalink structure to determine if we should use posts or pages endpoint
       let endpoint = /^\/\d{4}\/\d{2}\/\d{2}\//.test(path) ? 'posts' : 'pages'
       // This is a request for a draft preview (query._wpnonce requires support in functions.php)
