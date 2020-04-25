@@ -114,11 +114,11 @@ const setCache = (lang, data, nestedCall = false) => {
     Storage.setItem(storedCacheKey(lang), JSON.stringify({'timestamp': (new Date).getTime(), data: data}))
   } catch(e) {
     console.log(e)
-    if (!nestedCall) { // eslint-disable-next-line
+    if (!nestedCall) {
       console.warn("Trying to make room for localStorage cache...")
       config.langs.forEach(lang => Storage.removeItem(storedCacheKey(lang)))
       setCache(lang, data, true)
-    } else { // eslint-disable-next-line
+    } else {
       console.warn("Couldn't save cache")
     }
   }
@@ -129,7 +129,7 @@ const getCache = (lang) => {
     if (data && data.timestamp && ((new Date).getTime() - data.timestamp < config.cacheLifespan)) {
       return data.data
     }
-  } catch(e) { // eslint-disable-next-line
+  } catch(e) {
     console.warn("Removing bad localStorage content cache...")
     Storage.removeItem(storedCacheKey(lang))
   }
