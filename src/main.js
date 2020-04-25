@@ -26,6 +26,12 @@ const router = new Router({
     {path: '/tool/:slug', name: 'tool', component: Home},
     {path: '/*', name: 'wordpress', component: WordPress},
   ],
+  scrollBehavior(to, from, savedPosition) {
+    if (to.hash) return new Promise(
+      resolve => setTimeout(() => resolve({selector: to.hash}), 250)
+    )
+    return savedPosition ? savedPosition : {x: 0, y: 0}
+  },
 })
 
 const languageSelectionPrefix = new RegExp(`^/(${config.langs.join("|")})(/|$)`)

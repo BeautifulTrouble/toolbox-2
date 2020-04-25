@@ -1,25 +1,50 @@
 <template>
   <div>
     <div v-if="$store.state.wordPressRequested">Loading...</div>
-    <div class="wordpress" v-html="$store.state.wordPress"></div>
+    <div
+      class="wordpress"
+      @click="handleLink"
+      v-html="$store.state.wordPress"
+      ></div>
   </div>
 </template>
 
 <script>
-//import config from '../bt.config'
+import config from '../bt.config'
 
 export default {
   name: 'WordPress',
-  components: {
-    // FUTURE: Maybe some WordPress [shortcode] extensions can be built to add functionality
-  },
   props: {
     // FIGURE OUT: loading things other than wordpress pages
     //path: {type: String, default: config.fallbackPage},
   },
+  methods: {
+    handleLink($event) {
+      let { target } = $event
+      // Ascend elements to the link
+      while (target && target.tagName != 'A') target = target.parentNode
+      // Only match local links
+      if (target && target.href &&
+          (target.matches(`.wordpress a[href*="://${config.siteDomain}"]`)
+           || target.matches('.wordpress a:not([href*="://"])'))) {
+        const { altKey, ctrlKey, metaKey, shiftKey, button, defaultPrevented } = $event
+        if (altKey || ctrlKey || metaKey || shiftKey) return
+        if (defaultPrevented) return
+        if (button !== undefined && button !== 0) return
+        if (target.getAttribute && target.getAttribute('target') == '_blank') return
+        const url = new URL(target.href)
+        if ($event.preventDefault) {
+          $event.preventDefault()
+          if (window.location.pathname != url.pathname || window.location.hash != url.hash) {
+            this.$router.push({path: url.pathname, hash: url.hash})
+          }
+        }
+      }
+    }
+  },
   watch: {
-    $route(to) {
-      this.$store.dispatch('GET_WP', to)
+    $route(to, from) {
+      if (to.path != from.path) this.$store.dispatch('GET_WP', to)
     },
   },
   created() {

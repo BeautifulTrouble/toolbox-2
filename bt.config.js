@@ -5,5 +5,6 @@ export default {
   //cacheLifespan: 10000,
   errorPage: '/error',
   langs: ['en', 'es', 'ar', 'pt'],
+  siteDomain: 'bt.org',
   wpapi: 'http://bt.org/wp-json/wp/v2',
 }
