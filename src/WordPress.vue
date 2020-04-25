@@ -36,7 +36,8 @@ export default {
         if ($event.preventDefault) {
           $event.preventDefault()
           if (window.location.pathname != url.pathname || window.location.hash != url.hash) {
-            this.$router.push({path: url.pathname, hash: url.hash})
+            // For some reason this throws an undefined exception on language-setting links
+            this.$router.push({path: url.pathname, hash: url.hash}).catch(e => e)
           }
         }
       }
