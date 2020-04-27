@@ -1,0 +1,90 @@
+{
+  "en": {
+    "story": [
+      "Story",
+      "Stories"
+    ],
+    "tactic": [
+      "Tactic",
+      "Tactics"
+    ],
+    "principle": [
+      "Principle",
+      "Principles"
+    ],
+    "theory": [
+      "Theory",
+      "Theories"
+    ],
+    "methodology": [
+      "Methodology",
+      "Methodologies"
+    ]
+  },
+  "es": {
+    "story": [
+      "Historia",
+      "Historias"
+    ],
+    "tactic": [
+      "T\u00e1ctica",
+      "T\u00e1cticas"
+    ],
+    "principle": [
+      "Principio",
+      "Principios"
+    ],
+    "theory": [
+      "Teor\u00eda",
+      "Teor\u00edas"
+    ],
+    "methodology": [
+      "Metodolog\u00eda",
+      "Metodolog\u00edas"
+    ]
+  },
+  "pt": {
+    "story": [
+      "Hist\u00f3ria",
+      "Hist\u00f3rias"
+    ],
+    "tactic": [
+      "T\u00e1tica",
+      "T\u00e1tica"
+    ],
+    "principle": [
+      "Princ\u00edpio",
+      "Princ\u00edpios"
+    ],
+    "theory": [
+      "Teoria",
+      "Teorias"
+    ],
+    "methodology": [
+      "Metodologia",
+      "Metodologias"
+    ]
+  },
+  "ar": {
+    "story": [
+      "\u0642\u0635\u0629",
+      "\u0642\u0635\u0635"
+    ],
+    "tactic": [
+      "\u062a\u0643\u062a\u064a\u0643",
+      "\u062a\u0643\u062a\u064a\u0643\u0627\u062a"
+    ],
+    "principle": [
+      "\u0645\u0628\u062f\u0623",
+      "\u0645\u0628\u0627\u062f\u0626"
+    ],
+    "theory": [
+      "\u0646\u0638\u0631\u064a\u0629",
+      "\u0646\u0638\u0631\u064a\u0627\u062a"
+    ],
+    "methodology": [
+      "\u0645\u0646\u0647\u062c\u064a\u0629",
+      "\u0645\u0646\u0647\u062c\u064a\u0627\u062a"
+    ]
+  }
+}
