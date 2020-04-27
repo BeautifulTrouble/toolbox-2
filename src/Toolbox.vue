@@ -11,20 +11,25 @@
       <div class="filter">
         <div class="by-collection" v-if="activeFilter == 'collection'">
           <div v-for="(value, key) in typeTextBySlug" :key="key"
-             :class="{collection: true, active: filterCollection == key}">
+             :class="{active: filterCollection == key}">
             <h3 @click="toggleFilter('Collection', key)">{{ value[1] }}</h3>
           </div>
-          <div :class="{collection: true, active: filterCollection == 'saved'}">
+          <div :class="{active: filterCollection == 'saved'}">
             <h3 @click="toggleFilter('Collection', 'saved')">MY TOOLS</h3>
           </div>
-          <div :class="{collection: true, active: filterCollection == 'selected'}">
+          <div :class="{active: filterCollection == 'selected'}">
             <h3 @click="toggleFilter('Collection', 'selected')">SELECTED TOOLS</h3>
           </div>
         </div>
         <div class="by-region" v-if="activeFilter == 'region'">
 
         </div>
-        <div class="by-tag" v-if="activeFilter == 'tag'">
+        <div class="by-tag" v-if="true || activeFilter == 'tag'">
+          <span
+            v-for="(tag, i) in tagSlugsSorted" :key="i"
+            :class="{active: filterTag == tag, disabled: !tagSlugsAvailable.has(tag)}"
+            @click="toggleFilter('Tag', tag)"
+            >{{ tagTextBySlug[tag] }}</span>
         </div>
       </div>
 
@@ -70,11 +75,10 @@ export default {
     sentence() {
       return `Show me ${this.$store}`
     },
-    filteredTools() {
+    filteredToolsAnyTag() {
       let tools = (this.$store.state.tools || [])
         .filter(t => t['module-type'] != 'snapshot' && t['module-type-effective'] != 'snapshot')
 
-      // Collection
       if (this.filterCollection == 'saved')
         tools = tools.filter(t => (this.$store.state.savedTools || []).includes(t.slug))
       else if (this.filterCollection == 'selected' && this.filterSelected != ALL)
@@ -84,31 +88,24 @@ export default {
       else if (config.toolTypes.includes(this.filterCollection))
         tools = tools.filter(t => t.type == this.filterCollection)
 
-      // Region
       if (this.filterCollection == 'story' && this.filterRegion != ALL)
         tools = tools.filter(t => (t.regions || []).includes(this.filterRegion))
-
-      // Tag
-      if (this.filterTag != ALL)
-        tools = tools.filter(t => (t.tags || []).includes(this.filterTag))
-
       return tools
     },
-    /* // This becomes availableTags
-    allTags() {
-      return [...this.$store.state.tools
-                  .map(T => T.tags)
-                  .reduce((a, c) => c !== undefined ? new Set([...a, ...c]) : a,
-                    new Set([]))
-      ].sort()
+    filteredTools() {
+      let tools = this.filteredToolsAnyTag
+      if (this.filterTag != ALL)
+        tools = tools.filter(t => (t.tags || []).includes(this.filterTag))
+      return tools
     },
-    */
     tagSlugsSorted() { // Sorted in current language
       return Object.keys(this.tagTextBySlug)
               .sort((a, b) => this.tagTextBySlug[a].localeCompare(this.tagTextBySlug[b]))
     },
-    tagSlugsAvailable() {
-      return this.filteredTools
+    tagSlugsAvailable() { // Relies on filteredToolsAnyTag to
+      return this.filteredToolsAnyTag
+        .map(t => t.tags)
+        .reduce((a, c) => c !== undefined ? new Set([...a, ...c]) : a, new Set([]))
     },
     tagTextBySlug() {
       return tagTextByLang[this.$store.state.lang]
@@ -121,6 +118,7 @@ export default {
     log: console.log,
     __tag(tag) { return this.tagTextBySlug[tag] || '' },
     toggleFilter(name, selected) {
+      if (name == 'Collection') this.filterTag = ALL
       this[`filter${name}`] = this[`filter${name}`] == selected ? ALL : selected
     }
 
@@ -137,22 +135,43 @@ export default {
 .active {
   text-decoration: underline;
 }
+.by-collection > div {
+  display: inline-block;
+  padding: 1rem;
+}
+.by-tag > span {
+  border: 1px dashed pink;
+  padding: 0 .5rem;
+  cursor: pointer;
+  &.active {
+    font-weight: bold;
+  }
+  &.disabled {
+    color: #ccc;
+    pointer-events: none;
+  }
+}
 .tools > div {
   display: flex;
   flex-wrap: wrap;
   flex-direction: row;
 }
 .tool {
+  transition: all .2s;
+  opacity: 1;
   flex: 0 0 12.5%;
-  height: 200px;
+  height: 140px;
   background-repeat: no-repeat;
   background-position: 50% 50%;
-  background-opacity: 50%;
   background-size: cover;
   border: 2px dashed #777;
   overflow: hidden;
   > div {
     background: transparentize(white, .50);
+  }
+  &[lazy="loading"] {
+    opacity: 0;
+    background: yellow; // TODO: remove
   }
 }
 // Transition-group animation
