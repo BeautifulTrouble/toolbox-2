@@ -159,10 +159,10 @@ export default {
   position: relative; // For transition animation
 }
 .tools {
+  //direction: rtl;
 }
 .tool {
   transition: all .2s;
-  opacity: 1;
   flex: 0 0 12.5%;
   height: 140px;
   background-repeat: no-repeat;
@@ -179,13 +179,19 @@ export default {
   }
 }
 // Transition-group animation
-.tools-list-move {
-  transition: all .2s;
+.tools-list-move { // transition is on .tool
+  //transition: all .2s;
 }
 .tools-list-leave-active {
   position: absolute;
-  left: 50% - (12.5% / 2);
-  top: 100vh;
+  opacity: 0;
+  // X-perry-mints
+  //left: 50% - (12.5% / 2);
+  //left: 0; right: 0;
+  //margin: 0 auto 0 auto;
+  //top: 0; bottom: 0;
+  //position: relative;
+  //transform: scale3d(0,0,0);
 }
 .tools-list-enter-active, .tools-list-leave-active {
   opacity: 1;
