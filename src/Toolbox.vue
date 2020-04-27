@@ -3,8 +3,8 @@
     <h1 v-if="$store.state.langRequested">Loading Toolbox...</h1>
     <div class="toolbox">
       <div class="sentence">
-        <div>
-          {{ sentence }}
+        <div @click="filterReset">
+          ({{ activeFilter}}; {{ filterCollection }}): {{ sentence }}
         </div>
       </div>
 
@@ -12,23 +12,23 @@
         <div class="by-collection" v-if="activeFilter == 'collection'">
           <div v-for="(value, key) in typeTextBySlug" :key="key"
              :class="{active: filterCollection == key}">
-            <h3 @click="toggleFilter('Collection', key)">{{ value[1] }}</h3>
+            <h3 @click="filterToggle('Collection', key)">{{ value[1] }}</h3>
           </div>
           <div :class="{active: filterCollection == 'saved'}">
-            <h3 @click="toggleFilter('Collection', 'saved')">MY TOOLS</h3>
+            <h3 @click="filterToggle('Collection', 'saved')">MY TOOLS</h3>
           </div>
           <div :class="{active: filterCollection == 'selected'}">
-            <h3 @click="toggleFilter('Collection', 'selected')">SELECTED TOOLS</h3>
+            <h3 @click="filterToggle('Collection', 'selected')">SELECTED TOOLS</h3>
           </div>
         </div>
         <div class="by-region" v-if="activeFilter == 'region'">
-
+          <div @click="filterToggle('Region', 'Europe')">EUROPE</div>
         </div>
-        <div class="by-tag" v-if="true || activeFilter == 'tag'">
+        <div class="by-tag" v-if="activeFilter == 'tag'">
           <span
             v-for="(tag, i) in tagSlugsSorted" :key="i"
             :class="{active: filterTag == tag, disabled: !tagSlugsAvailable.has(tag)}"
-            @click="toggleFilter('Tag', tag)"
+            @click="filterToggle('Tag', tag)"
             >{{ tagTextBySlug[tag] }}</span>
         </div>
       </div>
@@ -66,6 +66,7 @@ export default {
   data: () => ({
     ALL,
     activeFilter: 'collection', // possibilities are: collection, region, selected, tag
+    activeFilterAdvance: true,
     filterCollection: ALL,
     filterRegion: ALL,
     filterSelected: ALL,
@@ -75,7 +76,7 @@ export default {
     sentence() {
       return `Show me ${this.$store}`
     },
-    filteredToolsAnyTag() {
+    filteredToolsAllTags() {
       let tools = (this.$store.state.tools || [])
         .filter(t => t['module-type'] != 'snapshot' && t['module-type-effective'] != 'snapshot')
 
@@ -93,7 +94,7 @@ export default {
       return tools
     },
     filteredTools() {
-      let tools = this.filteredToolsAnyTag
+      let tools = this.filteredToolsAllTags
       if (this.filterTag != ALL)
         tools = tools.filter(t => (t.tags || []).includes(this.filterTag))
       return tools
@@ -102,8 +103,8 @@ export default {
       return Object.keys(this.tagTextBySlug)
               .sort((a, b) => this.tagTextBySlug[a].localeCompare(this.tagTextBySlug[b]))
     },
-    tagSlugsAvailable() { // Relies on filteredToolsAnyTag to
-      return this.filteredToolsAnyTag
+    tagSlugsAvailable() { // Relies on filteredToolsAllTags to
+      return this.filteredToolsAllTags
         .map(t => t.tags)
         .reduce((a, c) => c !== undefined ? new Set([...a, ...c]) : a, new Set([]))
     },
@@ -115,9 +116,34 @@ export default {
     }
   },
   methods: {
-    toggleFilter(name, selected) {
-      if (name == 'Collection') this.filterTag = ALL
-      this[`filter${name}`] = this[`filter${name}`] == selected ? ALL : selected
+    filterToggle(name, selected) {
+      // TODO: what's exact activeFilterAdvance logic?
+      if (this[`filter${name}`] == selected) {
+        this[`filter${name}`] = ALL
+      } else {
+        this[`filter${name}`] = selected
+        if (this.activeFilterAdvance) {
+          console.log('b4', this.activeFilter, this.filterCollection)
+          this.activeFilter = {
+            collection: {
+              story: 'region',
+              saved: 'collection',
+              selected: this.filterSelected}[this.filterCollection] || 'tag',
+            region: 'tag',
+            tag: 'tag',
+          }[this.activeFilter]
+          console.log('af', this.activeFilter)
+        }
+        if (name == 'Collection') this.filterTag = ALL
+      }
+    },
+    filterReset() {
+      this.activeFilter = 'collection'
+      this.activeFilterAdvance = true
+      this.filterCollection = ALL
+      this.filterRegion = ALL
+      this.filterSelected = ALL
+      this.filterTag = ALL
     },
   },
   watch: {
