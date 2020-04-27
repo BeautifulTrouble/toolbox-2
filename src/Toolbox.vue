@@ -36,7 +36,7 @@
       <div class="tools">
         <transition-group name="tools-list" tag="div">
           <div class="tool"
-            v-for="(tool, i) in filteredTools" :key="`tool-${i}`"
+            v-for="(tool, i) in filteredTools" :key="tool.slug"
             v-lazy:background-image="`https://beautifulrising.org/tile-${tool.image}`"
             @click="log(tool)">
             <div>
@@ -143,6 +143,7 @@ export default {
   border: 1px dashed pink;
   padding: 0 .5rem;
   cursor: pointer;
+  display: inline-block;
   &.active {
     font-weight: bold;
   }
@@ -155,6 +156,9 @@ export default {
   display: flex;
   flex-wrap: wrap;
   flex-direction: row;
+  position: relative; // For transition animation
+}
+.tools {
 }
 .tool {
   transition: all .2s;
@@ -171,16 +175,22 @@ export default {
   }
   &[lazy="loading"] {
     opacity: 0;
-    background: yellow; // TODO: remove
+    //background: yellow; // TODO: remove
   }
 }
 // Transition-group animation
-.tools-list-enter-active, .tools-list-leave-active {
+.tools-list-move {
   transition: all .2s;
+}
+.tools-list-leave-active {
+  position: absolute;
+  left: 50% - (12.5% / 2);
+  top: 100vh;
+}
+.tools-list-enter-active, .tools-list-leave-active {
   opacity: 1;
 }
 .tools-list-enter, .tools-list-leave-to {
   opacity: 0;
-  transform: translateY(10px);
 }
 </style>
