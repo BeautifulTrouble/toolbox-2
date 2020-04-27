@@ -6,6 +6,48 @@ import Vuex from 'vuex'
 import config from '../bt.config'
 
 
+// LOCALSTORAGE
+// IMPORTANT: We need the ability to delete our large localStorage cache, and want to avoid calling
+//            localStorage.clear(), so please DON'T RENAME "bt-tools-??" after launch.
+const storageKeyCache = lang => `bt-tools-${lang}`
+const storageKeyLang = 'bt-lang'
+const storageKeySaved = 'bt-saved'
+
+const storageGetSavedTools = () => {
+  return new Set(JSON.parse(Storage.getItem(storageKeySaved) || '[]'))
+}
+const storageSetSavedTools = tools => {
+  Storage.setItem(storageKeySaved, JSON.stringify([...tools.keys()]))
+}
+
+const storageSetCache = (lang, data, nestedCall = false) => {
+  // TODO: to help fit more data under quota, remove top-level key-modules, document_whatever
+  try {
+    Storage.setItem(storageKeyCache(lang), JSON.stringify({'timestamp': (new Date).getTime(), data: data}))
+  } catch(e) {
+    console.debug(e)
+    if (!nestedCall) {
+      console.debug("Trying to make room for localStorage cache...")
+      config.langs.forEach(lang => Storage.removeItem(storageKeyCache(lang)))
+      storageSetCache(lang, data, true)
+    } else {
+      console.debug("Couldn't save cache")
+    }
+  }
+}
+const storageGetCache = lang => {
+  try {
+    let data = JSON.parse(Storage.getItem(storageKeyCache(lang)))
+    if (data && data.timestamp && ((new Date).getTime() - data.timestamp < config.cacheLifespan)) {
+      return data.data
+    }
+  } catch(e) {
+    console.debug("Removing bad localStorage tools cache...")
+    Storage.removeItem(storageKeyCache(lang))
+  }
+}
+
+
 // VUEX
 Vue.use(Vuex)
 
@@ -13,6 +55,7 @@ export const store = new Vuex.Store({
   state: {
     lang: null,
     langRequested: null,
+    savedTools: storageGetSavedTools(),
     tools: {},
     wordPress: '',
     wordPressRequested: false,
@@ -22,11 +65,11 @@ export const store = new Vuex.Store({
     SET_LANG(context, [lang, forceReload]) {
       // No language was requested, so detect the browser language from storage or navigator.
       if (!lang) {
-        lang = Storage.getItem(storedLangKey) || navigator.language.slice(0,2)
+        lang = Storage.getItem(storageKeyLang) || navigator.language.slice(0,2)
       }
       // If language isn't already set and there's no outstanding request for this language already
       if (context.state.lang != lang && context.state.langRequested != lang) {
-        let cache = getCache(lang)
+        let cache = storageGetCache(lang)
         if (cache && !forceReload) {
           console.debug('using cached tools')
           context.commit('setLang', [cache, lang, false])
@@ -75,14 +118,28 @@ export const store = new Vuex.Store({
             }
           })
       }
-    }
+    },
+    // SAVE/UNSAVE TOOL
+    SAVE_TOOL(context, slug) {
+      //let tools = new Set([...JSON.parse(Storage.getItem(storageKeySaved) || '[]'), slug])
+      let tools = new Set([...storageGetSavedTools(), slug])
+      //Storage.setItem(storageKeySaved, JSON.stringify([...tools.keys()]))
+      storageSetSavedTools(tools)
+      context.commit('setSavedTools', tools)
+    },
+    UNSAVE_TOOL(context, slug) {
+      let tools = storageGetSavedTools()
+      tools.delete(slug)
+      storageSetSavedTools(tools)
+      context.commit('setSavedTools', tools)
+    },
   },
   mutations: {
-    // STORE API TOOLS
+    // API TOOLS
     setLang(state, [tools, lang, cache]) {
-      Storage.setItem(storedLangKey, lang)
+      Storage.setItem(storageKeyLang, lang)
       if (cache) {
-        setCache(lang, tools)
+        storageSetCache(lang, tools)
       }
       state.tools = tools
       state.lang = lang
@@ -92,7 +149,7 @@ export const store = new Vuex.Store({
     setLangRequested(state, lang) {
       state.langRequested = lang
     },
-    // STORE WORDPRESS CONTENT
+    // WORDPRESS CONTENT
     setWordPressRequested(state) {
       state.wordPress = ''
       state.wordPressRequested = true
@@ -100,42 +157,12 @@ export const store = new Vuex.Store({
     setWordPress(state, html) {
       state.wordPressRequested = false
       state.wordPress = html
-    }
+    },
+    // SAVED TOOLS
+    setSavedTools(state, tools) {
+      state.savedTools = tools
+    },
   },
 })
-
-
-// CACHE API DATA IN LOCALSTORAGE
-// IMPORTANT: We need the ability to delete our large localStorage cache, and want to avoid calling
-//            localStorage.clear(), so please DON'T RENAME "bt-tools-??" after launch.
-const storedCacheKey = lang => `bt-tools-${lang}`
-const storedLangKey = 'bt-lang'
-
-// TODO: to help fit more data under quota, remove top-level key-modules, document_whatever
-const setCache = (lang, data, nestedCall = false) => {
-  try {
-    Storage.setItem(storedCacheKey(lang), JSON.stringify({'timestamp': (new Date).getTime(), data: data}))
-  } catch(e) {
-    console.debug(e)
-    if (!nestedCall) {
-      console.debug("Trying to make room for localStorage cache...")
-      config.langs.forEach(lang => Storage.removeItem(storedCacheKey(lang)))
-      setCache(lang, data, true)
-    } else {
-      console.debug("Couldn't save cache")
-    }
-  }
-}
-const getCache = (lang) => {
-  try {
-    let data = JSON.parse(Storage.getItem(storedCacheKey(lang)))
-    if (data && data.timestamp && ((new Date).getTime() - data.timestamp < config.cacheLifespan)) {
-      return data.data
-    }
-  } catch(e) {
-    console.debug("Removing bad localStorage tools cache...")
-    Storage.removeItem(storedCacheKey(lang))
-  }
-}
 
 
