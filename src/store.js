@@ -86,8 +86,21 @@ export const store = new Vuex.Store({
         }
       }
     },
+    // TOOL SAVING/UNSAVING
+    TOOL_TOGGLE(context, slug) {
+      context.dispatch(context.state.savedTools.has(slug) ? 'TOOL_UNSAVE' : 'TOOL_SAVE', slug)
+    },
+    TOOL_SAVE(context, slug) {
+      let tools = new Set([...storageGetSavedTools(), slug])
+      context.commit('setSavedTools', tools)
+    },
+    TOOL_UNSAVE(context, slug) {
+      let tools = storageGetSavedTools()
+      tools.delete(slug)
+      context.commit('setSavedTools', tools)
+    },
     // GET WORDPRESS CONTENT
-    GET_WP(context, {path, query}) {
+    WP_GET(context, {path, query}) {
       // TODO: Reload WordPress content
       // Look for permalink structure to determine if we should use posts or pages endpoint
       let endpoint = /^\/\d{4}\/\d{2}\/\d{2}\//.test(path) ? 'posts' : 'pages'
@@ -114,24 +127,10 @@ export const store = new Vuex.Store({
               }
             })
             if (!foundItem && path != config.errorPage) {
-              context.dispatch('GET_WP', {path: config.errorPage, query: {}})
+              context.dispatch('WP_GET', {path: config.errorPage, query: {}})
             }
           })
       }
-    },
-    // SAVE/UNSAVE TOOL
-    SAVE_TOOL(context, slug) {
-      //let tools = new Set([...JSON.parse(Storage.getItem(storageKeySaved) || '[]'), slug])
-      let tools = new Set([...storageGetSavedTools(), slug])
-      //Storage.setItem(storageKeySaved, JSON.stringify([...tools.keys()]))
-      storageSetSavedTools(tools)
-      context.commit('setSavedTools', tools)
-    },
-    UNSAVE_TOOL(context, slug) {
-      let tools = storageGetSavedTools()
-      tools.delete(slug)
-      storageSetSavedTools(tools)
-      context.commit('setSavedTools', tools)
     },
   },
   mutations: {
@@ -161,6 +160,7 @@ export const store = new Vuex.Store({
     // SAVED TOOLS
     setSavedTools(state, tools) {
       state.savedTools = tools
+      storageSetSavedTools(tools)
     },
   },
 })

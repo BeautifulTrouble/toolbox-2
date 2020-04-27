@@ -47,11 +47,11 @@ export default {
   },
   watch: {
     $route(to, from) {
-      if (to.path != from.path) this.$store.dispatch('GET_WP', to)
+      if (to.path != from.path) this.$store.dispatch('WP_GET', to)
     },
   },
   created() {
-    this.$store.dispatch('GET_WP', this.$route)
+    this.$store.dispatch('WP_GET', this.$route)
   },
 };
 </script>

@@ -38,7 +38,7 @@
           <div class="tool"
             v-for="(tool, i) in filteredTools" :key="tool.slug"
             v-lazy:background-image="`https://beautifulrising.org/tile-${tool.image}`"
-            @click="toggleSaved(tool.slug)">
+            @click="$store.dispatch('TOOL_TOGGLE', tool.slug)">
             <div>
               {{ tool.title }}{{ $store.state.savedTools.has(tool.slug) ? '@' : '.' }}
             </div>
@@ -115,16 +115,10 @@ export default {
     }
   },
   methods: {
-    log: console.log,
-    __tag(tag) { return this.tagTextBySlug[tag] || '' },
     toggleFilter(name, selected) {
       if (name == 'Collection') this.filterTag = ALL
       this[`filter${name}`] = this[`filter${name}`] == selected ? ALL : selected
     },
-    toggleSaved(slug) {
-      this.$store.dispatch(this.$store.state.savedTools.has(slug) ? 'UNSAVE_TOOL' : 'SAVE_TOOL', slug)
-    },
-
   },
   watch: {
   },
