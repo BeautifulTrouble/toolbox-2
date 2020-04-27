@@ -32,7 +32,7 @@
         <transition-group name="tools-list" tag="div">
           <div class="tool"
             v-for="(tool, i) in filteredTools" :key="`tool-${i}`"
-            :style="{backgroundImage: `url(https://beautifulrising.org/tile-${tool.image})`}"
+            v-lazy:background-image="`https://beautifulrising.org/tile-${tool.image}`"
             @click="log(tool)">
             <div>
             {{ tool.title }}

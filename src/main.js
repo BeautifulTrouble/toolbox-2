@@ -5,6 +5,7 @@ import Axios from 'axios'
 import Router from 'vue-router'
 import Showdown from 'showdown'
 import ShowdownTargetBlank from 'showdown-target-blank'
+import VueLazyload from 'vue-lazyload'
 
 import App from './App'
 import Toolbox from './Toolbox.vue'
@@ -81,6 +82,8 @@ Vue.mixin({
     },
   },
 })
+
+Vue.use(VueLazyload)
 
 
 // START VUE
