@@ -57,10 +57,10 @@ router.beforeEach((to, from, next) => {
 
   if (languageSelectionPrefix.test(to.path)) {
     let lang = to.path.slice(1,3)
-    store.dispatch('LANG_INIT', [lang, false])
+    store.dispatch('LANG_SET', [lang, false])
     next({path: to.path.slice(3)})
   } else if (!store.state.lang) {
-    store.dispatch('LANG_INIT', [null, false])
+    store.dispatch('LANG_SET', [null, false])
     next()
   } else {
     next()

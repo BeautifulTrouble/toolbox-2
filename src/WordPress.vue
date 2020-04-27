@@ -1,7 +1,5 @@
 <template>
   <div>
-    <h1 @click="$store.dispatch('LANG_INIT', ['en', false])">EN</h1>
-    <h1 @click="$store.dispatch('LANG_INIT', ['pt', false])">PT</h1>
     <div v-if="$store.state.wordPressRequested">Loading...</div>
     <div
       class="wordpress"

@@ -62,7 +62,7 @@ export const store = new Vuex.Store({
   },
   actions: {
     // SET LANGUAGE AND GET [UNEXPIRED CACHE OF] API DATA
-    LANG_INIT(context, [lang, forceReload]) {
+    LANG_SET(context, [lang, forceReload]) {
       // No language was requested, so detect the browser language from storage or navigator.
       if (!lang) {
         lang = Storage.getItem(storageKeyLang) || navigator.language.slice(0,2)
@@ -74,6 +74,7 @@ export const store = new Vuex.Store({
           console.debug('using cached tools')
           context.commit('setLang', [cache, lang, false])
         } else {
+          // TODO: When not on a toolbox page, maybe defer this.
           console.debug('fetching fresh tools')
           context.commit('setLangRequested', lang)
           Axios.get(`${config.api}/modules?lang=${lang}`)
