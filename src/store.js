@@ -62,7 +62,7 @@ export const store = new Vuex.Store({
   },
   actions: {
     // SET LANGUAGE AND GET [UNEXPIRED CACHE OF] API DATA
-    SET_LANG(context, [lang, forceReload]) {
+    LANG_INIT(context, [lang, forceReload]) {
       // No language was requested, so detect the browser language from storage or navigator.
       if (!lang) {
         lang = Storage.getItem(storageKeyLang) || navigator.language.slice(0,2)

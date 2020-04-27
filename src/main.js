@@ -26,7 +26,7 @@ const router = new Router({
   routes: [
     {path: '/', name: 'home', component: Home},
     {path: '/about', name: 'about', component: () => import(/* webpackChunkName: "about" */ './views/About.vue')},
-    {path: '/tools/:filter?', alias: '/toolbox', name: 'toolbox', component: Toolbox},
+    {path: '/tools/:collection?/:region?/:tag?', alias: '/toolbox', name: 'toolbox', component: Toolbox},
     {path: '/tool/:slug', name: 'tool', component: Home},
     {path: '/*', name: 'wordpress', component: WordPress},
   ],
@@ -57,10 +57,10 @@ router.beforeEach((to, from, next) => {
 
   if (languageSelectionPrefix.test(to.path)) {
     let lang = to.path.slice(1,3)
-    store.dispatch('SET_LANG', [lang, false])
+    store.dispatch('LANG_INIT', [lang, false])
     next({path: to.path.slice(3)})
   } else if (!store.state.lang) {
-    store.dispatch('SET_LANG', [null, false])
+    store.dispatch('LANG_INIT', [null, false])
     next()
   } else {
     next()
