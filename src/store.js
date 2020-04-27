@@ -13,9 +13,9 @@ export const store = new Vuex.Store({
   state: {
     lang: null,
     langRequested: null,
-    content: {},
+    tools: {},
     wordPress: '',
-    wordPressRequested: true,
+    wordPressRequested: false,
   },
   actions: {
     // SET LANGUAGE AND GET [UNEXPIRED CACHE OF] API DATA
@@ -28,17 +28,17 @@ export const store = new Vuex.Store({
       if (context.state.lang != lang && context.state.langRequested != lang) {
         let cache = getCache(lang)
         if (cache && !forceReload) {
-          console.log('using cached content')
-          context.commit('setContent', [cache, lang, false])
+          console.debug('using cached tools')
+          context.commit('setLang', [cache, lang, false])
         } else {
-          console.log('fetching fresh content')
+          console.debug('fetching fresh tools')
           context.commit('setLangRequested', lang)
           Axios.get(`${config.api}/modules?lang=${lang}`)
             .then(r => {
-              context.commit('setContent', [r.data, lang, true])
+              context.commit('setLang', [r.data, lang, true])
             })
             .catch(e => {
-              console.error("Couldn't get API content!", e)
+              console.error("Couldn't get API tools!", e)
             })
         }
       }
@@ -78,16 +78,16 @@ export const store = new Vuex.Store({
     }
   },
   mutations: {
-    // STORE API CONTENT
-    setContent(state, [content, lang, cache]) {
+    // STORE API TOOLS
+    setLang(state, [tools, lang, cache]) {
       Storage.setItem(storedLangKey, lang)
       if (cache) {
-        setCache(lang, content)
+        setCache(lang, tools)
       }
-      state.content = content
+      state.tools = tools
       state.lang = lang
       state.langRequested = null
-      console.log(`got content e.g.`, state.content[1].title)
+      console.debug(`got tools e.g.`, state.tools[1].title)
     },
     setLangRequested(state, lang) {
       state.langRequested = lang
@@ -106,7 +106,9 @@ export const store = new Vuex.Store({
 
 
 // CACHE API DATA IN LOCALSTORAGE
-const storedCacheKey = lang => `bt-content-${lang}`
+// IMPORTANT: We need the ability to delete our large localStorage cache, and want to avoid calling
+//            localStorage.clear(), so please DON'T RENAME "bt-tools-??" after launch.
+const storedCacheKey = lang => `bt-tools-${lang}`
 const storedLangKey = 'bt-lang'
 
 // TODO: to help fit more data under quota, remove top-level key-modules, document_whatever
@@ -114,13 +116,13 @@ const setCache = (lang, data, nestedCall = false) => {
   try {
     Storage.setItem(storedCacheKey(lang), JSON.stringify({'timestamp': (new Date).getTime(), data: data}))
   } catch(e) {
-    console.log(e)
+    console.debug(e)
     if (!nestedCall) {
-      console.warn("Trying to make room for localStorage cache...")
+      console.debug("Trying to make room for localStorage cache...")
       config.langs.forEach(lang => Storage.removeItem(storedCacheKey(lang)))
       setCache(lang, data, true)
     } else {
-      console.warn("Couldn't save cache")
+      console.debug("Couldn't save cache")
     }
   }
 }
@@ -131,7 +133,7 @@ const getCache = (lang) => {
       return data.data
     }
   } catch(e) {
-    console.warn("Removing bad localStorage content cache...")
+    console.debug("Removing bad localStorage tools cache...")
     Storage.removeItem(storedCacheKey(lang))
   }
 }
