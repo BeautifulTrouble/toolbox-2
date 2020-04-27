@@ -12,15 +12,27 @@
       <router-link to="/top">top</router-link> |
       <router-link to="/top/">top/</router-link> |
       <router-link to="/top/another">top another</router-link> |
-      <router-link to="/does/not/exist">404</router-link>
+      <router-link to="/does/not/exist">404</router-link> |
+      <router-link to="/tool">toolbox1</router-link> |
+      <router-link to="/toolbox">toolbox2</router-link>
     </div>
-    <router-view/>
+    <transition name="fade" mode="out-in">
+      <router-view/>
+    </transition>
     <div v-if="$store.state.langRequested">
       Loading...</div>
   </div>
 </template>
 
 <style lang="scss">
+html {
+  overflow-y: scroll;
+  box-sizing: border-box;
+}
+*, *:before, *:after {
+  box-sizing: border-box;
+}
+
 #app {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -37,5 +49,14 @@
       color: #42b983;
     }
   }
+}
+
+.fade-enter-active, .fade-leave-active {
+  position: relative;
+  transition: all .1s;
+  opacity: 1;
+}
+.fade-enter, .fade-leave-to {
+  opacity: 0;
 }
 </style>

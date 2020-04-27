@@ -6,5 +6,6 @@ export default {
   errorPage: '/error',
   langs: ['en', 'es', 'ar', 'pt'],
   siteDomain: 'bt.org',
+  toolTypes: ['story', 'tactic', 'principle', 'theory', 'methodology'],
   wpapi: 'http://bt.org/wp-json/wp/v2',
 }

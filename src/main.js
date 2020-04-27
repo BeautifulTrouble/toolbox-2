@@ -7,8 +7,10 @@ import Showdown from 'showdown'
 import ShowdownTargetBlank from 'showdown-target-blank'
 
 import App from './App'
-import Home from './views/Home'
+import Toolbox from './Toolbox.vue'
 import WordPress from './WordPress'
+
+import Home from './views/Home'
 
 import { store } from './store'
 import config from '../bt.config'
@@ -23,6 +25,7 @@ const router = new Router({
   routes: [
     {path: '/', name: 'home', component: Home},
     {path: '/about', name: 'about', component: () => import(/* webpackChunkName: "about" */ './views/About.vue')},
+    {path: '/tools/:filter?', alias: '/toolbox', name: 'toolbox', component: Toolbox},
     {path: '/tool/:slug', name: 'tool', component: Home},
     {path: '/*', name: 'wordpress', component: WordPress},
   ],
