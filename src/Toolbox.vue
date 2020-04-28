@@ -35,14 +35,8 @@
 
       <div class="tools">
         <transition-group name="tools-list" tag="div">
-          <div class="tool"
-            v-for="(tool, i) in filteredTools" :key="tool.slug"
-            v-lazy:background-image="`https://beautifulrising.org/tile-${tool.image}`"
-            @click="$store.dispatch('TOOL_TOGGLE', tool.slug)">
-            <div>
-              {{ tool.title }}{{ $store.state.savedTools.has(tool.slug) ? '@' : '.' }}
-            </div>
-          </div>
+          <tool-tile v-for="(tool, i) in filteredTools" :key="tool.slug"
+            :tool="tool" :text="typeTextBySlug"/>
         </transition-group>
       </div>
     </div>
@@ -50,6 +44,7 @@
 </template>
 
 <script>
+import ToolTile from './ToolTile'
 import config from '../bt.config'
 import tagTextByLang from './tags'
 import typeTextByLang from './types'
@@ -72,6 +67,9 @@ export default {
     filterSelected: ALL,
     filterTag: ALL,
   }),
+  components: {
+    ToolTile,
+  },
   computed: {
     sentence() {
       return `Show me ${this.$store}`
@@ -147,6 +145,9 @@ export default {
     },
   },
   watch: {
+    $route(to, from) {
+      console.log('to', to, 'from', from)
+    },
   },
   created() {
     console.log('created toolbox')
@@ -184,37 +185,13 @@ export default {
 .tools {
   //direction: rtl;
 }
-.tool {
-  transition: all .2s;
-  flex: 0 0 12.5%;
-  height: 140px;
-  background-repeat: no-repeat;
-  background-position: 50% 50%;
-  background-size: cover;
-  border: 2px dashed #777;
-  overflow: hidden;
-  > div {
-    background: transparentize(white, .50);
-  }
-  &[lazy="loading"] {
-    opacity: 0;
-    //background: yellow; // TODO: remove
-  }
-}
+
 // Transition-group animation
-.tools-list-move { // transition is on .tool
-  //transition: all .2s;
+.tool {
+  transition: all .2s ease-out;
 }
 .tools-list-leave-active {
   position: absolute;
-  opacity: 0;
-  // X-perry-mints
-  //left: 50% - (12.5% / 2);
-  //left: 0; right: 0;
-  //margin: 0 auto 0 auto;
-  //top: 0; bottom: 0;
-  //position: relative;
-  //transform: scale3d(0,0,0);
 }
 .tools-list-enter-active, .tools-list-leave-active {
   opacity: 1;
