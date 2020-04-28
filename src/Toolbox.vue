@@ -143,14 +143,90 @@ export default {
       this.filterSelected = ALL
       this.filterTag = ALL
     },
+    reRoute(params) {
+      this.$router.replace({name: 'toolbox', params})
+    },
+    filterUpdateFromRoute(route) {
+      // Validate filters from path
+      /*
+      let { collection, filterA, filterB } = route.params
+      let fC, fR, fS, fT
+
+      // Is it a valid filterB?
+      if (filterB && (collection != 'story' || !(filterB in this.tagTextBySlug)))
+        return this.$router.replace({name: 'toolbox', params: {collection, filterA}})
+
+      if (collection == 'saved') {
+        if (filterA)
+          return this.$router.replace({name: 'toolbox', params: {collection}})
+      } else if (collection == 'selected') {
+        if (filterA && !COLLECTIONS.includes(filterA))
+          return this.$router.replace({name: 'toolbox', params: {collection}})
+        fS = filterA
+      } else if (collection == 'story') {
+        if (filterA && !REGIONS.includes(filterA))
+          return this.$router.replace({name: 'toolbox', params: {collection}})
+        fR = filterA
+        fT = filterB
+      } else if (collection in this.typeTextBySlug) {
+        if (filterA && !(filterA in this.tagTextBySlug))
+          return this.$router.replace({name: 'toolbox', params: {collection}})
+        fT = filterA
+      } else {
+        return this.$router.replace({name: 'toolbox'})
+      }
+      this.filterCollection = collection || ALL
+      this.filterRegion = fR || ALL
+      this.filterSelected = fS || ALL
+      this.filterTag = fT || ALL
+
+        console.log('filter:', collection, filterA, filterB, this.filterCollection, this.filterRegion,
+      this.filterSelected, this.filterTag)
+      */
+      let { collection, filterA, filterB } = route.params
+      let filterRegion, filterSelected, filterTag
+
+      if (collection == 'saved') {
+        if (filterA || filterB) return this.reRoute({collection})
+      } else if (collection == 'selected') {
+        if (filterB)
+          return this.reRoute({collection, filterA})
+        if (filterA && !COLLECTIONS.includes(filterA))
+          return this.reRoute({collection})
+        filterSelected = filterA
+      } else if (collection == 'story') {
+        if (filterB && !(filterB in this.tagTextBySlug))
+          return this.reRoute({collection, filterA})
+        if (filterA && !REGIONS.includes(filterA))
+          return this.reRoute({collection})
+        filterRegion = filterA
+        filterTag = filterB
+      } else if (collection in this.typeTextBySlug) {
+        if (filterB)
+          return this.reRoute({collection, filterA})
+        if (filterA && !(filterA in this.tagTextBySlug))
+          return this.reRoute({collection})
+        filterTag = filterA
+      } else {
+        return this.reRoute({})
+      }
+      this.filterCollection = collection || ALL
+      this.filterRegion = filterRegion || ALL
+      this.filterSelected = filterSelected || ALL
+      this.filterTag = filterTag || ALL
+
+        console.log('filter:', collection, filterA, filterB, this.filterCollection, this.filterRegion,
+      this.filterSelected, this.filterTag)
+    }
   },
   watch: {
     $route(to, from) {
-      console.log('to', to, 'from', from)
+      this.filterUpdateFromRoute(to)
     },
   },
   created() {
-    console.log('created toolbox')
+    console.log('created toolbox', this.$route)
+    this.filterUpdateFromRoute(this.$route)
   },
 };
 </script>

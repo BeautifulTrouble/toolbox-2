@@ -24,11 +24,17 @@ const router = new Router({
   mode: 'history',
   base: '/',
   routes: [
-    {path: '/', name: 'home', component: Home},
-    {path: '/about', name: 'about', component: () => import(/* webpackChunkName: "about" */ './views/About.vue')},
-    {path: '/tools/:collection?/:region?/:tag?', alias: '/toolbox', name: 'toolbox', component: Toolbox},
-    {path: '/tool/:slug', name: 'tool', component: Home},
-    {path: '/*', name: 'wordpress', component: WordPress},
+    {name: 'home', component: Home,
+      path: '/'},
+    {name: 'about', component: () => import(/* webpackChunkName: "about" */ './views/About.vue'),
+      path: '/about'},
+    {name: 'toolbox', component: Toolbox,
+      path: '/tools/:collection?/:filterA?/:filterB?',
+      alias: '/toolbox/:collection?/:filterA?/:filterB?'},
+    {name: 'tool', component: Home,
+      path: '/tool/:slug'},
+    {name: 'wordpress', component: WordPress,
+      path: '/*'},
   ],
   scrollBehavior(to, from, savedPosition) {
     if (to.hash) {
