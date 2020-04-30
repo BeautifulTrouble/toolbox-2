@@ -56,7 +56,7 @@ export const store = new Vuex.Store({
     lang: null,
     langRequested: null,
     savedTools: storageGetSavedTools(),
-    tools: {},
+    tools: [],
     wordPress: '',
     wordPressRequested: false,
   },

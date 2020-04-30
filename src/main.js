@@ -29,8 +29,7 @@ const router = new Router({
     {name: 'about', component: () => import(/* webpackChunkName: "about" */ './views/About.vue'),
       path: '/about'},
     {name: 'toolbox', component: Toolbox,
-      path: '/tools/:collection?/:filterA?/:filterB?',
-      alias: '/toolbox/:collection?/:filterA?/:filterB?'},
+      path: '/toolbox/:collection?/:filterA?/:filterB?'},
     {name: 'tool', component: Home,
       path: '/tool/:slug'},
     {name: 'wordpress', component: WordPress,
@@ -79,7 +78,9 @@ const showdown = new Showdown.Converter({
   extensions: [ShowdownTargetBlank],
 })
 
+Vue.config.productionTip = false
 Vue.prototype.$http = Axios
+Vue.use(VueLazyload)
 
 Vue.mixin({
   methods: {
@@ -89,7 +90,6 @@ Vue.mixin({
   },
 })
 
-Vue.use(VueLazyload)
 
 
 // START VUE

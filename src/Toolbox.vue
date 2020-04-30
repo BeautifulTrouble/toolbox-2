@@ -3,7 +3,7 @@
     <h1 v-if="$store.state.langRequested">Loading Toolbox...</h1>
     <div class="toolbox">
       <div class="sentence">
-        <div @click="filterReset">
+        <div @click="filterReRoute()">
           ({{ activeFilter}}; {{ filterCollection }}): {{ sentence }}
         </div>
       </div>
@@ -12,23 +12,27 @@
         <div class="by-collection" v-if="activeFilter == 'collection'">
           <div v-for="(value, key) in typeTextBySlug" :key="key"
              :class="{active: filterCollection == key}">
-            <h3 @click="filterToggle('Collection', key)">{{ value[1] }}</h3>
+            <h3 @click="filterToggleCollection(key)">{{ value[1] }}</h3>
           </div>
           <div :class="{active: filterCollection == 'saved'}">
-            <h3 @click="filterToggle('Collection', 'saved')">MY TOOLS</h3>
+            <h3 @click="filterToggleCollection('saved')">MY TOOLS</h3>
           </div>
           <div :class="{active: filterCollection == 'selected'}">
-            <h3 @click="filterToggle('Collection', 'selected')">SELECTED TOOLS</h3>
+            <h3 @click="filterToggleCollection('selected')">SELECTED TOOLS</h3>
           </div>
         </div>
         <div class="by-region" v-if="activeFilter == 'region'">
-          <div @click="filterToggle('Region', 'Europe')">EUROPE</div>
+          <div @click="filterToggleRegion('Europe')">EUROPE</div>
+        </div>
+        <div class="by-selected" v-if="activeFilter == 'selected'">
+          <div @click="filterToggleSelected('best-of')">BEST OF</div>
+          <div @click="filterToggleSelected('andrews-list')">ANDREW'S LIST</div>
         </div>
         <div class="by-tag" v-if="activeFilter == 'tag'">
           <span
             v-for="(tag, i) in tagSlugsSorted" :key="i"
             :class="{active: filterTag == tag, disabled: !tagSlugsAvailable.has(tag)}"
-            @click="filterToggle('Tag', tag)"
+            @click="filterToggleTag(tag)"
             >{{ tagTextBySlug[tag] }}</span>
         </div>
       </div>
@@ -52,7 +56,7 @@ import typeTextByLang from './types'
 // Let's have some dignity
 const ALL = 'all'
 const COLLECTIONS = ['andrews-list', 'best-of']
-const REGIONS = ['Latin America and the Caribbean']
+const REGIONS = ['fake', 'Latin America and the Caribbean']
 
 export default {
   name: 'Toolbox',
@@ -75,8 +79,8 @@ export default {
       return `Show me ${this.$store}`
     },
     filteredToolsAllTags() {
-      let tools = (this.$store.state.tools || [])
-        .filter(t => t['module-type'] != 'snapshot' && t['module-type-effective'] != 'snapshot')
+      let tools = this.$store.state.tools.filter(
+        t => t['module-type'] != 'snapshot' && t['module-type-effective'] != 'snapshot')
 
       if (this.filterCollection == 'saved')
         tools = tools.filter(t => this.$store.state.savedTools.has(t.slug))
@@ -136,6 +140,7 @@ export default {
       }
     },
     filterReset() {
+      console.log('filterReset')
       this.activeFilter = 'collection'
       this.activeFilterAdvance = true
       this.filterCollection = ALL
@@ -143,90 +148,79 @@ export default {
       this.filterSelected = ALL
       this.filterTag = ALL
     },
-    reRoute(params) {
-      this.$router.replace({name: 'toolbox', params})
-    },
-    filterUpdateFromRoute(route) {
-      // Validate filters from path
-      /*
-      let { collection, filterA, filterB } = route.params
-      let fC, fR, fS, fT
-
-      // Is it a valid filterB?
-      if (filterB && (collection != 'story' || !(filterB in this.tagTextBySlug)))
-        return this.$router.replace({name: 'toolbox', params: {collection, filterA}})
-
-      if (collection == 'saved') {
-        if (filterA)
-          return this.$router.replace({name: 'toolbox', params: {collection}})
-      } else if (collection == 'selected') {
-        if (filterA && !COLLECTIONS.includes(filterA))
-          return this.$router.replace({name: 'toolbox', params: {collection}})
-        fS = filterA
-      } else if (collection == 'story') {
-        if (filterA && !REGIONS.includes(filterA))
-          return this.$router.replace({name: 'toolbox', params: {collection}})
-        fR = filterA
-        fT = filterB
-      } else if (collection in this.typeTextBySlug) {
-        if (filterA && !(filterA in this.tagTextBySlug))
-          return this.$router.replace({name: 'toolbox', params: {collection}})
-        fT = filterA
-      } else {
-        return this.$router.replace({name: 'toolbox'})
-      }
-      this.filterCollection = collection || ALL
-      this.filterRegion = fR || ALL
-      this.filterSelected = fS || ALL
-      this.filterTag = fT || ALL
-
-        console.log('filter:', collection, filterA, filterB, this.filterCollection, this.filterRegion,
-      this.filterSelected, this.filterTag)
-      */
+    filterGuardAndUpdate(route, next) {
+      // Validates and sets filters specified by a route. When passed the next function from a
+      // route guard, re-routes to a path with a valid filter (or none).
       let { collection, filterA, filterB } = route.params
       let filterRegion, filterSelected, filterTag
 
+      next = next || (() => {})
+      let nextReplace = params => next({name: 'toolbox', replace: true, params})
+
+      console.log('ROUTE GUARD:', collection, filterA, filterB)
+
       if (collection == 'saved') {
-        if (filterA || filterB) return this.reRoute({collection})
+        if (filterA || filterB) return nextReplace({collection})
       } else if (collection == 'selected') {
-        if (filterB)
-          return this.reRoute({collection, filterA})
-        if (filterA && !COLLECTIONS.includes(filterA))
-          return this.reRoute({collection})
+        if (filterB) return nextReplace({collection, filterA})
+        if (filterA && !COLLECTIONS.includes(filterA)) return nextReplace({collection})
         filterSelected = filterA
       } else if (collection == 'story') {
-        if (filterB && !(filterB in this.tagTextBySlug))
-          return this.reRoute({collection, filterA})
-        if (filterA && !REGIONS.includes(filterA))
-          return this.reRoute({collection})
+        if (filterB && !(filterB in this.tagTextBySlug))  return nextReplace({collection, filterA})
+        if (filterA && !REGIONS.includes(filterA)) return nextReplace({collection})
         filterRegion = filterA
         filterTag = filterB
       } else if (collection in this.typeTextBySlug) {
-        if (filterB)
-          return this.reRoute({collection, filterA})
-        if (filterA && !(filterA in this.tagTextBySlug))
-          return this.reRoute({collection})
+        if (filterB) return nextReplace({collection, filterA})
+        if (filterA && !(filterA in this.tagTextBySlug)) return nextReplace({collection})
         filterTag = filterA
-      } else {
-        return this.reRoute({})
+      } else if (collection) {
+        return nextReplace({})
       }
       this.filterCollection = collection || ALL
       this.filterRegion = filterRegion || ALL
       this.filterSelected = filterSelected || ALL
       this.filterTag = filterTag || ALL
-
-        console.log('filter:', collection, filterA, filterB, this.filterCollection, this.filterRegion,
-      this.filterSelected, this.filterTag)
-    }
-  },
-  watch: {
-    $route(to, from) {
-      this.filterUpdateFromRoute(to)
+      next()
     },
+    filterReRoute(params = {}) {
+      this.$router.push({name: 'toolbox', params})
+    },
+    filterToggleCollection(collection) {
+      if (this.filterCollection != collection) this.filterReRoute({collection})
+      else this.filterReRoute()
+    },
+    filterToggleRegion(region) {
+      if (this.filterCollection == 'story') {
+        if (this.filterRegion != region) this.filterReRoute({collection: 'story', filterA: region})
+        else this.filterReRoute({collection: 'story'})
+      }
+    },
+    filterToggleSelected(selected) {
+      if (this.filterCollection == 'selected') {
+        if (this.filterSelected != selected) this.filterReRoute({collection: 'selected', filterA: selected})
+        else this.filterReRoute({collection: 'selected'})
+      }
+    },
+    filterToggleTag(tag) {
+      if (this.filterTag != tag) this.filterReRoute(this.filterCollection == 'story'
+        ? {collection: this.filterCollection, filterA: this.filterRegion, filterB: tag}
+        : {collection: this.filterCollection, filterA: tag})
+      else this.filterReRoute({collection: 'story'})
+    },
+  },
+  beforeRouteUpdate(to, from, next) {
+    console.log('route update')
+    this.filterGuardAndUpdate(to, next)
+  },
+  beforeRouteEnter(to, from, next) {
+    console.log('route enter')
+    next(vm => vm.filterGuardAndUpdate(to, next))
   },
   created() {
     console.log('created toolbox', this.$route)
-    this.filterUpdateFromRoute(this.$route)
+    // TODO: ensure that when built
+    this.filterGuardAndUpdate(this.$route)
   },
 };
 </script>
