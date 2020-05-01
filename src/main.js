@@ -8,7 +8,8 @@ import ShowdownTargetBlank from 'showdown-target-blank'
 import VueLazyload from 'vue-lazyload'
 
 import App from './App'
-import Toolbox from './Toolbox.vue'
+import Tool from './Tool'
+import Toolbox from './Toolbox'
 import WordPress from './WordPress'
 
 import Home from './views/Home'
@@ -30,7 +31,7 @@ const router = new Router({
       path: '/about'},
     {name: 'toolbox', component: Toolbox,
       path: '/toolbox/:collection?/:filterA?/:filterB?'},
-    {name: 'tool', component: Home,
+    {name: 'tool', component: Tool,
       path: '/tool/:slug'},
     {name: 'wordpress', component: WordPress,
       path: '/*'},

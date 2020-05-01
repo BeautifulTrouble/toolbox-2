@@ -3,9 +3,9 @@
     <h1 v-if="$store.state.langRequested">Loading Toolbox...</h1>
     <div class="toolbox">
       <div class="sentence">
-        <div @click="filterReRoute()">
-          ({{ filterPaneActive}}; {{ filterCollection }}): {{ sentence }}
-        </div>
+        <h3 @click="filterReRoute()">
+          {{ sentence }}
+        </h3>
       </div>
 
       <div @click="filterPaneActive = 'collection'">:COLLECTION .</div>
@@ -13,32 +13,34 @@
       <div @click="filterPaneActive = 'selected'">:SELECTED .</div>
       <div @click="filterPaneActive = 'tag'">:TAG .</div>
       <div class="filter">
-        <div class="by-collection" v-if="filterPaneActive == 'collection'">
-          <div v-for="(value, key) in typeTextBySlug" :key="key"
-             :class="{active: filterCollection == key}">
-            <h3 @click="filterToggleCollection(key)">{{ value[1] }}</h3>
+        <transition name="fade" mode="out-in">
+          <div class="by-collection" v-if="filterPaneActive == 'collection'" key="'collection'">
+            <div v-for="(value, key) in typeTextBySlug" :key="key"
+               :class="{active: filterCollection == key}">
+              <h3 @click="filterToggleCollection(key)">{{ value[1] }}</h3>
+            </div>
+            <div :class="{active: filterCollection == 'saved'}">
+              <h3 @click="filterToggleCollection('saved')">MY TOOLS</h3>
+            </div>
+            <div :class="{active: filterCollection == 'selected'}">
+              <h3 @click="filterToggleCollection('selected')">SELECTED TOOLS</h3>
+            </div>
           </div>
-          <div :class="{active: filterCollection == 'saved'}">
-            <h3 @click="filterToggleCollection('saved')">MY TOOLS</h3>
+          <div class="by-region" v-if="filterPaneActive == 'region'" :key="'region'">
+            <div @click="filterToggleRegion('africa')">Africa</div>
           </div>
-          <div :class="{active: filterCollection == 'selected'}">
-            <h3 @click="filterToggleCollection('selected')">SELECTED TOOLS</h3>
+          <div class="by-selected" v-if="filterPaneActive == 'selected'" :key="'selected'">
+            <div @click="filterToggleSelected('best-of')">BEST OF</div>
+            <div @click="filterToggleSelected('andrews-list')">ANDREW'S LIST</div>
           </div>
-        </div>
-        <div class="by-region" v-if="filterPaneActive == 'region'">
-          <div @click="filterToggleRegion('africa')">Africa</div>
-        </div>
-        <div class="by-selected" v-if="filterPaneActive == 'selected'">
-          <div @click="filterToggleSelected('best-of')">BEST OF</div>
-          <div @click="filterToggleSelected('andrews-list')">ANDREW'S LIST</div>
-        </div>
-        <div class="by-tag" v-if="filterPaneActive == 'tag'">
-          <span
-            v-for="(tag, i) in tagSlugsSorted" :key="i"
-            :class="{active: filterTag == tag, disabled: !tagSlugsAvailable.has(tag)}"
-            @click="filterToggleTag(tag)"
-            >{{ tagTextBySlug[tag] }}</span>
-        </div>
+          <div class="by-tag" v-if="filterPaneActive == 'tag'" :key="'tag'">
+            <span
+              v-for="(tag, i) in tagSlugsSorted" :key="i"
+              :class="{active: filterTag == tag, disabled: !tagSlugsAvailable.has(tag)}"
+              @click="filterToggleTag(tag)"
+              >{{ tagTextBySlug[tag] }}</span>
+          </div>
+        </transition>
       </div>
 
       <div class="tools">
@@ -81,7 +83,10 @@ export default {
   },
   computed: {
     sentence() {
-      return `Show me ${this.$store}`
+      if (this.filterCollection == 'story')
+        return `Show me ${this.filterCollection} from (region) ${this.filterRegion} about (tag) ${this.filterTag}`
+      else
+        return `Show me ${this.filterCollection} about (tag) ${this.filterTag}`
     },
     filteredToolsAllTags() {
       let tools = this.$store.state.tools.filter(
@@ -243,9 +248,6 @@ export default {
   flex-wrap: wrap;
   flex-direction: row;
   position: relative; // For transition animation
-}
-.tools {
-  //direction: rtl;
 }
 
 // Transition-group animation

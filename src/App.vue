@@ -1,5 +1,5 @@
 <template>
-  <div id="app">
+  <div id="app" :class="{rtl: this.$store.state.lang == 'ar'}">
     <h1>Site Language set to: {{ $store.state.lang }}</h1>
     <span v-for="lang in ['en', 'es', 'ar', 'pt']" :key="lang"
       @click="$store.dispatch('LANG_SET', [lang, false])">{{ lang }} &nbsp;</span>
@@ -15,8 +15,9 @@
       <router-link to="/top/">top/</router-link> |
       <router-link to="/top/another">top another</router-link> |
       <router-link to="/does/not/exist">404</router-link> |
-      <router-link to="/tool">toolbox1</router-link> |
-      <router-link to="/toolbox">toolbox2</router-link>
+      <router-link to="/tool/action-logic">tool (real)</router-link> |
+      <router-link to="/tool/not-real">tool (fake)</router-link> |
+      <router-link to="/toolbox">toolbox</router-link>
     </div>
     <transition name="fade" mode="out-in">
       <router-view/>
@@ -41,6 +42,9 @@ html {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
+  &.rtl {
+    direction: rtl;
+  }
 }
 #nav {
   padding: 30px;
@@ -55,7 +59,7 @@ html {
 
 .fade-enter-active, .fade-leave-active {
   position: relative;
-  transition: all .1s;
+  transition: all .2s;
   opacity: 1;
 }
 .fade-enter, .fade-leave-to {

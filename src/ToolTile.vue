@@ -1,7 +1,10 @@
 <template>
   <div class="tool-tile" v-if="tool"
     v-lazy:background-image="`https://beautifulrising.org/tile-${tool.image}`"
-    @click="$store.dispatch('TOOL_SAVE_TOGGLE', tool.slug)">
+    @click="$router.push({name: 'tool', params: {slug: tool.slug}})">
+    <!--
+      @click="$store.dispatch('TOOL_SAVE_TOGGLE', tool.slug)">
+    -->
     <div>
       <h2>{{ text[tool.type][0] }}</h2>
       {{ tool.title }}{{ $store.state.savedTools.has(tool.slug) ? '@' : '.' }}
