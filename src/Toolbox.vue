@@ -249,7 +249,7 @@ export default {
 }
 
 // Transition-group animation
-.tool {
+.tool-tile {
   transition: all .2s ease-out;
 }
 .tools-list-leave-active {

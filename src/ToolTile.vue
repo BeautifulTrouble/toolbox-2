@@ -1,7 +1,7 @@
 <template>
-  <div class="tool" v-if="tool"
+  <div class="tool-tile" v-if="tool"
     v-lazy:background-image="`https://beautifulrising.org/tile-${tool.image}`"
-    @click="$store.dispatch('TOOL_TOGGLE', tool.slug)">
+    @click="$store.dispatch('TOOL_SAVE_TOGGLE', tool.slug)">
     <div>
       <h2>{{ text[tool.type][0] }}</h2>
       {{ tool.title }}{{ $store.state.savedTools.has(tool.slug) ? '@' : '.' }}
@@ -11,7 +11,7 @@
 
 <script>
 export default {
-  name: 'Toolbox',
+  name: 'ToolTile',
   props: {
     tool: {type: Object, default: null},
     text: {type: Object, default: null},
@@ -20,7 +20,7 @@ export default {
 </script>
 
 <style lang="scss">
-.tool {
+.tool-tile {
   flex: 0 0 12.5%;
   height: 140px;
   background-repeat: no-repeat;

@@ -88,7 +88,7 @@ export const store = new Vuex.Store({
       }
     },
     // TOOL SAVING/UNSAVING
-    TOOL_TOGGLE(context, slug) {
+    TOOL_SAVE_TOGGLE(context, slug) {
       context.dispatch(context.state.savedTools.has(slug) ? 'TOOL_UNSAVE' : 'TOOL_SAVE', slug)
     },
     TOOL_SAVE(context, slug) {
