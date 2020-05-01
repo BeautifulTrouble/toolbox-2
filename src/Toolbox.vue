@@ -61,7 +61,7 @@ import typeTextByLang from './types'
 const ALL = 'all'
 const COLLECTIONS = ['andrews-list', 'best-of']
 const REGIONS = ['fake', 'Africa', 'Latin America and the Caribbean'].map(
-  s => s.toLowerCase().replace(/\s/ig, '-').replace(/[^\w\-]/ig, ''))
+  s => s.toLowerCase().replace(/\s/ig, '-').replace(/[^-\w]/ig, ''))
 
 export default {
   name: 'Toolbox',
