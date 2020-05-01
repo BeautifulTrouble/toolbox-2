@@ -87,6 +87,9 @@ Vue.mixin({
     renderMarkdown(string) {
       return showdown.makeHtml(string)
     },
+    slugify(string) {
+      return string.toLowerCase().replace(/\s/ig, '-').replace(/[^\w\-]/ig, '');
+    },
   },
 })
 
