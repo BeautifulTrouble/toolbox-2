@@ -19,9 +19,12 @@
       <router-link to="/tool/not-real">tool (fake)</router-link> |
       <router-link to="/toolbox">toolbox</router-link>
     </div>
+    <!--
     <transition name="fade" mode="out-in">
       <router-view/>
     </transition>
+    -->
+      <router-view/>
     <div v-if="$store.state.langRequested">
       Loading...</div>
   </div>

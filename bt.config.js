@@ -5,6 +5,7 @@ export default {
   //cacheLifespan: 10000,
   defaultCollection: 'andrews-list',
   errorPage: '/error',
+  imagePrefix: 'https://beautifulrising.org',
   langs: ['en', 'es', 'ar', 'pt'],
   siteDomain: 'bt.org',
   toolTypes: ['story', 'tactic', 'principle', 'theory', 'methodology'],

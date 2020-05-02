@@ -223,6 +223,9 @@ export default {
 </script>
 
 <style lang="scss">
+.filter {
+    height: 100px;
+}
 .active {
   text-decoration: underline;
 }

@@ -6,6 +6,7 @@ import Router from 'vue-router'
 import Showdown from 'showdown'
 import ShowdownTargetBlank from 'showdown-target-blank'
 import VueLazyload from 'vue-lazyload'
+import VueLazyImageLoading from 'vue-lazy-image-loading'
 
 import App from './App'
 import Tool from './Tool'
@@ -25,16 +26,12 @@ const router = new Router({
   mode: 'history',
   base: '/',
   routes: [
-    {name: 'home', component: Home,
-      path: '/'},
-    {name: 'about', component: () => import(/* webpackChunkName: "about" */ './views/About.vue'),
-      path: '/about'},
-    {name: 'toolbox', component: Toolbox,
-      path: '/toolbox/:collection?/:filterA?/:filterB?'},
-    {name: 'tool', component: Tool,
-      path: '/tool/:slug'},
-    {name: 'wordpress', component: WordPress,
-      path: '/*'},
+    {path: '/', name: 'home', component: Home},
+    {path: '/about', name: 'about', component: () => import(/* webpackChunkName: "about" */ './views/About.vue')},
+    {path: '/tool', redirect: {name: 'toolbox'}},
+    {path: '/tool/:slug', name: 'tool', component: Tool},
+    {path: '/toolbox/:collection?/:filterA?/:filterB?', name: 'toolbox', component: Toolbox},
+    {path: '/*', name: 'wordpress', component: WordPress},
   ],
   scrollBehavior(to, from, savedPosition) {
     if (to.hash) {
@@ -42,6 +39,7 @@ const router = new Router({
         resolve => setTimeout(() => resolve({selector: to.hash}), 250)
       )
     }
+    // TODO: https://forum.vuejs.org/t/vue-router-page-position-when-navigating-pages/32885/4
     return savedPosition ? savedPosition : {x: 0, y: 0}
   },
 })
@@ -81,7 +79,20 @@ const showdown = new Showdown.Converter({
 
 Vue.config.productionTip = false
 Vue.prototype.$http = Axios
-Vue.use(VueLazyload)
+
+// TODO: Use IE shim for Intersection Observer API
+// This lazy-loader loads images on scroll (v-lazy directive)
+Vue.use(VueLazyload, {
+  observer: true,
+  observerOptions: {
+    rootMargin: '0px',
+    threshold: 0.1,
+  },
+})
+// This lazy-loader only provides placeholders and image loading transitions (lazy-* components)
+Vue.use(VueLazyImageLoading, {
+  cache: false,
+})
 
 Vue.mixin({
   methods: {

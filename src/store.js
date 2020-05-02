@@ -57,11 +57,12 @@ export const store = new Vuex.Store({
     langRequested: null,
     savedTools: storageGetSavedTools(),
     tools: [],
+    toolsBySlug: {},
     wordPress: '',
     wordPressRequested: false,
   },
   actions: {
-    // SET LANGUAGE AND GET [UNEXPIRED CACHE OF] API DATA
+    // API TOOLS
     LANG_SET(context, [lang, forceReload]) {
       // No language was requested, so detect the browser language from storage or navigator.
       if (!lang) {
@@ -87,20 +88,7 @@ export const store = new Vuex.Store({
         }
       }
     },
-    // TOOL SAVING/UNSAVING
-    TOOL_SAVE_TOGGLE(context, slug) {
-      context.dispatch(context.state.savedTools.has(slug) ? 'TOOL_UNSAVE' : 'TOOL_SAVE', slug)
-    },
-    TOOL_SAVE(context, slug) {
-      let tools = new Set([...storageGetSavedTools(), slug])
-      context.commit('setSavedTools', tools)
-    },
-    TOOL_UNSAVE(context, slug) {
-      let tools = storageGetSavedTools()
-      tools.delete(slug)
-      context.commit('setSavedTools', tools)
-    },
-    // GET WORDPRESS CONTENT
+    // WORDPRESS CONTENT
     WP_GET(context, {path, query}) {
       // TODO: Reload WordPress content
       // Look for permalink structure to determine if we should use posts or pages endpoint
@@ -133,6 +121,19 @@ export const store = new Vuex.Store({
           })
       }
     },
+    // SAVED TOOLS
+    TOOL_SAVE_TOGGLE(context, slug) {
+      context.dispatch(context.state.savedTools.has(slug) ? 'TOOL_UNSAVE' : 'TOOL_SAVE', slug)
+    },
+    TOOL_SAVE(context, slug) {
+      let tools = new Set([...storageGetSavedTools(), slug])
+      context.commit('setSavedTools', tools)
+    },
+    TOOL_UNSAVE(context, slug) {
+      let tools = storageGetSavedTools()
+      tools.delete(slug)
+      context.commit('setSavedTools', tools)
+    },
   },
   mutations: {
     // API TOOLS
@@ -141,6 +142,9 @@ export const store = new Vuex.Store({
       if (cache) {
         storageSetCache(lang, tools)
       }
+      // Preprocess tools into more convenient forms
+      state.toolsBySlug = Object.fromEntries(tools.map(t => [t.slug, t]))
+
       state.tools = tools
       state.lang = lang
       state.langRequested = null

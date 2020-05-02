@@ -1,11 +1,11 @@
 <template>
   <div class="tool-tile" v-if="tool"
-    v-lazy:background-image="`https://beautifulrising.org/tile-${tool.image}`"
     @click="$router.push({name: 'tool', params: {slug: tool.slug}})">
     <!--
       @click="$store.dispatch('TOOL_SAVE_TOGGLE', tool.slug)">
     -->
-    <div>
+    <!-- Use VueLazyLoad for loading images on scroll -->
+    <div class="tool-tile-image" v-lazy:background-image="`${config.imagePrefix}/tile-${tool.image}`">
       <h2>{{ text[tool.type][0] }}</h2>
       {{ tool.title }}{{ $store.state.savedTools.has(tool.slug) ? '@' : '.' }}
     </div>
@@ -13,8 +13,13 @@
 </template>
 
 <script>
+import config from '../bt.config'
+
 export default {
   name: 'ToolTile',
+  data: () => ({
+    config,
+  }),
   props: {
     tool: {type: Object, default: null},
     text: {type: Object, default: null},
@@ -24,19 +29,27 @@ export default {
 
 <style lang="scss">
 .tool-tile {
-  flex: 0 0 12.5%;
-  height: 140px;
-  background-repeat: no-repeat;
-  background-position: 50% 50%;
-  background-size: cover;
+  //flex: 0 0 12.5%;
+  flex: 0 0 25%;
+  //height: 140px;
+  height: 300px;
   border: 2px dashed #777;
   overflow: hidden;
-  > div {
-    background: transparentize(white, .50);
+  h2 {
+    margin: 0;
   }
+}
+.tool-tile-image {
+  background-repeat: no-repeat;
+  background-position: top center;
+  background-size: cover;
+  transition: opacity 1s;
+  height: 100%;
   &[lazy="loading"] {
     opacity: 0;
-    //background: yellow; // TODO: remove
+  }
+  &[lazy="loaded"] {
+    opacity: 1;
   }
 }
 </style>
