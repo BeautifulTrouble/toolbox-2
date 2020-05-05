@@ -3,12 +3,33 @@
 // Grid system
 
 // Colors
-$tactic: #4f8c2d;
+$tactic: #f48c2d;
 $theory: #de193b;
 $story: #70c861;
 $principle: #48abcc;
 $methodology: #874493;
 
+$bggray: #f4f4f4;
+
 // Fonts
 
 // Elements
+html {
+  overflow-y: scroll;
+  box-sizing: border-box;
+}
+*, *:before, *:after {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+}
+a:link, a:visited, a:hover {
+  // TODO: What is this color, globally?
+  color: $theory;
+}
+.tactic { a:link, a:visited, a:hover, h1, h2, h3, h4, h5, h6 { color: $tactic; }}
+.theory { a:link, a:visited, a:hover, h1, h2, h3, h4, h5, h6 { color: $theory; }}
+.story { a:link, a:visited, a:hover, h1, h2, h3, h4, h5, h6 { color: $story; }}
+.principle { a:link, a:visited, a:hover, h1, h2, h3, h4, h5, h6 { color: $principle; }}
+.methodology { a:link, a:visited, a:hover, h1, h2, h3, h4, h5, h6 { color: $methodology; }}
