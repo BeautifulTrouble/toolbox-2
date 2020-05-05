@@ -96,7 +96,7 @@ Vue.use(VueLazyImageLoading, {
 
 Vue.mixin({
   methods: {
-    renderMarkdown(string) {
+    markdown(string) {
       return showdown.makeHtml(string)
     },
     slugify(string) {

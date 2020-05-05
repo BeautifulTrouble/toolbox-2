@@ -45,7 +45,7 @@
 
       <div class="tools">
         <transition-group name="tools-list" tag="div">
-          <tool-tile v-for="(tool, i) in filteredTools" :key="tool.slug"
+          <tool-tile v-for="tool in filteredTools" :key="tool.slug"
             :tool="tool" :text="typeTextBySlug"/>
         </transition-group>
       </div>
