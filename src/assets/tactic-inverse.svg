@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   width="24.76593mm"
+   height="24.76593mm"
+   viewBox="0 0 24.76593 24.76593"
+   version="1.1"
+   id="svg6165">
+  <defs
+     id="defs6159">
+    <clipPath
+       clipPathUnits="userSpaceOnUse"
+       id="clipPath896-0">
+      <path
+         d="M 0,841.89 H 595.276 V 0 H 0 Z"
+         id="path894-3" />
+    </clipPath>
+  </defs>
+  <metadata
+     id="metadata6162">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     id="layer1"
+     transform="translate(-286.50988,-156.73682)">
+    <g
+       transform="matrix(0.35277777,0,0,-0.35277777,194.86165,432.23861)"
+       id="g890-2">
+      <g
+         style="fill:#ffffff"
+         transform="translate(-44.322447,22.904889)"
+         clip-path="url(#clipPath896-0)"
+         id="g5808-5">
+        <g
+           style="fill:#ffffff"
+           transform="translate(297.271,772.026)"
+           id="g5798-8">
+          <path
+             id="path5796-0"
+             d="M 41.942309,-13.980908 C 22.55631,-13.980908 6.8417246,-29.695493 6.8417246,-49.081493 6.8417246,-66.621493 19.707064,-81.155598 36.515064,-83.764598 38.284064,-84.039598 40.09631,-84.183543 41.942309,-84.183543 42.04531,-84.183543 42.146462,-84.175754 42.248462,-84.174754 43.282462,-84.166754 44.30731,-84.115016 45.317309,-84.018015 47.28031,-83.831015 49.196173,-83.480371 51.052173,-82.982371 66.021173,-78.970371 77.04436,-65.315493 77.04436,-49.081493 77.04436,-29.695493 61.32831,-13.980908 41.942309,-13.980908 Z M 50.463305,-23.747021 59.038501,-38.599072 H 53.330005 V -76.895946 C 52.171005,-77.370945 50.984392,-77.799809 49.751392,-78.130809 49.041392,-78.320808 48.319607,-78.474742 47.596607,-78.612742 V -38.599072 H 41.888111 Z M 28.473072,-36.163037 V -41.871532 H 42.248462 V -79.15034 C 42.234462,-79.15034 42.219981,-79.151805 42.205982,-79.151805 42.115982,-79.152805 42.028154,-79.155594 41.907153,-79.160594 40.366154,-79.158594 38.812036,-79.037242 37.287036,-78.800242 37.028037,-78.760242 36.772064,-78.708546 36.515064,-78.662547 V -47.60493 H 28.473072 V -53.313426 L 13.622486,-44.738232 Z"
+             style="fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1" />
+        </g>
+        <g
+           style="fill:#ffffff"
+           transform="translate(314.3672,747.4083)"
+           id="g5802-86" />
+        <g
+           style="fill:#ffffff"
+           transform="translate(283.8018,744.1349)"
+           id="g5806-33" />
+      </g>
+    </g>
+  </g>
+</svg>
