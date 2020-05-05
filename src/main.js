@@ -74,7 +74,17 @@ router.beforeEach((to, from, next) => {
 
 // EXTEND VUE
 const showdown = new Showdown.Converter({
-  extensions: [ShowdownTargetBlank],
+  noHeaderId: true,
+  simpleLineBreaks: true,
+  strikethrough: true,
+  extensions: [
+    ShowdownTargetBlank,
+    { // Replace inline images with prefixed urls
+      type: 'lang',
+      regex: /!\[(.*)\]\((.+)\.(png|jpg|gif|svg)\)/gi,
+      replace: `![$1](${config.imagePrefix}/medium-$2.$3)`,
+    }
+  ],
 })
 
 Vue.config.productionTip = false
@@ -91,7 +101,7 @@ Vue.use(VueLazyload, {
 })
 // This lazy-loader only provides placeholders and image loading transitions (lazy-* components)
 Vue.use(VueLazyImageLoading, {
-  cache: false,
+  cache: true, // Don't animate already-loaded images
 })
 
 Vue.mixin({
@@ -100,7 +110,7 @@ Vue.mixin({
       // TODO:
       // string = string.replace(/src="!\[.*\]([^/]+\.(jpg|png|gif|svg))\)"/gm, `src="${config.imagePrefix}/$1"`)
       // Regex from https://github.com/showdownjs/showdown/issues/206
-      string = string.replace(/^[\w\<\'\'][^\n]*\n+/gm, s => s.match(/\n{2}/) ? s : s.trim() + "\n\n")
+      //string = string.replace(/^[\w'<][^\n]*\n+/gm, s => s.match(/\n{2}/) ? s : s.trim() + "\n\n")
       return showdown.makeHtml(string)
     },
     slugify(string) {

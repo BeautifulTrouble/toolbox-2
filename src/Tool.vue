@@ -16,7 +16,7 @@
           <h1>{{ tool.title }}</h1>
         </div>
         <div class="lower">
-          <div><!-- Two divs ensure that flexbox' space-between places them appropriately -->
+          <div><!-- Always render two divs to ensure proper placement -->
             <div v-if="tool['image-caption']" :class="['caption', tool.type]" v-html="markdown(tool['image-caption'])" />
           </div>
           <div>
@@ -34,6 +34,9 @@
             <router-link to="/toolbox">TOOLBOX</router-link> /
             <router-link :to="{name: 'toolbox', params: {collection: tool.type}}">{{ typeTextBySlug[tool.type][0] }}</router-link> /
             <router-link :to="{name: 'tool', params: {slug: tool.slug}}">{{ tool.title }}</router-link></div>
+          <div v-if="tool['image-2']">
+            <p><img :src="`${config.imagePrefix}/medium-${tool['image-2']}`"></p>
+          </div>
           <div class="write-up" @click="handleLink" v-html="markdown(writeUp)" />
         </div>
       </article>
@@ -45,8 +48,7 @@
         <div class="risks">
         </div>
         <div class="related">
-          <div v-for="T in Object.keys(types)" :key="T"
-            v-if="tool[types[T]] && tool[types[T]].length" :class="T">
+          <div v-for="T in Object.keys(randomRelated)" :key="T" :class="T">
             <div class="type">
               <img svg-inline svg-sprite v-if="T == 'tactic'" class="icon" src="./assets/tactic.svg">
               <img svg-inline svg-sprite v-if="T == 'theory'" class="icon" src="./assets/theory.svg">
@@ -56,7 +58,7 @@
               <h5>{{ typeTextBySlug[T][1] }}</h5>
             </div>
             <div class="titles">
-              <div v-for="m in randomRelated[T]">
+              <div v-for="m in randomRelated[T]" :key="m">
                 <router-link :to="{name: 'tool', params: {slug: m}}">{{ $store.state.toolsBySlug[m].title }}</router-link>
               </div>
             </div>
@@ -90,24 +92,17 @@ export default {
       return this.tool['full-write-up'] || this.tool['short-write-up'] || this.tool['snapshot']
     },
     randomRelated() {
-      let related = {nonce: this.$route.params.slug}
-      for (let T in this.types) {
-        if (this.tool[this.types[T]]) {
-          related[T] = this.tool[this.types[T]].sort(() => 0.5 - Math.random()).slice(0, 5)
-        }
-      }
-      return related
+      return Object.fromEntries(
+        Object.keys(this.types)
+          .filter(T => (this.tool[this.types[T]] || []).length)
+          .map(T => [T, [...this.tool[this.types[T]]].sort(() => 0.5 - Math.random()).slice(0, 5)])
+      )
     }
   },
   methods: {
     otherTool(slug) {
       return this.$store.state.toolsBySlug[slug] || {}
     },
-    /*
-    randomRelated(arr, n = 5) {
-      return arr.sort(() => 0.5 - Math.random()).slice(0, n)
-    },
-    */
     handleLink($event) {
       let { target } = $event
       // Ascend elements to the link
@@ -199,15 +194,20 @@ export default {
       max-width: 400px;
       padding: 0 1rem;
       margin: 2rem 3rem;
+      border-style: solid;
+      border-width: 0 0 0 .5rem;
+      .rtl & {
+        border-width: 0 .5rem 0 0;
+      }
       p {
         margin: 0;
       }
     }
-    .caption.tactic { border-left: .5rem solid $tactic; }
-    .caption.theory { border-left: .5rem solid $theory; }
-    .caption.story { border-left: .5rem solid $story; }
-    .caption.principle { border-left: .5rem solid $principle; }
-    .caption.methodology { border-left: .5rem solid $methodology; }
+    .caption.tactic { border-color: $tactic; }
+    .caption.theory { border-color: $theory; }
+    .caption.story { border-color: $story; }
+    .caption.principle { border-color: $principle; }
+    .caption.methodology { border-color: $methodology; }
   }
   main {
     display: flex;
@@ -223,11 +223,21 @@ export default {
     justify-content: flex-end;
     box-shadow: 5px 0 8px #d3d3d3;
     padding: 2rem;
+    h6 {
+      font-size: 1rem;
+      margin: .25rem 0;
+    }
     .inner {
       flex: 0 0 66%;
+      // TODO: Figure out how to achieve this while placing it correctly
+      //max-width: 800px;
+      img {
+        max-width: 100%;
+      }
     }
     .breadcrumbs {
       font-weight: bold;
+      margin-bottom: 1rem;
       a {
         text-decoration: none;
       }
@@ -240,7 +250,7 @@ export default {
   }
   aside {
     height: 100%;
-    flex: 1 0 33%;
+    flex: 2 0 33%;
     .related {
       padding: 0 2rem;
       h5 {
