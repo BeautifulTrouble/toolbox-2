@@ -246,11 +246,13 @@ export default {
     pointer-events: none;
   }
 }
-.tools > div {
-  display: flex;
-  flex-wrap: wrap;
-  flex-direction: row;
-  position: relative; // For transition animation
+.tools {
+  > div {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    position: relative; // For transition animation
+  }
 }
 
 // Transition-group animation

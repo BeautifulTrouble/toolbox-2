@@ -97,6 +97,10 @@ Vue.use(VueLazyImageLoading, {
 Vue.mixin({
   methods: {
     markdown(string) {
+      // TODO:
+      // string = string.replace(/src="!\[.*\]([^/]+\.(jpg|png|gif|svg))\)"/gm, `src="${config.imagePrefix}/$1"`)
+      // Regex from https://github.com/showdownjs/showdown/issues/206
+      string = string.replace(/^[\w\<\'\'][^\n]*\n+/gm, s => s.match(/\n{2}/) ? s : s.trim() + "\n\n")
       return showdown.makeHtml(string)
     },
     slugify(string) {

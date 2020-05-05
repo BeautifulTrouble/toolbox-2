@@ -1,7 +1,10 @@
 <template>
   <div v-if="tool" :class="['tool', tool.type]">
     <!-- Use VueLazyImageLoading for fade-in effect on load -->
-    <lazy-background position="50% 0%" no-ratio :src="`${config.imagePrefix}/hero-${tool.image}`">
+    <lazy-background position="50% 0%" no-ratio :blur="0"
+      :src="`${config.imagePrefix}/hero-${tool.image}`"
+      placeholder="data:image/gif;base64,R0lGODlhAQABAIAAAAUEBAAAACwAAAAAAQABAAACAkQBADs="
+      >
       <header slot="content">
         <div class="upper">
           <img svg-inline svg-sprite v-if="tool.type == 'tactic'" class="icon" src="./assets/tactic.svg">
@@ -22,7 +25,9 @@
         </div>
       </header>
     </lazy-background>
+
     <main>
+      <!-- Tool -->
       <article>
         <div class="inner">
           <div :class="['breadcrumbs', tool.type]">
@@ -32,13 +37,35 @@
           <div class="write-up" @click="handleLink" v-html="markdown(writeUp)" />
         </div>
       </article>
+
+      <!-- Sidebar -->
       <aside>
-        SIDEBAR
+        <div class="actions">
+        </div>
+        <div class="risks">
+        </div>
+        <div class="related">
+          <div v-for="T in Object.keys(types)" :key="T"
+            v-if="tool[types[T]] && tool[types[T]].length" :class="T">
+            <div class="type">
+              <img svg-inline svg-sprite v-if="T == 'tactic'" class="icon" src="./assets/tactic.svg">
+              <img svg-inline svg-sprite v-if="T == 'theory'" class="icon" src="./assets/theory.svg">
+              <img svg-inline svg-sprite v-if="T == 'story'" class="icon" src="./assets/story.svg">
+              <img svg-inline svg-sprite v-if="T == 'principle'" class="icon" src="./assets/principle.svg">
+              <img svg-inline svg-sprite v-if="T == 'methodology'" class="icon" src="./assets/methodology.svg">
+              <h5>{{ typeTextBySlug[T][1] }}</h5>
+            </div>
+            <div class="titles">
+              <div v-for="m in randomRelated[T]">
+                <router-link :to="{name: 'tool', params: {slug: m}}">{{ $store.state.toolsBySlug[m].title }}</router-link>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="author">
+        </div>
       </aside>
     </main>
-    <span v-for="(slug, i) in tool.theories || []" :key="i"><router-link :to="`/tool/${slug}`">{{
-        slug }} | </router-link></span>
-
   </div>
 </template>
 
@@ -50,6 +77,7 @@ export default {
   name: 'Tool',
   data: () => ({
     config,
+    types: {story: 'stories', tactic: 'tactics', theory: 'theories', principle: 'principles', methodology: 'methodologies'},
   }),
   computed: {
     tool() {
@@ -61,8 +89,25 @@ export default {
     writeUp() {
       return this.tool['full-write-up'] || this.tool['short-write-up'] || this.tool['snapshot']
     },
+    randomRelated() {
+      let related = {nonce: this.$route.params.slug}
+      for (let T in this.types) {
+        if (this.tool[this.types[T]]) {
+          related[T] = this.tool[this.types[T]].sort(() => 0.5 - Math.random()).slice(0, 5)
+        }
+      }
+      return related
+    }
   },
   methods: {
+    otherTool(slug) {
+      return this.$store.state.toolsBySlug[slug] || {}
+    },
+    /*
+    randomRelated(arr, n = 5) {
+      return arr.sort(() => 0.5 - Math.random()).slice(0, n)
+    },
+    */
     handleLink($event) {
       let { target } = $event
       // Ascend elements to the link
@@ -99,7 +144,8 @@ export default {
 
 .tool {
   .lazy-background-image {
-    transition: all .2s ease-in-out;
+    background: black;
+    transition: all .1s ease-in-out;
     &:after {
       content: "";
       background: linear-gradient(180deg, rgba(0,0,0,0) 20%, rgba(0,0,0,1) 100%);
@@ -135,17 +181,19 @@ export default {
     }
     .upper {
       height: 70%;
-      margin-top: 5rem;
+      margin-top: 10rem;
       display: flex;
       flex-direction: column;
       justify-content: center;
     }
     .lower {
       width: 100%;
+      min-height: 20rem;
       text-align: initial;
       display: flex;
       flex-direction: row;
       justify-content: space-between;
+      align-items: flex-end;
     }
     .caption {
       max-width: 400px;
@@ -193,6 +241,33 @@ export default {
   aside {
     height: 100%;
     flex: 1 0 33%;
+    .related {
+      padding: 0 2rem;
+      h5 {
+        margin: 0;
+        font-size: 1.5rem;
+      }
+      .type {
+        display: flex;
+        flex-direction: row;
+        margin: .5rem 0;
+      }
+      .titles {
+        margin-bottom: 1.5rem;
+      }
+      .icon {
+        max-height: 1.5rem;
+        margin: .25rem .5rem 0 0;
+        .rtl & {
+          margin: .25rem 0 0 .5rem;
+        }
+      }
+      .tactic { a, h5 { color: $tactic; } }
+      .theory { a, h5 { color: $theory; } }
+      .story { a, h5 { color: $story; } }
+      .principle { a, h5 { color: $principle; } }
+      .methodology { a, h5 { color: $methodology; } }
+    }
   }
 }
 </style>
