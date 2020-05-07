@@ -1,4 +1,11 @@
 module.exports = {
+  chainWebpack: config => config.module
+      .rule('vue')
+      .use('vue-svg-inline-loader')
+        .loader('vue-svg-inline-loader')
+        .options({
+          addTitle: true,
+        }),
   configureWebpack: {
     output: {
       // Add querystring so webpackChunkName will get reloaded
