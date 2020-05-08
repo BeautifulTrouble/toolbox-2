@@ -7,20 +7,23 @@
       >
       <header slot="content">
         <div class="upper">
-          <img svg-inline svg-sprite v-if="tool.type == 'tactic'" class="icon" src="./assets/tactic.svg">
-          <img svg-inline svg-sprite v-if="tool.type == 'theory'" class="icon" src="./assets/theory.svg">
-          <img svg-inline svg-sprite v-if="tool.type == 'story'" class="icon" src="./assets/story.svg">
-          <img svg-inline svg-sprite v-if="tool.type == 'principle'" class="icon" src="./assets/principle.svg">
-          <img svg-inline svg-sprite v-if="tool.type == 'methodology'" class="icon" src="./assets/methodology.svg">
-          <h3>{{ typeTextBySlug[tool.type][0] }}</h3>
+          <router-link :to="{name: 'toolbox', params: {collection: tool.type}}">
+            <img svg-inline v-if="tool.type == 'tactic'" class="icon" src="./assets/tactic.svg">
+            <img svg-inline v-if="tool.type == 'theory'" class="icon" src="./assets/theory.svg">
+            <img svg-inline v-if="tool.type == 'story'" class="icon" src="./assets/story.svg">
+            <img svg-inline v-if="tool.type == 'principle'" class="icon" src="./assets/principle.svg">
+            <img svg-inline v-if="tool.type == 'methodology'" class="icon" src="./assets/methodology.svg">
+            <h3>{{ typeTextBySlug[tool.type][0] }}</h3>
+          </router-link>
           <h1>{{ tool.title }}</h1>
+          <img svg-inline v-if="showDocumentLinks" @click="openDocument" class="edit" alt="Edit this Google Doc" src="./assets/edit.svg">
         </div>
         <div class="lower">
           <div><!-- Always render two divs to ensure proper placement -->
             <div v-if="tool['image-caption']" :class="['caption', tool.type]" v-html="markdown(tool['image-caption'])" />
           </div>
           <div>
-            <img svg-inline svg-sprite v-if="tool.video" class="icon video" src="./assets/video.svg">
+            <img svg-inline v-if="tool.video" class="icon video" src="./assets/video.svg">
           </div>
         </div>
       </header>
@@ -33,11 +36,40 @@
           <div :class="['breadcrumbs', tool.type]">
             <router-link to="/toolbox">TOOLBOX</router-link> /
             <router-link :to="{name: 'toolbox', params: {collection: tool.type}}">{{ typeTextBySlug[tool.type][0] }}</router-link> /
-            <router-link :to="{name: 'tool', params: {slug: tool.slug}}">{{ tool.title }}</router-link></div>
-          <div v-if="tool['image-2']">
+            <router-link :to="{name: 'tool', params: {slug: tool.slug}}">{{ tool.title }}</router-link>
+          </div>
+          <div class="origins" v-if="tool.origins"><strong>ORIGINS</strong>: <em v-html="markdown(tool.origins)" /></div>
+          <div class="image" v-if="tool['image-2']">
             <p><img :src="`${config.imagePrefix}/medium-${tool['image-2']}`"></p>
           </div>
           <div class="write-up" @click="handleLink" v-html="markdown(writeUp)" />
+          <div class="box how-to-use">
+          </div>
+          <div class="box real-world-examples" v-if="tool['real-world-examples'] && tool['real-world-examples'].length">
+            <h4>REAL WORLD EXAMPLES</h4>
+            <div v-if="expand.rwe">
+              <div v-for="(rwe, i) in tool['real-world-examples']" key="i">
+                <a :href="rwe.link" target="_blank">
+                  <h5>{{ rwe.title }}</h5>
+                  <p>{{ rwe.description }}</p>
+                  <img v-if="rwe.image" :src="`${config.imagePrefix}/${rwe.image}`">
+                </a>
+              </div>
+            </div>
+          </div>
+          <div class="box learn-more" v-if="tool['learn-more'] && tool['learn-more'].length">
+            <h4>LEARN MORE</h4>
+            <div v-if="expand.learn">
+              <div v-for="(lm, i) in tool['learn-more']" key="i">
+                <a :href="lm.link" target="_blank">
+                  <h5>{{ lm.title }}</h5><span v-if="lm.source"> | {{ lm.source }}</span><span v-if="lm.year">, {{ lm.year }}</span>
+                </a>
+              </div>
+            </div>
+
+          </div>
+          <div class="box contribute">
+          </div>
         </div>
       </article>
 
@@ -45,17 +77,23 @@
       <aside>
         <div class="actions">
         </div>
-        <div class="risks">
+        <div v-if="tool['potential-risks']" class="risks">
+          <h4>POTENTIAL RISKS</h4>
+          <div v-html="markdown(tool['potential-risks'])" />
+          <hr>
         </div>
         <div class="related">
+          <h4>RELATED TOOLS</h4>
           <div v-for="T in Object.keys(randomRelated)" :key="T" :class="T">
             <div class="type">
-              <img svg-inline svg-sprite v-if="T == 'tactic'" class="icon" src="./assets/tactic.svg">
-              <img svg-inline svg-sprite v-if="T == 'theory'" class="icon" src="./assets/theory.svg">
-              <img svg-inline svg-sprite v-if="T == 'story'" class="icon" src="./assets/story.svg">
-              <img svg-inline svg-sprite v-if="T == 'principle'" class="icon" src="./assets/principle.svg">
-              <img svg-inline svg-sprite v-if="T == 'methodology'" class="icon" src="./assets/methodology.svg">
-              <h5>{{ typeTextBySlug[T][1] }}</h5>
+              <router-link :to="{name: 'toolbox', params: {collection: T}}">
+                <img svg-inline v-if="T == 'tactic'" class="icon" src="./assets/tactic.svg">
+                <img svg-inline v-if="T == 'theory'" class="icon" src="./assets/theory.svg">
+                <img svg-inline v-if="T == 'story'" class="icon" src="./assets/story.svg">
+                <img svg-inline v-if="T == 'principle'" class="icon" src="./assets/principle.svg">
+                <img svg-inline v-if="T == 'methodology'" class="icon" src="./assets/methodology.svg">
+                <h2>{{ typeTextBySlug[T][1] }}</h2>
+              </router-link>
             </div>
             <div class="titles">
               <div v-for="m in randomRelated[T]" :key="m">
@@ -63,8 +101,10 @@
               </div>
             </div>
           </div>
+          <hr>
         </div>
         <div class="author">
+          <hr>
         </div>
       </aside>
     </main>
@@ -79,7 +119,15 @@ export default {
   name: 'Tool',
   data: () => ({
     config,
+    showDocumentLinks: window.btOptions.showDocumentLinks,
     types: {story: 'stories', tactic: 'tactics', theory: 'theories', principle: 'principles', methodology: 'methodologies'},
+    expand: {
+      risks: false,
+      use: true,
+      rwe: true,
+      learn: true,
+      contribute: false,
+    },
   }),
   computed: {
     tool() {
@@ -100,6 +148,9 @@ export default {
     }
   },
   methods: {
+    openDocument() {
+      window.open(this.tool.document_link, '_blank')
+    },
     otherTool(slug) {
       return this.$store.state.toolsBySlug[slug] || {}
     },
@@ -140,7 +191,7 @@ export default {
 .tool {
   .lazy-background-image {
     background: black;
-    transition: all .1s ease-in-out;
+    transition: all .2s ease-in-out;
     &:after {
       content: "";
       background: linear-gradient(180deg, rgba(0,0,0,0) 20%, rgba(0,0,0,1) 100%);
@@ -156,8 +207,8 @@ export default {
     justify-content: space-between;
     align-items: center;
     height: 45rem;
-    .icon {
-      margin-bottom: .5rem;
+    a {
+      text-decoration: none;
     }
     h1, h3 {
       margin: 0;
@@ -171,7 +222,19 @@ export default {
     h3 {
       margin-bottom: .5rem;
     }
+    .edit {
+      cursor: pointer;
+      position: absolute;
+      height: 2rem;
+      width: 2rem;
+      top: 1rem; right: 1rem;
+      filter: drop-shadow(0px 0px 10px black);
+      path {
+        fill: white;
+      }
+    }
     .icon {
+      margin-bottom: .5rem;
       filter: drop-shadow(0px 0px 20px rgba(black, .2));
     }
     .upper {
@@ -191,7 +254,7 @@ export default {
       align-items: flex-end;
     }
     .caption {
-      max-width: 400px;
+      max-width: 25rem;
       padding: 0 1rem;
       margin: 2rem 3rem;
       border-style: solid;
@@ -214,6 +277,16 @@ export default {
     flex-direction: row;
     background: $bggray;
     padding-top: 1rem;
+    a {
+      text-decoration: none;
+      h5 {
+        //text-decoration: underline;
+      }
+    }
+    h4 {
+      color: $text;
+      margin: .5rem 0;
+    }
   }
   article {
     flex: 1 0 66%;
@@ -225,7 +298,7 @@ export default {
     padding: 2rem;
     h6 {
       font-size: 1rem;
-      margin: .25rem 0;
+      margin: .25rem;
     }
     .inner {
       flex: 0 0 66%;
@@ -238,45 +311,74 @@ export default {
     .breadcrumbs {
       font-weight: bold;
       margin-bottom: 1rem;
-      a {
-        text-decoration: none;
-      }
     }
     .breadcrumbs.tactic { color: $tactic; }
     .breadcrumbs.theory { color: $theory; }
     .breadcrumbs.story { color: $story; }
     .breadcrumbs.principle { color: $principle; }
     .breadcrumbs.methodology { color: $methodology; }
+    .origins {
+      p {
+        display: inline;
+      }
+    }
+    .box {
+      margin: 1rem 0;
+      background-color: $bggray;
+      padding: 1rem 2rem;
+      border: 1px solid $bgdark;
+      h5 {
+        font-size: 1rem;
+        margin: 0;
+        color: $text;
+        display: inline;
+      }
+      img {
+        max-height: 20rem;
+        margin: .5rem 0;
+      }
+      p {
+        margin: 0;
+        color: $text;
+      }
+    }
   }
   aside {
     height: 100%;
     flex: 2 0 33%;
+    padding: 0 2rem;
+    h2 {
+      margin: 0;
+      font-size: 1.5rem;
+    }
+    hr {
+      max-width: 10rem;
+    }
     .related {
-      padding: 0 2rem;
-      h5 {
-        margin: 0;
-        font-size: 1.5rem;
-      }
       .type {
         display: flex;
         flex-direction: row;
-        margin: .5rem 0;
+        svg, h2 {
+          display: inline-block;
+        }
       }
       .titles {
-        margin-bottom: 1.5rem;
+        margin-bottom: 1rem;
       }
       .icon {
         max-height: 1.5rem;
-        margin: .25rem .5rem 0 0;
+        max-width: 1.5rem;
+        margin: 0 .25rem 0 0;
+        margin-bottom: -.2rem;
         .rtl & {
           margin: .25rem 0 0 .5rem;
         }
       }
-      .tactic { a, h5 { color: $tactic; } }
-      .theory { a, h5 { color: $theory; } }
-      .story { a, h5 { color: $story; } }
-      .principle { a, h5 { color: $principle; } }
-      .methodology { a, h5 { color: $methodology; } }
+      .tactic { a, h2 { color: $tactic; } }
+      .theory { a, h2 { color: $theory; } }
+      .story { a, h2 { color: $story; } }
+      .principle { a, h2 { color: $principle; } }
+      .methodology { a, h2 { color: $methodology; } }
     }
   }
 }

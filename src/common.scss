@@ -9,7 +9,9 @@ $story: #70c861;
 $principle: #48abcc;
 $methodology: #874493;
 
+$text: #6b6b6b;
 $bggray: #f4f4f4;
+$bgdark: darken(#f4f4f4, 30%);
 
 // Fonts
 
@@ -25,12 +27,29 @@ body {
   margin: 0;
 }
 a:link, a:visited, a:hover {
-  // TODO: What is this color, globally?
+  // TODO: What is this color globally?
   color: $theory;
+}
+hr {
+  border: none;
+  border-top: 1px solid darken($bggray, 15%);
+  margin: 1.5rem 0;
+}
+h4 {
+  font-size: 1rem;
+  font-weight: normal;
+  margin: .25rem 0;
+  color: $text;
+}
+svg { // Center inline svgs
+  margin: auto;
+  display: block;
+  outline: none;
 }
 .tactic { a:link, a:visited, a:hover, h1, h2, h3, h4, h5, h6 { color: $tactic; }}
 .theory { a:link, a:visited, a:hover, h1, h2, h3, h4, h5, h6 { color: $theory; }}
 .story { a:link, a:visited, a:hover, h1, h2, h3, h4, h5, h6 { color: $story; }}
 .principle { a:link, a:visited, a:hover, h1, h2, h3, h4, h5, h6 { color: $principle; }}
 .methodology { a:link, a:visited, a:hover, h1, h2, h3, h4, h5, h6 { color: $methodology; }}
+
 .centered { text-align: center; }

@@ -83,6 +83,11 @@ const showdown = new Showdown.Converter({
       type: 'lang',
       regex: /!\[(.*)\]\((.+)\.(png|jpg|gif|svg)\)/gi,
       replace: `![$1](${config.imagePrefix}/medium-$2.$3)`,
+    },
+    { // Replace single newlines (these occur in a lot of "originally published in..." pieces
+      type: 'lang',
+      regex: /([^\n])\n([^\n])/gm,
+      replace: '$1\n\n$2',
     }
   ],
 })
@@ -107,8 +112,7 @@ Vue.use(VueLazyImageLoading, {
 Vue.mixin({
   methods: {
     markdown(string) {
-      // TODO:
-      // string = string.replace(/src="!\[.*\]([^/]+\.(jpg|png|gif|svg))\)"/gm, `src="${config.imagePrefix}/$1"`)
+      // TODO: Ensure newlines get transformed into line breaks
       // Regex from https://github.com/showdownjs/showdown/issues/206
       //string = string.replace(/^[\w'<][^\n]*\n+/gm, s => s.match(/\n{2}/) ? s : s.trim() + "\n\n")
       return showdown.makeHtml(string)
