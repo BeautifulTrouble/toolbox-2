@@ -10,7 +10,9 @@
     <link rel="icon" href="favicon.ico">
     <title>Beautiful Trouble</title>
     <script>
-        window.btLoggedIn = <%= `${NODE_ENV == 'development' ? 'true' : '<?php echo is_user_logged_in() ? "true" : "false" ?>'}` %>;
+      window.btOptions = {
+        showDocumentLinks: <%= NODE_ENV == 'development' ? 'true' : '<?php echo is_user_logged_in() ? "true" : "false" ?>' %>,
+      };
     </script>
   </head>
   <body>
