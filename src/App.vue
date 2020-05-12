@@ -1,8 +1,10 @@
 <template>
   <div id="app" :class="{rtl: this.$store.state.lang == 'ar'}">
-    <h1>Site Language set to: {{ $store.state.lang }}</h1>
-    <span v-for="lang in ['en', 'es', 'ar', 'pt']" :key="lang"
-      @click="$store.dispatch('LANG_SET', [lang, false])">{{ lang }} &nbsp;</span>
+    <div style="position: fixed; padding: 1rem; z-index: 100; background: white; top: 0; right: 0;">
+      <span v-for="lang in ['en', 'es', 'ar', 'pt']" :key="lang"
+        :style="{fontWeight: lang == $store.state.lang ? 'bold' : 'normal'}"
+        @click="$store.dispatch('LANG_SET', [lang, false])">{{ lang }} &nbsp;</span>
+    </div>
     <div id="nav">
       <router-link to="/">Home</router-link> |
       <router-link to="/en/about">En About</router-link> |
