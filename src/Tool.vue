@@ -1,10 +1,9 @@
 <template>
-  <div v-if="tool" :class="['tool', tool.type]">
+  <div v-if="tool" :class="['tool', tool.type]" @click="handleLink">
     <!-- Use VueLazyImageLoading for fade-in effect on load -->
     <lazy-background position="50% 0%" no-ratio :blur="0"
       :src="`${config.imagePrefix}/hero-${tool.image}`"
-      placeholder="data:image/gif;base64,R0lGODlhAQABAIAAAAUEBAAAACwAAAAAAQABAAACAkQBADs="
-      >
+      placeholder="data:image/gif;base64,R0lGODlhAQABAIAAAAUEBAAAACwAAAAAAQABAAACAkQBADs=">
       <header slot="content">
         <div class="upper">
           <router-link :to="{name: 'toolbox', params: {collection: tool.type}}">
@@ -38,37 +37,41 @@
             <router-link :to="{name: 'toolbox', params: {collection: tool.type}}">{{ typeTextBySlug[tool.type][0] }}</router-link> /
             <router-link :to="{name: 'tool', params: {slug: tool.slug}}">{{ tool.title }}</router-link>
           </div>
-          <div class="origins" v-if="tool.origins"><strong>ORIGINS</strong>: <em v-html="markdown(tool.origins)" /></div>
+          <div class="origins" v-if="tool.origins">
+            <strong>ORIGINS</strong>: <em v-html="markdown(tool.origins)" />
+          </div>
           <div class="image" v-if="tool['image-2']">
             <p><img :src="`${config.imagePrefix}/medium-${tool['image-2']}`"></p>
           </div>
-          <div class="write-up" @click="handleLink" v-html="markdown(writeUp)" />
-          <div class="box how-to-use">
-          </div>
-          <div class="box real-world-examples" v-if="tool['real-world-examples'] && tool['real-world-examples'].length">
-            <h4>REAL WORLD EXAMPLES</h4>
-            <div v-if="expand.rwe">
-              <div v-for="(rwe, i) in tool['real-world-examples']" key="i">
-                <a :href="rwe.link" target="_blank">
-                  <h5>{{ rwe.title }}</h5>
-                  <p>{{ rwe.description }}</p>
-                  <img v-if="rwe.image" :src="`${config.imagePrefix}/${rwe.image}`">
-                </a>
-              </div>
-            </div>
-          </div>
-          <div class="box learn-more" v-if="tool['learn-more'] && tool['learn-more'].length">
-            <h4>LEARN MORE</h4>
-            <div v-if="expand.learn">
-              <div v-for="(lm, i) in tool['learn-more']" key="i">
+          <div class="write-up" v-html="markdown(writeUp)" />
+          <div class="expanders">
+            <expander :key="tool.slug" :open="true" :name="'how-to-use'" v-if="tool['how-to-use']">
+              <template v-slot:title>HOW TO USE</template>
+            </expander>
+            <expander :key="tool.slug" :open="true" :name="'real-world-examples'"
+              v-if="tool['real-world-examples'] && tool['real-world-examples'].length">
+              <template v-slot:title>REAL WORLD EXAMPLES</template>
+                <div v-for="(rwe, i) in tool['real-world-examples']" :key="i">
+                  <a :href="rwe.link" target="_blank">
+                    <h5>{{ rwe.title }}</h5>
+                    <div v-html="markdown(rwe.description)" />
+                    <img v-if="rwe.image" :src="`${config.imagePrefix}/${rwe.image}`">
+                  </a>
+                </div>
+              </span>
+            </expander>
+            <expander :key="tool.slug" :open="true" :name="'learn-more'"
+              v-if="tool['learn-more'] && tool['learn-more'].length">
+              <template v-slot:title>LEARN MORE</template>
+              <div v-for="(lm, i) in tool['learn-more']" :key="i">
                 <a :href="lm.link" target="_blank">
                   <h5>{{ lm.title }}</h5><span v-if="lm.source"> | {{ lm.source }}</span><span v-if="lm.year">, {{ lm.year }}</span>
                 </a>
               </div>
-            </div>
-
-          </div>
-          <div class="box contribute">
+            </expander>
+            <expander :key="tool.slug" :open="true" :name="'contribute'">
+            <template v-slot:title>HAVE YOU SEEN OR USED THIS {{ typeTextBySlug[tool.type][0] }}?</template>
+            </expander>
           </div>
         </div>
       </article>
@@ -76,6 +79,7 @@
       <!-- Sidebar -->
       <aside>
         <div class="actions">
+          <img svg-inline class="icon" src="./assets/favorite.svg">
         </div>
         <div v-if="tool['potential-risks']" class="risks">
           <h4>POTENTIAL RISKS</h4>
@@ -112,6 +116,7 @@
 </template>
 
 <script>
+import Expander from './Expander'
 import typeTextByLang from './types'
 import config from '../bt.config'
 
@@ -129,6 +134,9 @@ export default {
       contribute: false,
     },
   }),
+  components: {
+    Expander,
+  },
   computed: {
     tool() {
       return this.$store.state.toolsBySlug[this.$route.params.slug]
@@ -156,7 +164,7 @@ export default {
     },
     handleLink($event) {
       let { target } = $event
-      // Ascend elements to the link
+      // Ascend elements to reach the link
       while (target && target.tagName != 'A') target = target.parentNode
       // Only match local links
       if (target && target.href &&
@@ -322,24 +330,13 @@ export default {
         display: inline;
       }
     }
-    .box {
-      margin: 1rem 0;
-      background-color: $bggray;
-      padding: 1rem 2rem;
-      border: 1px solid $bgdark;
-      h5 {
-        font-size: 1rem;
-        margin: 0;
-        color: $text;
-        display: inline;
-      }
+    .expanders {
       img {
         max-height: 20rem;
-        margin: .5rem 0;
+        margin: .5rem 0 .5rem 0;
       }
       p {
         margin: 0;
-        color: $text;
       }
     }
   }

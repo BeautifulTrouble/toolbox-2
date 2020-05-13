@@ -54,13 +54,4 @@
     }
   }
 }
-
-.fade-enter-active, .fade-leave-active {
-  position: relative;
-  transition: all .2s;
-  opacity: 1;
-}
-.fade-enter, .fade-leave-to {
-  opacity: 0;
-}
 </style>

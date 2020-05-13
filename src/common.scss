@@ -41,15 +41,78 @@ h4 {
   margin: .25rem 0;
   color: $text;
 }
+h5 {
+  font-size: 1rem;
+  margin: 0;
+  display: inline;
+}
 svg { // Center inline svgs
   margin: auto;
   display: block;
   outline: none;
 }
-.tactic { a:link, a:visited, a:hover, h1, h2, h3, h4, h5, h6 { color: $tactic; }}
-.theory { a:link, a:visited, a:hover, h1, h2, h3, h4, h5, h6 { color: $theory; }}
-.story { a:link, a:visited, a:hover, h1, h2, h3, h4, h5, h6 { color: $story; }}
-.principle { a:link, a:visited, a:hover, h1, h2, h3, h4, h5, h6 { color: $principle; }}
-.methodology { a:link, a:visited, a:hover, h1, h2, h3, h4, h5, h6 { color: $methodology; }}
 
-.centered { text-align: center; }
+// Classes
+.tactic { 
+  a:link, a:visited, a:hover, h1, h2, h3, h4, h5, h6 { color: $tactic; }
+}
+.theory { 
+  a:link, a:visited, a:hover, h1, h2, h3, h4, h5, h6 { color: $theory; }
+}
+.story { 
+  a:link, a:visited, a:hover, h1, h2, h3, h4, h5, h6 { color: $story; }
+}
+.principle { 
+  a:link, a:visited, a:hover, h1, h2, h3, h4, h5, h6 { color: $principle; }
+}
+.methodology { 
+  a:link, a:visited, a:hover, h1, h2, h3, h4, h5, h6 { color: $methodology; }
+}
+.box {
+  position: relative;
+  margin: 1rem 0;
+  border: 1px solid $bgdark;
+  padding: 1rem 2rem;
+  background-color: $bggray;
+  h1, h2, h3, h4, h5, h6, p { color: $text; }
+}
+.centered { 
+  text-align: center; 
+}
+
+// Transitions
+// fade
+.fade-enter-active, .fade-leave-active {
+  position: relative;
+  transition: all .2s;
+  opacity: 1;
+}
+.fade-enter, .fade-leave-to {
+  opacity: 0;
+}
+// slide
+.slide-enter-active, .slide-leave-active {
+  transition: all .2s ease-out;
+}
+.slide-enter-to, .slide-leave {
+   max-height: 100vh;
+   overflow: hidden;
+}
+.slide-enter, .slide-leave-to {
+   overflow: hidden;
+   max-height: 0;
+}
+// slide-fade
+.slide-fade-enter-active, .slide-fade-leave-active {
+  transition: all .2s ease-out;
+  opacity: 1;
+}
+.slide-fade-enter-to, .slide-fade-leave {
+   max-height: 100vh;
+   overflow: hidden;
+}
+.slide-fade-enter, .slide-fade-leave-to {
+   overflow: hidden;
+   max-height: 0;
+   opacity: 0;
+}
