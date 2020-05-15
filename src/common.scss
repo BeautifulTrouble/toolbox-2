@@ -20,15 +20,22 @@ html {
   overflow-y: scroll;
   box-sizing: border-box;
 }
-*, *:before, *:after {
+*, *::before, *::after {
   box-sizing: border-box;
 }
 body {
+  color: $text;
   margin: 0;
 }
 a:link, a:visited, a:hover {
   // TODO: What is this color globally?
   color: $theory;
+}
+blockquote {
+  font-style: italic;
+  position: relative;
+  quotes: '“' '”';
+  color: lighten($text, 15%);
 }
 hr {
   border: none;
@@ -53,21 +60,16 @@ svg { // Center inline svgs
 }
 
 // Classes
-.tactic { 
-  a:link, a:visited, a:hover, h1, h2, h3, h4, h5, h6 { color: $tactic; }
+@mixin type-particulars($color) {
+  a:link, a:visited, a:hover, h1, h2, h3, h4, h5, h6 { color: $color; }
+  blockquote.pull-quote, .caption { border-color: $color; }
 }
-.theory { 
-  a:link, a:visited, a:hover, h1, h2, h3, h4, h5, h6 { color: $theory; }
-}
-.story { 
-  a:link, a:visited, a:hover, h1, h2, h3, h4, h5, h6 { color: $story; }
-}
-.principle { 
-  a:link, a:visited, a:hover, h1, h2, h3, h4, h5, h6 { color: $principle; }
-}
-.methodology { 
-  a:link, a:visited, a:hover, h1, h2, h3, h4, h5, h6 { color: $methodology; }
-}
+.tactic { @include type-particulars($tactic); }
+.theory { @include type-particulars($theory); }
+.story { @include type-particulars($story); }
+.principle { @include type-particulars($principle); }
+.methodology { @include type-particulars($methodology); }
+
 .box {
   position: relative;
   margin: 1rem 0;
@@ -78,6 +80,9 @@ svg { // Center inline svgs
 }
 .centered { 
   text-align: center; 
+}
+.clear { // Disgusting, but only used after floated blockquotes
+  clear: both;
 }
 
 // Transitions

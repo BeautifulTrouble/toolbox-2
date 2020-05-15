@@ -4,29 +4,30 @@
     <lazy-background position="50% 0%" no-ratio :blur="0"
       :src="`${config.imagePrefix}/hero-${tool.image}`"
       placeholder="data:image/gif;base64,R0lGODlhAQABAIAAAAUEBAAAACwAAAAAAQABAAACAkQBADs=">
-      <header slot="content">
-        <div class="upper">
-          <router-link :to="{name: 'toolbox', params: {collection: tool.type}}">
-            <img svg-inline v-if="tool.type == 'tactic'" class="icon" src="./assets/tactic.svg">
-            <img svg-inline v-if="tool.type == 'theory'" class="icon" src="./assets/theory.svg">
-            <img svg-inline v-if="tool.type == 'story'" class="icon" src="./assets/story.svg">
-            <img svg-inline v-if="tool.type == 'principle'" class="icon" src="./assets/principle.svg">
-            <img svg-inline v-if="tool.type == 'methodology'" class="icon" src="./assets/methodology.svg">
-            <h3>{{ typeTextBySlug[tool.type][0] }}</h3>
-          </router-link>
-          <h1>{{ tool.title }}</h1>
-          <img svg-inline v-if="showDocumentLinks" @click="openDocument" class="edit" alt="Edit this Google Doc" src="./assets/edit.svg">
-        </div>
-        <div class="lower">
-          <div><!-- Always render two divs to ensure proper placement -->
-            <div v-if="tool['image-caption']" :class="['caption', tool.type]" v-html="markdown(tool['image-caption'])" />
-          </div>
-          <div>
-            <img svg-inline v-if="tool.video" class="icon video" src="./assets/video.svg">
-          </div>
-        </div>
-      </header>
     </lazy-background>
+
+    <header slot="content">
+      <div class="upper">
+        <router-link :to="{name: 'toolbox', params: {collection: tool.type}}">
+          <img svg-inline v-if="tool.type == 'tactic'" class="icon" src="./assets/tactic.svg">
+          <img svg-inline v-if="tool.type == 'theory'" class="icon" src="./assets/theory.svg">
+          <img svg-inline v-if="tool.type == 'story'" class="icon" src="./assets/story.svg">
+          <img svg-inline v-if="tool.type == 'principle'" class="icon" src="./assets/principle.svg">
+          <img svg-inline v-if="tool.type == 'methodology'" class="icon" src="./assets/methodology.svg">
+          <h3>{{ typeTextBySlug[tool.type][0] }}</h3>
+        </router-link>
+        <h1>{{ tool.title }}</h1>
+        <img svg-inline v-if="showDocumentLinks" @click="openDocument" class="edit" alt="Edit this Google Doc" src="./assets/edit.svg">
+      </div>
+      <div class="lower">
+        <div><!-- Always render two divs to ensure proper placement -->
+          <div v-if="tool['image-caption']" :class="['caption', tool.type]" v-html="markdown(tool['image-caption'])" />
+        </div>
+        <div>
+          <img svg-inline v-if="tool.video" class="icon video" src="./assets/video.svg">
+        </div>
+      </div>
+    </header>
 
     <main>
       <!-- Tool -->
@@ -43,36 +44,38 @@
           <div class="image" v-if="tool['image-2']">
             <p><img :src="`${config.imagePrefix}/medium-${tool['image-2']}`"></p>
           </div>
+
           <div class="write-up" v-html="markdown(writeUp)" />
-          <div class="expanders">
-            <expander :key="tool.slug" :open="true" :name="'how-to-use'" v-if="tool['how-to-use']">
-              <template v-slot:title>HOW TO USE</template>
-            </expander>
-            <expander :key="tool.slug" :open="true" :name="'real-world-examples'"
-              v-if="tool['real-world-examples'] && tool['real-world-examples'].length">
-              <template v-slot:title>REAL WORLD EXAMPLES</template>
-                <div v-for="(rwe, i) in tool['real-world-examples']" :key="i">
-                  <a :href="rwe.link" target="_blank">
-                    <h5>{{ rwe.title }}</h5>
-                    <div v-html="markdown(rwe.description)" />
-                    <img v-if="rwe.image" :src="`${config.imagePrefix}/${rwe.image}`">
-                  </a>
-                </div>
-              </span>
-            </expander>
-            <expander :key="tool.slug" :open="true" :name="'learn-more'"
-              v-if="tool['learn-more'] && tool['learn-more'].length">
-              <template v-slot:title>LEARN MORE</template>
-              <div v-for="(lm, i) in tool['learn-more']" :key="i">
-                <a :href="lm.link" target="_blank">
-                  <h5>{{ lm.title }}</h5><span v-if="lm.source"> | {{ lm.source }}</span><span v-if="lm.year">, {{ lm.year }}</span>
+          <div class="clear" />
+
+          <expander :key="`how-${tool.slug}`" :open="true" :name="'how-to-use'" v-if="tool['how-to-use']">
+            <template v-slot:title>HOW TO USE</template>
+            <div v-html="markdown(tool['how-to-use'])" />
+          </expander>
+          <expander :key="`rwe-${tool.slug}`" :open="true" :name="'real-world-examples'"
+            v-if="tool['real-world-examples'] && tool['real-world-examples'].length">
+            <template v-slot:title>REAL WORLD EXAMPLES</template>
+              <div v-for="(rwe, i) in tool['real-world-examples']" :key="i">
+                <a :href="rwe.link" target="_blank">
+                  <h5>{{ rwe.title }}</h5>
+                  <div v-html="markdown(rwe.description)" />
+                  <img v-if="rwe.image" :src="`${config.imagePrefix}/${rwe.image}`">
                 </a>
               </div>
-            </expander>
-            <expander :key="tool.slug" :open="true" :name="'contribute'">
+            </span>
+          </expander>
+          <expander :key="`learn-${tool.slug}`" :open="true" :name="'learn-more'"
+            v-if="tool['learn-more'] && tool['learn-more'].length">
+            <template v-slot:title>LEARN MORE</template>
+            <div v-for="(lm, i) in tool['learn-more']" :key="i">
+              <a :href="lm.link" target="_blank">
+                <h5>{{ lm.title }}</h5><span v-if="lm.source"> | {{ lm.source }}</span><span v-if="lm.year">, {{ lm.year }}</span>
+              </a>
+            </div>
+          </expander>
+          <expander :open="true" :name="'contribute'">
             <template v-slot:title>HAVE YOU SEEN OR USED THIS {{ typeTextBySlug[tool.type][0] }}?</template>
-            </expander>
-          </div>
+          </expander>
         </div>
       </article>
 
@@ -145,7 +148,19 @@ export default {
       return typeTextByLang[this.$store.state.lang]
     },
     writeUp() {
-      return this.tool['full-write-up'] || this.tool['short-write-up'] || this.tool['snapshot']
+      // TODO: module-type-effective logic (see RED text document prepared for Troels)
+      let text = this.tool['full-write-up'] || this.tool['short-write-up'] || this.tool['snapshot']
+      text = this.markdown(text)
+      if (this.tool['pull-quote']) {
+        // Remove outermost <p>...</p> tags, split to array on inner </p><p> junctions, and re-wrap
+        let paragraphs = text.replace(/(^<p>|<\/p>$)/g, '').split(/<\/p>\s*<p>/).map(p => `<p>${p}</p>`)
+        if (paragraphs.length > 1) {
+          let quote = `<blockquote class="pull-quote">${this.markdown(this.tool['pull-quote'])}</blockquote>`
+          paragraphs.splice(paragraphs.length < 4 ? 1 : 2, 0, quote)
+          text = paragraphs.join(' ')
+        }
+      }
+      return text
     },
     randomRelated() {
       return Object.fromEntries(
@@ -196,12 +211,18 @@ export default {
 <style lang="scss">
 @import 'common.scss';
 
+$image-height: 45rem;
+
 .tool {
+  .lazy-background {
+    position: fixed;
+  }
   .lazy-background-image {
     background: black;
     transition: all .2s ease-in-out;
-    &:after {
+    &::before {
       content: "";
+      transition: opacity .5s ease-in-out;
       background: linear-gradient(180deg, rgba(0,0,0,0) 20%, rgba(0,0,0,1) 100%);
       position: absolute;
       top: 0; left: 0;
@@ -214,7 +235,8 @@ export default {
     flex-direction: column;
     justify-content: space-between;
     align-items: center;
-    height: 45rem;
+    position: relative;
+    height: $image-height;
     a {
       text-decoration: none;
     }
@@ -262,29 +284,39 @@ export default {
       align-items: flex-end;
     }
     .caption {
+      text-shadow: 1.5px 1.5px 1.5px rgba(black, .5);
       max-width: 25rem;
       padding: 0 1rem;
       margin: 2rem 3rem;
       border-style: solid;
-      border-width: 0 0 0 .5rem;
+      border-width: 0 0 0 .3rem;
+      transition: all .1s ease-in-out;
+      &:hover {
+        border-width: 0 0 0 .6rem;
+      }
       .rtl & {
-        border-width: 0 .5rem 0 0;
+        border-width: 0 .3rem 0 0;
       }
       p {
         margin: 0;
       }
     }
-    .caption.tactic { border-color: $tactic; }
-    .caption.theory { border-color: $theory; }
-    .caption.story { border-color: $story; }
-    .caption.principle { border-color: $principle; }
-    .caption.methodology { border-color: $methodology; }
   }
   main {
+    position: absolute;
     display: flex;
     flex-direction: row;
     background: $bggray;
     padding-top: 1rem;
+    &::before {
+      content: "";
+      height: 5rem;
+      top: -5rem;
+      left: 0; right: 0;
+      position: absolute;
+      background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,.2) 100%);
+      pointer-events: none;
+    }
     a {
       text-decoration: none;
       h5 {
@@ -304,6 +336,38 @@ export default {
     justify-content: flex-end;
     box-shadow: 5px 0 8px #d3d3d3;
     padding: 2rem;
+    blockquote.pull-quote {
+      display: block;
+      position: relative;
+      float: left;
+      text-transform: uppercase;
+      color: $text;
+      font-size: 1.1rem;
+      font-style: normal;
+      user-select: none;
+      margin: 3rem 1rem 3rem -20%;
+      padding: 0 1rem;
+      border-width: .3rem;
+      border-left-style: solid;
+      width: 25rem;
+      max-width: 50%;
+      transition: all .1s ease-in-out;
+      &:hover {
+        border-width: .6rem;
+      }
+      &::before {
+        content: none;
+      }
+      .rtl & {
+        margin: 3rem -5rem 3rem 1rem;
+        float: right;
+        border-left-style: none;
+        border-right-style: solid;
+      }
+      p {
+        margin: 0;
+      }
+    }
     h6 {
       font-size: 1rem;
       margin: .25rem;
@@ -330,7 +394,7 @@ export default {
         display: inline;
       }
     }
-    .expanders {
+    .learn-more, .real-world-examples {
       img {
         max-height: 20rem;
         margin: .5rem 0 .5rem 0;
