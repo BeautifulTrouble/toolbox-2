@@ -37,6 +37,7 @@ export default {
     position: absolute;
     top: 0; left: 0;
     width: 100%;
+    user-select: none;
     padding: 1.5rem 4rem 1.5rem 2rem; // also .rtl &
     margin: 0;
     .rtl & {
