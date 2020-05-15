@@ -55,14 +55,13 @@
           <expander :key="`rwe-${tool.slug}`" :open="true" :name="'real-world-examples'"
             v-if="tool['real-world-examples'] && tool['real-world-examples'].length">
             <template v-slot:title>REAL WORLD EXAMPLES</template>
-              <div v-for="(rwe, i) in tool['real-world-examples']" :key="i">
-                <a :href="rwe.link" target="_blank">
-                  <h5>{{ rwe.title }}</h5>
-                  <div v-html="markdown(rwe.description)" />
-                  <img v-if="rwe.image" :src="`${config.imagePrefix}/${rwe.image}`">
-                </a>
-              </div>
-            </span>
+            <div v-for="(rwe, i) in tool['real-world-examples']" :key="i">
+              <a :href="rwe.link" target="_blank">
+                <h5>{{ rwe.title }}</h5>
+                <div v-html="markdown(rwe.description)" />
+                <img v-if="rwe.image" :src="`${config.imagePrefix}/${rwe.image}`">
+              </a>
+            </div>
           </expander>
           <expander :key="`learn-${tool.slug}`" :open="true" :name="'learn-more'"
             v-if="tool['learn-more'] && tool['learn-more'].length">
@@ -101,10 +100,16 @@
                 <img svg-inline v-if="T == 'methodology'" class="icon" src="./assets/methodology.svg">
                 <h2>{{ typeTextBySlug[T][1] }}</h2>
               </router-link>
+              <span :class="{T: true, open: expandRelated[T]}" v-if="randomRelated[T].length > 5"
+                @click="$set(expandRelated, T, !expandRelated[T])" />
             </div>
             <div class="titles">
-              <div v-for="m in randomRelated[T]" :key="m">
-                <router-link :to="{name: 'tool', params: {slug: m}}">{{ $store.state.toolsBySlug[m].title }}</router-link>
+              <div class="related-link" v-for="[s, show] in randomRelated[T]" :key="s">
+                <transition name="fade">
+                  <div v-if="expandRelated[T] || show">
+                    <router-link :to="{name: 'tool', params: {slug: s}}">{{ $store.state.toolsBySlug[s].title }}</router-link>
+                  </div>
+                </transition>
               </div>
             </div>
           </div>
@@ -129,13 +134,7 @@ export default {
     config,
     showDocumentLinks: window.btOptions.showDocumentLinks,
     types: {story: 'stories', tactic: 'tactics', theory: 'theories', principle: 'principles', methodology: 'methodologies'},
-    expand: {
-      risks: false,
-      use: true,
-      rwe: true,
-      learn: true,
-      contribute: false,
-    },
+    expandRelated: {},
   }),
   components: {
     Expander,
@@ -163,20 +162,24 @@ export default {
       return text
     },
     randomRelated() {
+      console.log('computing randomRelated')
       return Object.fromEntries(
         Object.keys(this.types)
           .filter(T => (this.tool[this.types[T]] || []).length)
+          .map(T => {
+            let slugs = this.tool[this.types[T]]
+            let indices = new Set([...Array(slugs.length).keys()].sort(() => 0.5 - Math.random()).slice(0, 5))
+            return [T, slugs.map((s, i) => [s, indices.has(i)])]
+          })
+        /*
+          .filter(T => (this.tool[this.types[T]] || []).length)
           .map(T => [T, [...this.tool[this.types[T]]].sort(() => 0.5 - Math.random()).slice(0, 5)])
+        */
       )
     }
   },
   methods: {
-    openDocument() {
-      window.open(this.tool.document_link, '_blank')
-    },
-    otherTool(slug) {
-      return this.$store.state.toolsBySlug[slug] || {}
-    },
+
     handleLink($event) {
       let { target } = $event
       // Ascend elements to reach the link
@@ -198,13 +201,23 @@ export default {
           }
         }
       }
-    }
+    },
+    openDocument() {
+      window.open(this.tool.document_link, '_blank')
+    },
+    resetExpandRelated() {
+      this.expandRelated = {story: false, tactic: false, theory: false, principle: false, methodology: false}
+    },
   },
-  // beforeRouteEnter
-  // beforeRouteUpdate
+  watch: {
+    $route() {
+      this.resetExpandRelated()
+    },
+  },
   created() {
+    this.resetExpandRelated()
     console.log('created tool')
-  }
+  },
 };
 </script>
 
@@ -216,6 +229,7 @@ $image-height: 45rem;
 .tool {
   .lazy-background {
     position: fixed;
+    height: $image-height;
   }
   .lazy-background-image {
     background: black;
@@ -418,9 +432,28 @@ $image-height: 45rem;
     .related {
       .type {
         display: flex;
+        position: relative;
         flex-direction: row;
         svg, h2 {
           display: inline-block;
+        }
+        span {
+          padding: .25rem .5rem;
+          width: 3rem;
+          cursor: pointer;
+          &.open::after {
+            transform: scaleY(-1);
+          }
+          &::after {
+            transition: all .2s ease-out;
+            position: absolute;
+            top: .7rem;
+            content: "";
+            border-top-width: .7rem;
+            border-top-style: solid;
+            border-left: .5rem solid transparent;
+            border-right: .5rem solid transparent;
+          }
         }
       }
       .titles {
@@ -435,12 +468,27 @@ $image-height: 45rem;
           margin: .25rem 0 0 .5rem;
         }
       }
-      .tactic { a, h2 { color: $tactic; } }
-      .theory { a, h2 { color: $theory; } }
-      .story { a, h2 { color: $story; } }
-      .principle { a, h2 { color: $principle; } }
-      .methodology { a, h2 { color: $methodology; } }
+      @mixin type-related($color) {
+        a, h2 { color: $color; }
+        span::after { border-top-color: $color; }
+      }
+      .tactic { @include type-related($tactic); }
+      .theory { @include type-related($theory); }
+      .story { @include type-related($story); }
+      .principle { @include type-related($principle); }
+      .methodology { @include type-related($methodology); }
     }
   }
+}
+.list-item {
+  display: inline-block;
+  margin-right: 10px;
+}
+.list-enter-active, .list-leave-active {
+  transition: all 1s;
+}
+.list-enter, .list-leave-to /* .list-leave-active below version 2.1.8 */ {
+  opacity: 0;
+  transform: translateY(30px);
 }
 </style>
