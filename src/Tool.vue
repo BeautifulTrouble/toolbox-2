@@ -80,15 +80,31 @@
 
       <!-- Sidebar -->
       <aside>
-        <div class="actions">
-          <img svg-inline class="icon" src="./assets/favorite.svg">
-        </div>
-        <div v-if="tool['potential-risks']" class="risks">
+        <section class="actions">
+          <span @click="$store.dispatch('TOOL_SAVE_TOGGLE', tool.slug)">
+            <img v-if="$store.state.savedTools.has(tool.slug)"
+              svg-inline :class="['icon', 'active', tool.type]" src="./assets/favorite-active.svg">
+            <img v-else svg-inline class="icon" src="./assets/favorite.svg">
+          </span>
+          <a :href="`${config.pdf}/download?tools=${tool.slug}`" target="_blank">
+            <img svg-inline class="icon" src="./assets/download.svg">
+          </a>
+          <a :href="shareUrlFacebook" target="_blank" rel="external">
+            <img svg-inline class="icon" src="./assets/facebook.svg">
+          </a>
+          <a :href="shareUrlTwitter" target="_blank" rel="external">
+            <img svg-inline class="icon" src="./assets/twitter.svg">
+          </a>
+          <a :href="shareUrlEmail" target="_blank" rel="external">
+            <img svg-inline class="icon" src="./assets/email.svg">
+          </a>
+        </section>
+        <section v-if="tool['potential-risks']" class="risks">
           <h4>POTENTIAL RISKS</h4>
           <div v-html="markdown(tool['potential-risks'])" />
           <hr>
-        </div>
-        <div class="related">
+        </section>
+        <section class="related">
           <h4>RELATED TOOLS</h4>
           <div v-for="T in Object.keys(randomRelated)" :key="T" :class="T">
             <div class="type">
@@ -114,10 +130,10 @@
             </div>
           </div>
           <hr>
-        </div>
-        <div class="author">
+        </section>
+        <section class="author">
           <hr>
-        </div>
+        </section>
       </aside>
     </main>
   </div>
@@ -176,16 +192,25 @@ export default {
           .map(T => [T, [...this.tool[this.types[T]]].sort(() => 0.5 - Math.random()).slice(0, 5)])
         */
       )
-    }
+    },
+    shareUrlEmail() {
+      // RFC2368 states a newline in mailto links must be represented %0d%0a
+      return `mailto:?subject=${this.capitalize(this.typeTextBySlug[this.tool.type][0])}: ${this.tool.title}&body=${this.tool.snapshot}%0d%0a%0d%0a${this.config.siteUrl}/${this.$store.state.lang}/${this.tool.slug}`
+    },
+    shareUrlFacebook() {
+      return `https://facebook.com/sharer/sharer.php?u=${this.config.siteUrl}/${this.$store.state.lang}/${this.tool.slug}`
+    },
+    shareUrlTwitter() {
+      return `https://twitter.com/intent/tweet?text=${this.tool.title}&url=${this.config.siteUrl}/${this.$store.state.lang}/${this.tool.slug}`
+    },
   },
   methods: {
-
     handleLink($event) {
       let { target } = $event
       // Ascend elements to reach the link
       while (target && target.tagName != 'A') target = target.parentNode
       // Only match local links
-      if (target && target.href &&
+      if (target && target.href && target.rel != 'external' &&
           (target.matches(`.tool a[href*="://${config.siteDomain}"]`)
            || target.matches('.tool a:not([href*="://"])'))) {
         const { altKey, ctrlKey, metaKey, shiftKey, button, defaultPrevented } = $event
@@ -228,7 +253,8 @@ $image-height: 45rem;
 
 .tool {
   .lazy-background {
-    position: fixed;
+    position: absolute;
+    z-index: 0;
     height: $image-height;
   }
   .lazy-background-image {
@@ -429,6 +455,33 @@ $image-height: 45rem;
     hr {
       max-width: 10rem;
     }
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      flex-direction: row;
+      align-items: center;
+      .icon {
+        max-width: 3rem;
+        cursor: pointer;
+        margin: 0 .5rem 0 0;
+        .rtl & {
+          margin: 0 0 0 .5rem;
+        }
+        &.tactic { fill: $tactic; }
+        &.theory { fill: $theory; }
+        &.story { fill: $story; }
+        &.principle { fill: $principle; }
+        &.methodology { fill: $methodology; }
+        &.active {
+          animation-name: add-favorite;
+          animation-duration: .5s;
+          animation-iteration-count: 1;
+        }
+      }
+      .email-form {
+        width: 100%;
+      }
+    }
     .related {
       .type {
         display: flex;
@@ -491,4 +544,5 @@ $image-height: 45rem;
   opacity: 0;
   transform: translateY(30px);
 }
+
 </style>

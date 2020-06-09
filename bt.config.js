@@ -7,7 +7,9 @@ export default {
   errorPage: '/error',
   imagePrefix: 'https://beautifulrising.org',
   langs: ['en', 'es', 'ar', 'pt'],
+  pdf: 'https://api.beautifulrising.org/pdf',
   siteDomain: 'bt.org',
+  siteUrl: 'https://beautifultrouble.org',
   toolTypes: ['story', 'tactic', 'principle', 'theory', 'methodology'],
   wpapi: 'http://bt.org/wp-json/wp/v2',
 }

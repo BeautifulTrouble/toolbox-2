@@ -24,7 +24,7 @@ export default {
       // Ascend elements to the link
       while (target && target.tagName != 'A') target = target.parentNode
       // Only match local links
-      if (target && target.href &&
+      if (target && target.href && target.rel != 'external' &&
           (target.matches(`.wordpress a[href*="://${config.siteDomain}"]`)
            || target.matches('.wordpress a:not([href*="://"])'))) {
         const { altKey, ctrlKey, metaKey, shiftKey, button, defaultPrevented } = $event
