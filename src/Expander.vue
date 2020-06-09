@@ -1,5 +1,5 @@
 <template>
-  <div :class="['box', 'expander', name]">
+  <section :class="['box', 'expander', name]">
     <h4 :class="{open: isOpen}" @click="isOpen = !isOpen">
       <slot name="title" />
     </h4>
@@ -8,7 +8,7 @@
         <slot />
       </div>
     </transition>
-  </div>
+  </section>
 </template>
 
 <script>
