@@ -116,6 +116,9 @@ Vue.use(VueLazyImageLoading, {
 
 Vue.mixin({
   methods: {
+    capitalize([first, ...rest], locale = navigator.language) {
+      return [first.toLocaleUpperCase(locale), ...rest].join('')
+    },
     markdown(string) {
       // TODO: Ensure newlines get transformed into line breaks
       // Regex from https://github.com/showdownjs/showdown/issues/206
