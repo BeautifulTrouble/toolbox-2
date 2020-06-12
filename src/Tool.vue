@@ -38,6 +38,12 @@
             <router-link :to="{name: 'toolbox', params: {collection: tool.type}}">{{ typeTextBySlug[tool.type][0] }}</router-link> /
             <router-link :to="{name: 'tool', params: {slug: tool.slug}}">{{ tool.title }}</router-link>
           </div>
+          <div class="epigraphs" v-if="tool.epigraphs">
+            <div v-for="(e, i) in tool.epigraphs" :key="i">
+              <div class="quote" v-html="markdown(e.replace(/(—[^—]+)$/g, ''))" />
+              <div class="attribution" v-html="markdown(e.replace(/^([^—]+)/g, ''))" />
+            </div>
+          </div>
           <div class="origins" v-if="tool.origins">
             <strong>ORIGINS</strong>: <em v-html="markdown(tool.origins)" />
           </div>
@@ -144,6 +150,8 @@ import Expander from './Expander'
 import typeTextByLang from './types'
 import config from '../bt.config'
 
+const crlf = '%0d%0a'
+
 export default {
   name: 'Tool',
   data: () => ({
@@ -194,8 +202,7 @@ export default {
       )
     },
     shareUrlEmail() {
-      // RFC2368 states a newline in mailto links must be represented %0d%0a
-      return `mailto:?subject=${this.capitalize(this.typeTextBySlug[this.tool.type][0])}: ${this.tool.title}&body=${this.tool.snapshot}%0d%0a%0d%0a${this.config.siteUrl}/${this.$store.state.lang}/${this.tool.slug}`
+      return `mailto:?subject=${this.capitalize(this.typeTextBySlug[this.tool.type][0])}: ${this.tool.title}&body=${this.tool.snapshot}${crlf}${crlf}${this.config.siteUrl}/${this.$store.state.lang}/${this.tool.slug}`
     },
     shareUrlFacebook() {
       return `https://facebook.com/sharer/sharer.php?u=${this.config.siteUrl}/${this.$store.state.lang}/${this.tool.slug}`
@@ -242,6 +249,7 @@ export default {
   created() {
     this.resetExpandRelated()
     console.log('created tool')
+    console.log(this.tool.epigraphs)
   },
 };
 </script>
@@ -376,6 +384,9 @@ $image-height: 45rem;
     justify-content: flex-end;
     box-shadow: 5px 0 8px #d3d3d3;
     padding: 2rem;
+    blockquote p {
+      margin: 0;
+    }
     blockquote.pull-quote {
       display: block;
       position: relative;
@@ -429,10 +440,25 @@ $image-height: 45rem;
     .breadcrumbs.story { color: $story; }
     .breadcrumbs.principle { color: $principle; }
     .breadcrumbs.methodology { color: $methodology; }
-    .origins {
+    .epigraphs {
+      margin: 0 1rem 1.5rem 1rem;
       p {
+        margin: 0;
+        font-size: .9rem;
+        font-style: italic;
+      }
+      .quote {
+      }
+      .attribution {
+        color: $bgdark;
+        margin-bottom: 1rem;
+      }
+    }
+    .origins {
+      p:first-of-type {
         display: inline;
       }
+      margin-bottom: 1.5rem;
     }
     .learn-more, .real-world-examples {
       img {
