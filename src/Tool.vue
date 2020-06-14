@@ -156,7 +156,7 @@ export default {
   name: 'Tool',
   data: () => ({
     config,
-    showDocumentLinks: window.btOptions.showDocumentLinks,
+    showDocumentLinks: window.btData.showDocumentLinks,
     types: {story: 'stories', tactic: 'tactics', theory: 'theories', principle: 'principles', methodology: 'methodologies'},
     expandRelated: {},
   }),
@@ -186,7 +186,6 @@ export default {
       return text
     },
     randomRelated() {
-      console.log('computing randomRelated')
       return Object.fromEntries(
         Object.keys(this.types)
           .filter(T => (this.tool[this.types[T]] || []).length)
@@ -249,7 +248,6 @@ export default {
   created() {
     this.resetExpandRelated()
     console.log('created tool')
-    console.log(this.tool.epigraphs)
   },
 };
 </script>

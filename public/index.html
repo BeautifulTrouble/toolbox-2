@@ -10,9 +10,24 @@
     <link rel="icon" href="favicon.ico">
     <title>Beautiful Trouble</title>
     <script>
-      window.btOptions = {
-        showDocumentLinks: <%= NODE_ENV == 'development' ? 'true' : '<?php echo is_user_logged_in() ? "true" : "false" ?>' %>,
-      };
+    <% if (NODE_ENV == 'development') { %>
+
+      window.btData = { 
+        showDocumentLinks: true,
+        menuData: null,
+      }
+      fetch('//localhost/wp-json/wp/v2/menu')
+        .then(r => r.json())
+        .then(d => window.btData.menuData = d)
+
+    <% } else { %>
+
+      window.btData = {
+        showDocumentLinks: <?php echo is_user_logged_in() ? "true" : "false"; ?>,
+        menuData: <?php echo json_encode(bt_get_menus()); ?>
+      }
+
+    <% } %>
     </script>
   </head>
   <body>
