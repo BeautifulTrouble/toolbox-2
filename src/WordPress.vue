@@ -1,11 +1,7 @@
 <template>
   <div>
     <div v-if="$store.state.wordPressRequested">Loading...</div>
-    <div
-      class="wordpress"
-      @click="handleLink"
-      v-html="$store.state.wordPress"
-      ></div>
+    <div @click="handleLink" v-html="$store.state.wordPress" class="wordpress"></div>
   </div>
 </template>
 

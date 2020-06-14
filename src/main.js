@@ -8,7 +8,7 @@ import ShowdownTargetBlank from 'showdown-target-blank'
 import VueLazyload from 'vue-lazyload'
 import VueLazyImageLoading from 'vue-lazy-image-loading'
 
-import Main from './Main'
+import App from './App'
 import Tool from './Tool'
 import Toolbox from './Toolbox'
 import WordPress from './WordPress'
@@ -57,7 +57,7 @@ router.beforeEach((to, from, next) => {
   // site language.
   //
   // While we're at it, set a language if one isn't already set. You might think such logic goes
-  // somewhere more general, like site initialization in a lifecycle hook of the Main component. I'd
+  // somewhere more general, like site initialization in a lifecycle hook of the App component. I'd
   // agree with that, but getting the language detection heuristic right is tricky, and easier to
   // reason about when it's all in one place.
   //
@@ -137,6 +137,6 @@ Vue.mixin({
 new Vue({
   router,
   store,
-  render: h => h(Main),
+  render: h => h(App),
 }).$mount('#app')
 
