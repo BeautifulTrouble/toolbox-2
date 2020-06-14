@@ -9,26 +9,26 @@ import config from '../bt.config'
 // LOCALSTORAGE
 // IMPORTANT: We need the ability to delete our large localStorage cache, and want to avoid calling
 //            localStorage.clear(), so please DON'T RENAME "bt-tools-??" after launch.
-const storageKeyCache = lang => `bt-tools-${lang}`
-const storageKeyLang = 'bt-lang'
-const storageKeySaved = 'bt-saved'
+const keyNameAPICache = lang => `bt-tools-${lang}`
+const keyNameLang = 'bt-lang'
+const keyNameSaved = 'bt-saved'
 
 const storageGetSavedTools = () => {
-  return new Set(JSON.parse(Storage.getItem(storageKeySaved) || '[]'))
+  return new Set(JSON.parse(Storage.getItem(keyNameSaved) || '[]'))
 }
 const storageSetSavedTools = tools => {
-  Storage.setItem(storageKeySaved, JSON.stringify([...tools.keys()]))
+  Storage.setItem(keyNameSaved, JSON.stringify([...tools.keys()]))
 }
 
 const storageSetCache = (lang, data, nestedCall = false) => {
   // TODO: to help fit more data under quota, remove top-level key-modules, document_whatever
   try {
-    Storage.setItem(storageKeyCache(lang), JSON.stringify({'timestamp': (new Date).getTime(), data: data}))
+    Storage.setItem(keyNameAPICache(lang), JSON.stringify({'timestamp': (new Date).getTime(), data: data}))
   } catch(e) {
     console.debug(e)
     if (!nestedCall) {
       console.debug("Trying to make room for localStorage cache...")
-      config.langs.forEach(lang => Storage.removeItem(storageKeyCache(lang)))
+      config.langs.forEach(lang => Storage.removeItem(keyNameAPICache(lang)))
       storageSetCache(lang, data, true)
     } else {
       console.debug("Couldn't save cache")
@@ -37,13 +37,13 @@ const storageSetCache = (lang, data, nestedCall = false) => {
 }
 const storageGetCache = lang => {
   try {
-    let data = JSON.parse(Storage.getItem(storageKeyCache(lang)))
+    let data = JSON.parse(Storage.getItem(keyNameAPICache(lang)))
     if (data && data.timestamp && ((new Date).getTime() - data.timestamp < config.cacheLifespan)) {
       return data.data
     }
   } catch(e) {
     console.debug("Removing bad localStorage tools cache...")
-    Storage.removeItem(storageKeyCache(lang))
+    Storage.removeItem(keyNameAPICache(lang))
   }
 }
 
@@ -66,7 +66,7 @@ export const store = new Vuex.Store({
     LANG_SET(context, [lang, forceReload]) {
       // No language was requested, so detect the browser language from storage or navigator.
       if (!lang) {
-        lang = Storage.getItem(storageKeyLang) || navigator.language.slice(0,2)
+        lang = Storage.getItem(keyNameLang) || navigator.language.slice(0,2)
       }
       // If language isn't already set and there's no outstanding request for this language already
       if (context.state.lang != lang && context.state.langRequested != lang) {
@@ -138,7 +138,7 @@ export const store = new Vuex.Store({
   mutations: {
     // API TOOLS
     setLang(state, [tools, lang, cache]) {
-      Storage.setItem(storageKeyLang, lang)
+      Storage.setItem(keyNameLang, lang)
       if (cache) {
         storageSetCache(lang, tools)
       }
