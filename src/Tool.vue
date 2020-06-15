@@ -73,8 +73,8 @@
             v-if="tool['learn-more'] && tool['learn-more'].length">
             <template v-slot:title>LEARN MORE</template>
             <div v-for="(lm, i) in tool['learn-more']" :key="i">
-              <a :href="lm.link" target="_blank">
-                <h5>{{ lm.title }}</h5><span v-if="lm.source"> | {{ lm.source }}</span><span v-if="lm.year">, {{ lm.year }}</span>
+              <a :href="lm.link" target="_blank" class="lm">
+                <h5>{{ lm.title }}</h5><span v-if="lm.source">&nbsp; | &nbsp;{{ lm.source }}</span><span v-if="lm.year">, {{ lm.year }}</span>
               </a>
             </div>
           </expander>
@@ -466,6 +466,10 @@ $image-height: 45rem;
     }
     .rwe {
       margin-bottom: .5rem;
+    }
+    .lm {
+      display: block;
+      margin-bottom: .25rem;
     }
   }
   aside {

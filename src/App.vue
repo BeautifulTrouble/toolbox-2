@@ -21,8 +21,16 @@
           </div>
         </div>
         <div class="resources">
-          foo
+          <router-link to="/toolbox/saved" class="saved">
+            <span>MY TOOLS</span>
+            <img svg-inline class="icon favorite" src="./assets/favorite-active.svg">
+            <span v-if="$store.state.savedTools.size" class="count">{{ $store.state.savedTools.size }}</span>
+          </router-link>
+          <img svg-inline @click="showSearch = !showSearch" class="icon search" src="./assets/search.svg">
         </div>
+      </div>
+      <div v-if="showSearch" class="search">
+        <input type="text">SEARCH........
       </div>
     </nav>
     <transition name="fade" mode="out-in">
@@ -63,6 +71,7 @@ export default {
   data: () => ({
     btData: window.btData,
     config: config,
+    showSearch: false,
   }),
   methods: {
     getMenuPath(url) {
@@ -126,6 +135,10 @@ nav {
       content: "";
       position: absolute;
     }
+    a {
+      color: white;
+      text-decoration: none;
+    }
     .links {
       z-index: 1;
       position: relative;
@@ -133,20 +146,43 @@ nav {
       align-items: center;
       a.link {
         padding: 0 1rem;
-        text-decoration: none;
         text-transform: uppercase;
         font-size: 1.75rem;
         font-weight: 300;
         color: white;
-        &.router-link-active {
+        &:hover, &.router-link-active {
           color: $dark;
         }
       }
     }
     .resources {
       z-index: 1;
-      position: relative;
-
+      display: flex;
+      align-items: center;
+      color: white;
+      a:hover {
+        text-decoration: underline;
+      }
+      .saved {
+        position: relative;
+        display: flex;
+        align-items: center;
+      }
+      .icon {
+        max-width: 3rem;
+        padding: .5rem;
+        fill: white;
+      }
+      .count {
+        top: 25%; right: 0;
+        position: absolute;
+        background: black;
+        padding: .1rem .25rem;
+        font-weight: normal;
+      }
+      .search {
+        cursor: pointer;
+      }
     }
   }
   .links a {
