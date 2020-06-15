@@ -4,7 +4,7 @@
       <div class="upper">
         <div v-if="btData.menuData" class="links">
           <router-link v-for="(item, i) in btData.menuData[1]"
-            :to="getPath(item.url)" :key="i" exact>{{ item.title }}</router-link>
+            :to="getMenuPath(item.url)" :key="i" exact>{{ item.title }}</router-link>
         </div>
         <div class="langs">
           <span v-for="lang in config.langs" :key="lang"
@@ -13,15 +13,22 @@
         </div>
       </div>
       <div class="lower">
-        <router-link to="/">
-          <img src="./assets/logo-header.png">
-        </router-link>
-        <div v-if="btData.menuData" class="links">
-          <router-link v-for="(item, i) in btData.menuData[0]"
-            :to="getPath(item.url)" :key="i" exact>{{ item.title }}</router-link>
+        <div class="links">
+          <router-link to="/"><img src="./assets/logo-header.png"></router-link>
+          <div v-if="btData.menuData">
+            <router-link v-for="(item, i) in btData.menuData[0]" class="link"
+              :to="getMenuPath(item.url)" :key="i" exact>{{ item.title }}</router-link>
+          </div>
+        </div>
+        <div class="resources">
+          foo
         </div>
       </div>
     </nav>
+    <transition name="fade" mode="out-in">
+      <router-view/>
+    </transition>
+    <div v-if="$store.state.langRequested">Loading...</div>
     <div style="position: fixed; padding: 1rem; z-index: 100; background: white; bottom: 0; right: 0;">
       <span v-for="lang in ['en', 'es', 'ar', 'pt']" :key="lang"
         :style="{fontWeight: lang == $store.state.lang ? 'bold' : 'normal'}"
@@ -43,10 +50,9 @@
       <router-link to="/tool/not-real">tool (fake)</router-link> |
       <router-link to="/toolbox">toolbox</router-link>
     </div>
-    <transition name="fade" mode="out-in">
-      <router-view/>
-    </transition>
-    <div v-if="$store.state.langRequested">Loading...</div>
+    <footer>
+        // TODO: remove #nav
+    </footer>
   </div>
 </template>
 
@@ -59,8 +65,8 @@ export default {
     config: config,
   }),
   methods: {
-    getPath(url) {
-      return (new URL(url)).pathname
+    getMenuPath(url) {
+      return url.startsWith('/') ? url : (new URL(url)).pathname
     },
   },
 };
@@ -69,56 +75,24 @@ export default {
 <style lang="scss">
 @import 'common.scss';
 
-#app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  //color: #2c3e50;
-  &.rtl {
-    direction: rtl;
-  }
-}
-#nav {
-  padding: 30px;
-  a {
-    font-weight: bold;
-    color: #2c3e50;
-    &.router-link-exact-active {
-      color: #42b983;
-    }
-  }
-}
 nav {
   position: fixed;
-  top: 0; left: 0; right: 0;
-  z-index: 100;
-  opacity: .9;
-
+  top: 0; left: 0;
+  right: 0;
+  z-index: $ztop;
   .upper {
+    height: $uppermenu;
     background: black;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    padding: .5rem .5rem;
+    padding: .7rem .5rem;
     a {
       padding: 0 .75rem;
       text-decoration: none;
       color: white;
       &:hover {
         text-decoration: underline;
-      }
-    }
-    .links a {
-      border-left: 1px solid white;
-      &:first-of-type {
-        border-left: none;
-      }
-      .rtl & {
-        border-left: none;
-        border-right: 1px solid white;
-        &:first-of-type {
-          border-right: none;
-        }
       }
     }
     .langs {
@@ -136,11 +110,62 @@ nav {
     }
   }
   .lower {
+    height: $lowermenu;
     background-image: url('assets/gradient.jpg');
-    height: 5rem;
+    background-size: contain;
+    padding: 1rem 2rem;
     display: flex;
+    position: relative;
     align-items: center;
-    justify-content: flex-start;
+    justify-content: space-between;
+    &::after {
+      z-index: 0; // Place a transparent white rectangle below the menu items
+      top: 0; bottom: 0;
+      left: 0; right: 0;
+      background: rgba(255,255,255,.1);
+      content: "";
+      position: absolute;
+    }
+    .links {
+      z-index: 1;
+      position: relative;
+      display: flex;
+      align-items: center;
+      a.link {
+        padding: 0 1rem;
+        text-decoration: none;
+        text-transform: uppercase;
+        font-size: 1.75rem;
+        font-weight: 300;
+        color: white;
+        &.router-link-active {
+          color: $dark;
+        }
+      }
+    }
+    .resources {
+      z-index: 1;
+      position: relative;
+
+    }
   }
+  .links a {
+    border-left: 1px solid white;
+    &:first-of-type {
+      border-left: none;
+    }
+    .rtl & {
+      border-left: none;
+      border-right: 1px solid white;
+      &:first-of-type {
+        border-right: none;
+      }
+    }
+  }
+}
+footer {
+  height: 20rem;
+  background-image: url('assets/gradient.jpg');
+  background-size: contain;
 }
 </style>

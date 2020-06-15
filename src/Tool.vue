@@ -61,7 +61,7 @@
           <expander :key="`rwe-${tool.slug}`" :open="true" :name="'real-world-examples'"
             v-if="tool['real-world-examples'] && tool['real-world-examples'].length">
             <template v-slot:title>REAL WORLD EXAMPLES</template>
-            <div v-for="(rwe, i) in tool['real-world-examples']" :key="i">
+            <div v-for="(rwe, i) in tool['real-world-examples']" :key="i" class="rwe">
               <a :href="rwe.link" target="_blank">
                 <h5>{{ rwe.title }}</h5>
                 <div v-html="markdown(rwe.description)" />
@@ -256,6 +256,7 @@ export default {
 @import 'common.scss';
 
 $image-height: 45rem;
+//$image-height: calc(100vh - ($uppermenu + $lowermenu));
 
 .tool {
   .lazy-background {
@@ -289,14 +290,10 @@ $image-height: 45rem;
     h1, h3 {
       margin: 0;
       text-align: center;
-      text-transform: uppercase;
       text-shadow: 1px 0px 6px rgba(black, .5);
     }
     h1 {
       color: white;
-    }
-    h3 {
-      margin-bottom: .5rem;
     }
     .edit {
       cursor: pointer;
@@ -304,7 +301,7 @@ $image-height: 45rem;
       height: 2rem;
       width: 2rem;
       top: 1rem; right: 1rem;
-      filter: drop-shadow(0px 0px 10px black);
+      filter: drop-shadow(0 0 1.5rem black);
       path {
         fill: white;
       }
@@ -349,7 +346,7 @@ $image-height: 45rem;
     }
   }
   main {
-    position: absolute;
+    //position: absolute;
     display: flex;
     flex-direction: row;
     background: $bggray;
@@ -466,6 +463,9 @@ $image-height: 45rem;
       p {
         margin: 0;
       }
+    }
+    .rwe {
+      margin-bottom: .5rem;
     }
   }
   aside {

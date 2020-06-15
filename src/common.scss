@@ -2,7 +2,7 @@
 
 // Grid system
 
-// Colors
+// Colors & other variables
 $tactic: #f48c2d;
 $theory: #de193b;
 $story: #70c861;
@@ -12,8 +12,14 @@ $methodology: #874493;
 $text: #6b6b6b;
 $bggray: #f4f4f4;
 $bgdark: darken(#f4f4f4, 30%);
+$dark: #333;
+
+$ztop: 10;
+$uppermenu: 2.75rem;
+$lowermenu: 7rem;
 
 // Fonts
+@import url('https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@300;400;700&family=Roboto+Condensed:wght@700&display=swap');
 
 // Elements
 html {
@@ -24,8 +30,12 @@ html {
   box-sizing: border-box;
 }
 body {
-  color: $text;
+  padding-top: $uppermenu + $lowermenu;
   margin: 0;
+  color: $text;
+  font-family: 'Barlow Semi Condensed', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 a:link, a:visited, a:hover {
   // TODO: What is this color globally?
@@ -41,6 +51,16 @@ hr {
   border: none;
   border-top: 1px solid darken($bggray, 15%);
   margin: 1.5rem 0;
+}
+h1, h2, h3 {
+  font-family: 'Roboto', sans-serif; 
+  text-transform: uppercase;
+}
+h1 {
+  font-size: 3.25rem;
+}
+h3 {
+  font-size: 1.375rem;
 }
 h4 {
   font-size: 1rem;
@@ -86,6 +106,9 @@ svg { // Center inline svgs
 }
 .router-link-active {
   font-weight: bold;
+}
+.rtl {
+  direction: rtl;
 }
 
 // Animations
