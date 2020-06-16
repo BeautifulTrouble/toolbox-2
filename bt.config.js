@@ -10,6 +10,10 @@ export default {
   pdf: 'https://api.beautifulrising.org/pdf',
   siteDomain: 'bt.org',
   siteUrl: 'https://beautifultrouble.org',
+  socialFacebook: 'https://www.facebook.com/BeautifulTroubleBook',
+  socialInstagram: 'https://www.instagram.com/beautifultroublehq/',
+  socialTwitter: 'https://twitter.com/BTroublemakers',
   toolTypes: ['story', 'tactic', 'principle', 'theory', 'methodology'],
+  trainingForm: 'https://docs.google.com/forms/d/e/1FAIpQLSeOtOoVxUeVWzwGw4z-w0xXS8Z2OaDcr7GaShWl4WkDtaXOiQ/viewform',
   wpapi: 'http://bt.org/wp-json/wp/v2',
 }

@@ -1,7 +1,3 @@
-// Breakpoints
-
-// Grid system
-
 // Colors & other variables
 $tactic: #f48c2d;
 $theory: #de193b;
@@ -17,6 +13,22 @@ $dark: #333;
 $ztop: 10;
 $uppermenu: 2.75rem;
 $lowermenu: 7rem;
+
+// Breakpoints
+
+// Grid system & layout
+.contain {
+  width: 80rem;
+  max-width: 80rem;
+}
+.column {
+  display: flex;
+  flex-direction: column;
+}
+.row {
+  display: flex;
+  flex-direction: row;
+}
 
 // Fonts
 @import url('https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@300;400;700&family=Roboto+Condensed:wght@700&display=swap');
@@ -78,6 +90,30 @@ svg { // Center inline svgs
   display: block;
   outline: none;
 }
+input{
+  background: transparent;
+  border: 1px solid white;
+  padding: .75rem 1rem;
+  color: white;
+  font-size: 1rem;
+  margin-top: 1rem;
+  &[type="email"] {
+    min-width: 80%;
+    color: white;
+  }
+  &[type="submit"] {
+    background: white;
+    color: #fbc459;
+    padding: .75rem 1rem;
+    cursor: pointer;
+  }
+  &::-webkit-input-placeholder {
+    color: white;
+  }
+  &:focus {
+    outline: 2px solid white;
+  }
+}
 
 // Classes
 @mixin type-particulars($color) {
@@ -97,6 +133,19 @@ svg { // Center inline svgs
   padding: 1rem 2rem;
   background-color: $bggray;
   h1, h2, h3, h4, h5, h6, p { color: $text; }
+}
+.button {
+  border: 1px solid white;
+  border-radius: .35rem;
+  padding: .7rem 2rem .8rem 2rem;
+  text-align: center;
+  display: inline-block;
+  max-width: 18rem;
+  font-size: 1rem;
+  margin-bottom: 1rem;
+  &:hover {
+    background-color: $principle;
+  }
 }
 .centered { 
   text-align: center; 

@@ -59,7 +59,55 @@
       <router-link to="/toolbox">toolbox</router-link>
     </div>
     <footer>
-        // TODO: remove #nav
+      <div class="upper">
+        <div class="contain">
+          <div v-if="btData.menuData" class="links">
+            <router-link v-for="(item, i) in btData.menuData[2]"
+              :to="getMenuPath(item.url)" :key="i" exact>{{ item.title }}</router-link>
+          </div>
+          <div class="social">
+            <span>FOLLOW BEAUTIFUL TROUBLE</span>
+            <a :href="config.socialInstagram" target="_blank" rel="external">
+              <img svg-inline class="icon" src="./assets/instagram.svg">
+            </a>
+            <a :href="config.socialFacebook" target="_blank" rel="external">
+              <img svg-inline class="icon" src="./assets/facebook.svg">
+            </a>
+            <a :href="config.socialTwitter" target="_blank" rel="external">
+              <img svg-inline class="icon" src="./assets/twitter.svg">
+            </a>
+          </div>
+        </div>
+      </div>
+      <div class="lower">
+        <div class="contain">
+          <div class="a column">
+            <router-link to="/">
+              <img class="logo" src="./assets/logo-footer.png">
+            </router-link>
+            <span>BeautifulTrouble.org 2020</span>
+            <span>Webdesign by <a href="https://rabotnik.coop" target="_blank">Rabotnik.coop</a></span>
+          </div>
+          <div class="b column">
+            <a :href="config.trainingForm" target="_blank" class="button">REQUEST A TRAINING</a>
+            <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/3.0/" target="_blank">
+              <img alt="Creative Commons License" src="./assets/cc-by-nc-sa.png">
+            </a>
+            <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/3.0/" target="_blank">
+              BeautifulTrouble.org by Beautiful Trouble is licensed under a Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License
+            </a>
+          </div>
+          <div class="c column">
+            <h3>JOIN THE COMMUNITY</h3>
+            <span>Provide your e-mail to receive the latest updates.</span>
+            <span>We promise not to sell your info!</span>
+            <form action="https://beautifultrouble.us7.list-manage.com/subscribe/post?u=2aa3b5c34f535e74090f9098d&amp;id=4a7c9e1689" method="post" id="mc-embedded-subscribe-form" name="mc-embedded-subscribe-form" class="validate" target="_blank" novalidate="">
+              <input type="email" value="" name="EMAIL" id="mce-EMAIL" placeholder="EMAIL ADDRESS" required>
+              <input type="submit" value="OK" name="subscribe" id="mc-embedded-subscribe">
+            </form>
+          </div>
+        </div>
+      </div>
     </footer>
   </div>
 </template>
@@ -90,7 +138,7 @@ nav {
   right: 0;
   z-index: $ztop;
   .upper {
-    height: $uppermenu;
+    min-height: $uppermenu;
     background: black;
     display: flex;
     flex-direction: row;
@@ -100,6 +148,7 @@ nav {
       padding: 0 .75rem;
       text-decoration: none;
       color: white;
+      //white-space: nowrap;
       &:hover {
         text-decoration: underline;
       }
@@ -185,6 +234,8 @@ nav {
       }
     }
   }
+}
+nav, footer {
   .links a {
     border-left: 1px solid white;
     &:first-of-type {
@@ -200,8 +251,71 @@ nav {
   }
 }
 footer {
-  height: 20rem;
   background-image: url('assets/gradient.jpg');
   background-size: contain;
+  color: white;
+  padding-bottom: 1rem;
+  a {
+    color: white !important;
+    text-decoration: none;
+  }
+  .contain { // Center the width-limited area
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 2rem;
+  }
+  .upper {
+    height: $uppermenu * 1.5;
+    display: flex;
+    justify-content: center;
+    a {
+      padding: 0 .75rem;
+      text-decoration: none;
+      color: white;
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+    span {
+      margin: 1rem;
+    }
+    .social {
+      display: flex;
+      align-items: center;
+      svg {
+        margin: -.5rem;
+        fill: white;
+        max-width: 2rem;
+      }
+    }
+  }
+  .lower {
+    background-color: rgba(255,255,255,.2);
+    height: $lowermenu * 2;
+    display: flex;
+    justify-content: center;
+    font-size: .8rem;
+    h3 {
+      margin: 0 0 .5rem 0;
+    }
+    .logo {
+      max-width: 90%;
+      align-self: flex-start;
+      margin-bottom: 1rem;
+    }
+    .a {
+      flex: 3 0 0;
+    }
+    .b {
+      flex: 5 0 0;
+      a {
+        max-width: 15rem;
+      }
+    }
+    .c {
+      flex: 4 0 0;
+    }
+  }
 }
 </style>

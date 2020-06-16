@@ -469,7 +469,7 @@ $image-height: 45rem;
     }
     .lm {
       display: block;
-      margin-bottom: .25rem;
+      margin-bottom: .5rem;
     }
   }
   aside {
