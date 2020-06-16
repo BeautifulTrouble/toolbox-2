@@ -12,7 +12,8 @@ add_filter('preview_post_link', 'bt_preview_post_link');
 function bt_get_menus() {
     return [
         wp_get_nav_menu_items('main-menu'), 
-        wp_get_nav_menu_items('secondary-menu')
+        wp_get_nav_menu_items('secondary-menu'),
+        wp_get_nav_menu_items('footer-menu'),
     ]; 
 }
 add_action('rest_api_init', function() {
