@@ -1,9 +1,9 @@
 <template>
   <div id="app" :class="{rtl: this.$store.state.lang == 'ar'}">
-    <nav>
+    <nav ref="nav">
       <div class="upper">
         <div v-if="btData.menuData" class="links">
-          <router-link v-for="(item, i) in btData.menuData[1]"
+          <router-link v-for="(item, i) in btData.menuData[1]" class="link"
             :to="getMenuPath(item.url)" :key="i" exact>{{ item.title }}</router-link>
         </div>
         <div class="langs">
@@ -14,7 +14,8 @@
       </div>
       <div class="lower">
         <div class="links">
-          <router-link to="/"><img src="./assets/logo-header.png"></router-link>
+          <router-link to="/"><img src="./assets/logo-round.png" class="logo logo-small"></router-link>
+          <router-link to="/"><img src="./assets/logo-small.png" class="logo logo-large"></router-link>
           <div v-if="btData.menuData">
             <router-link v-for="(item, i) in btData.menuData[0]" class="link"
               :to="getMenuPath(item.url)" :key="i" exact>{{ item.title }}</router-link>
@@ -29,7 +30,7 @@
           <img svg-inline @click="showSearch = !showSearch" class="icon search" src="./assets/search.svg">
         </div>
       </div>
-      <div v-if="showSearch" class="search">
+      <div v-show="showSearch" class="search-bar">
         <input type="text">SEARCH........
       </div>
     </nav>
@@ -37,11 +38,6 @@
       <router-view/>
     </transition>
     <div v-if="$store.state.langRequested">Loading...</div>
-    <div style="position: fixed; padding: 1rem; z-index: 100; background: white; bottom: 0; right: 0;">
-      <span v-for="lang in ['en', 'es', 'ar', 'pt']" :key="lang"
-        :style="{fontWeight: lang == $store.state.lang ? 'bold' : 'normal'}"
-        @click="$store.dispatch('LANG_SET', [lang, false])">{{ lang }} &nbsp;</span>
-    </div>
     <div id="nav">
       <router-link to="/">Home</router-link> |
       <router-link to="/en/about">En About</router-link> |
@@ -62,7 +58,7 @@
       <div class="upper">
         <div class="contain">
           <div v-if="btData.menuData" class="links">
-            <router-link v-for="(item, i) in btData.menuData[2]"
+            <router-link v-for="(item, i) in btData.menuData[2]" class="link"
               :to="getMenuPath(item.url)" :key="i" exact>{{ item.title }}</router-link>
           </div>
           <div class="social">
@@ -83,7 +79,7 @@
         <div class="contain">
           <div class="a column">
             <router-link to="/">
-              <img class="logo" src="./assets/logo-footer.png">
+              <img class="logo" src="./assets/logo-large.png">
             </router-link>
             <span>BeautifulTrouble.org 2020</span>
             <span>Webdesign by <a href="https://rabotnik.coop" target="_blank">Rabotnik.coop</a></span>
@@ -113,6 +109,7 @@
 </template>
 
 <script>
+import Headroom from 'headroom.js'
 import config from '../bt.config'
 
 export default {
@@ -126,6 +123,12 @@ export default {
       return url.startsWith('/') ? url : (new URL(url)).pathname
     },
   },
+  mounted() {
+    let headroom = new Headroom(this.$refs.nav, {
+      offset: 300,
+    })
+    headroom.init()
+  },
 };
 </script>
 
@@ -133,17 +136,24 @@ export default {
 @import 'common.scss';
 
 nav {
+  user-select: none;
   position: fixed;
   top: 0; left: 0;
   right: 0;
   z-index: $ztop;
   .upper {
-    min-height: $uppermenu;
+    transition: all .1s linear;
+
+    height: $uppermenu;
     background: black;
     display: flex;
+    position: relative;
     flex-direction: row;
     justify-content: space-between;
     padding: .7rem .5rem;
+    > div {
+      transition: opacity .2s linear;
+    }
     a {
       padding: 0 .75rem;
       text-decoration: none;
@@ -156,7 +166,7 @@ nav {
     .langs {
       cursor: pointer;
       span {
-        padding: 0 .3rem;
+        padding: 0 .5rem;
         color: white;
         &:hover {
           text-decoration: underline;
@@ -168,6 +178,8 @@ nav {
     }
   }
   .lower {
+    transition: all .1s linear;
+
     height: $lowermenu;
     background-image: url('assets/gradient.jpg');
     background-size: contain;
@@ -187,6 +199,15 @@ nav {
     a {
       color: white;
       text-decoration: none;
+    }
+    img.logo {
+      transition: opacity .1s linear;
+    }
+    img.logo-small {
+      opacity: 0;
+      position: absolute;
+      top: 1rem;
+      width: 4rem;
     }
     .links {
       z-index: 1;
@@ -234,9 +255,33 @@ nav {
       }
     }
   }
+  &.headroom--unpinned:not(:hover) { // TODO: test that this selector actually works
+    .upper {
+      height: .5rem;
+    }
+    .upper > div {
+      opacity: 0;
+    }
+    .lower {
+      height: $uppermenu * 1.5;
+    }
+    img.logo-large {
+      opacity: 0;
+    }
+    img.logo-small {
+      opacity: 1;
+    }
+
+  }
+  .search-bar {
+    background-image: url('assets/gradient.jpg');
+    background-size: contain;
+    width: 100%;
+    background-color: red;
+  }
 }
 nav, footer {
-  .links a {
+  .links a.link {
     border-left: 1px solid white;
     &:first-of-type {
       border-left: none;
@@ -292,17 +337,22 @@ footer {
   }
   .lower {
     background-color: rgba(255,255,255,.2);
-    height: $lowermenu * 2;
     display: flex;
     justify-content: center;
     font-size: .8rem;
     h3 {
       margin: 0 0 .5rem 0;
     }
+    .contain {
+      flex-wrap: wrap;
+    }
     .logo {
       max-width: 90%;
       align-self: flex-start;
       margin-bottom: 1rem;
+    }
+    .a, .b, .c {
+      margin: 1rem;
     }
     .a {
       flex: 3 0 0;
