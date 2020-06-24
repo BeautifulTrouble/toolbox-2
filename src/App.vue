@@ -18,7 +18,7 @@
           <router-link to="/"><img src="./assets/logo-small.png" class="logo logo-large"></router-link>
           <div v-if="btData.menuData">
             <router-link v-for="(item, i) in btData.menuData[0]" class="link"
-              :to="getMenuPath(item.url)" :key="i" exact>{{ item.title }}</router-link>
+              :to="getMenuPath(item.url)" :key="i">{{ item.title }}</router-link>
           </div>
         </div>
         <div class="resources">
@@ -35,7 +35,7 @@
       </div>
     </nav>
     <transition name="fade" mode="out-in">
-      <router-view/>
+      <router-view class="container" />
     </transition>
     <div v-if="$store.state.langRequested">Loading...</div>
     <div id="nav">
@@ -125,7 +125,8 @@ export default {
   },
   mounted() {
     let headroom = new Headroom(this.$refs.nav, {
-      offset: 300,
+      offset: 100,
+      tolerance: 10,
     })
     headroom.init()
   },
@@ -221,7 +222,7 @@ nav {
         font-weight: 300;
         color: white;
         &:hover, &.router-link-active {
-          color: $dark;
+          color: black;
         }
       }
     }

@@ -266,11 +266,11 @@ $image-height: 45rem;
   }
   .lazy-background-image {
     background: black;
-    transition: all .2s ease-in-out;
+    transition: all .1s ease-in-out;
     &::before {
       content: "";
-      transition: opacity .5s ease-in-out;
-      background: linear-gradient(180deg, rgba(0,0,0,0) 20%, rgba(0,0,0,1) 100%);
+      transition: opacity .1s ease-in-out;
+      background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,.3) 80%, rgba(0,0,0,.7) 100%);
       position: absolute;
       top: 0; left: 0;
       bottom: 0; right: 0;
@@ -288,12 +288,15 @@ $image-height: 45rem;
       text-decoration: none;
     }
     h1, h3 {
-      margin: 0;
       text-align: center;
       text-shadow: 1px 0px 6px rgba(black, .5);
     }
     h1 {
       color: white;
+      margin: 0 3rem;
+    }
+    h3 {
+      margin: 0;
     }
     .edit {
       cursor: pointer;
@@ -350,7 +353,7 @@ $image-height: 45rem;
     display: flex;
     flex-direction: row;
     background: $bggray;
-    padding-top: 1rem;
+    padding: 1rem 0;
     &::before {
       content: "";
       height: 5rem;
@@ -362,9 +365,6 @@ $image-height: 45rem;
     }
     a {
       text-decoration: none;
-      h5 {
-        //text-decoration: underline;
-      }
     }
     h4 {
       color: $text;
@@ -445,7 +445,7 @@ $image-height: 45rem;
       .quote {
       }
       .attribution {
-        color: $bgdark;
+        color: $bgdark3;
         margin-bottom: 1rem;
       }
     }

@@ -2,45 +2,64 @@
   <div>
     <h1 v-if="$store.state.langRequested">Loading Toolbox...</h1>
     <div class="toolbox">
-      <div class="sentence">
-        <h3 @click="filterReRoute()">
-          {{ sentence }}
-        </h3>
-      </div>
-
       <div @click="filterPaneActive = 'collection'">:COLLECTION .</div>
       <div @click="filterPaneActive = 'region'">:REGION .</div>
       <div @click="filterPaneActive = 'selected'">:SELECTED .</div>
       <div @click="filterPaneActive = 'tag'">:TAG .</div>
+
       <div class="filter">
-        <transition name="fade" mode="out-in">
-          <div class="by-collection" v-if="filterPaneActive == 'collection'" key="'collection'">
-            <div v-for="(value, key) in typeTextBySlug" :key="key"
-               :class="{active: filterCollection == key}">
-              <h3 @click="filterToggleCollection(key)">{{ value[1] }}</h3>
-            </div>
-            <div :class="{active: filterCollection == 'saved'}">
-              <h3 @click="filterToggleCollection('saved')">MY TOOLS</h3>
-            </div>
-            <div :class="{active: filterCollection == 'selected'}">
-              <h3 @click="filterToggleCollection('selected')">SELECTED TOOLS</h3>
-            </div>
+        <div class="sentence contain">
+          <h3 @click="filterReRoute()">
+            {{ sentence }}
+          </h3>
+
+        </div>
+        <div class="widget-wrapper">
+          <div class="widget contain">
+            <transition name="fade" mode="out-in">
+              <div class="by by-collection" v-if="filterPaneActive == 'collection'" key="'collection'">
+                <div v-for="(value, key) in typeTextBySlug" :key="key" :class="getFilterClasses('Collection', key)" @click="filterToggleCollection(key)">
+                  <img svg-inline v-if="key == 'tactic'" class="icon" src="./assets/tactic.svg">
+                  <img svg-inline v-if="key == 'theory'" class="icon" src="./assets/theory.svg">
+                  <img svg-inline v-if="key == 'story'" class="icon" src="./assets/story.svg">
+                  <img svg-inline v-if="key == 'principle'" class="icon" src="./assets/principle.svg">
+                  <img svg-inline v-if="key == 'methodology'" class="icon" src="./assets/methodology.svg">
+                  <h3>{{ value[1] }}</h3>
+                  <p>{{ descriptionTextByLang[key] }}</p>
+                </div>
+                <div :class="getFilterClasses('Collection', 'saved')" @click="filterToggleCollection('saved')">
+                  <img svg-inline class="icon smaller" src="./assets/favorite-active.svg">
+                  <h3>MY TOOLS</h3>
+                  <p>TOOLS YOU'VE SAVED BY CLICKING THE HEART ICON</p>
+                </div>
+                <div :class="getFilterClasses('Collection', 'selected')" @click="filterToggleCollection('selected')">
+                  <img svg-inline class="icon smaller" src="./assets/selected.svg">
+                  <h3>SELECTED TOOLS</h3>
+                  <p>COLLECTIONS OF TOOLS WE'VE SELECTED BASED ON SPECIFIC CRITERIA</p>
+                </div>
+              </div>
+
+              <div class="by by-region" v-if="filterPaneActive == 'region'" :key="'region'">
+                TODO: v-for each region
+                wat
+                <div @click="filterToggleRegion('africa')">Africa</div>
+              </div>
+
+              <div class="by by-selected" v-if="filterPaneActive == 'selected'" :key="'selected'">
+                <div @click="filterToggleSelected('best-of')">BEST OF</div>
+                <div @click="filterToggleSelected('andrews-list')">ANDREW'S LIST</div>
+              </div>
+
+              <div class="by by-tag" v-if="filterPaneActive == 'tag'" :key="'tag'">
+                <span
+                  v-for="(tag, i) in tagSlugsSorted" :key="i"
+                  :class="{active: filterTag == tag, disabled: !tagSlugsAvailable.has(tag)}"
+                  @click="filterToggleTag(tag)"
+                  >{{ capitalize(tagTextBySlug[tag]) }}</span>
+              </div>
+            </transition>
           </div>
-          <div class="by-region" v-if="filterPaneActive == 'region'" :key="'region'">
-            <div @click="filterToggleRegion('africa')">Africa</div>
-          </div>
-          <div class="by-selected" v-if="filterPaneActive == 'selected'" :key="'selected'">
-            <div @click="filterToggleSelected('best-of')">BEST OF</div>
-            <div @click="filterToggleSelected('andrews-list')">ANDREW'S LIST</div>
-          </div>
-          <div class="by-tag" v-if="filterPaneActive == 'tag'" :key="'tag'">
-            <span
-              v-for="(tag, i) in tagSlugsSorted" :key="i"
-              :class="{active: filterTag == tag, disabled: !tagSlugsAvailable.has(tag)}"
-              @click="filterToggleTag(tag)"
-              >{{ tagTextBySlug[tag] }}</span>
-          </div>
-        </transition>
+        </div>
       </div>
 
       <div class="tools">
@@ -56,6 +75,7 @@
 <script>
 import ToolTile from './ToolTile'
 import config from '../bt.config'
+import descriptionTextByLang from './descriptions'
 import tagTextByLang from './tags'
 import typeTextByLang from './types'
 
@@ -119,6 +139,9 @@ export default {
       return this.filteredToolsAllTags
         .map(t => t.tags)
         .reduce((a, c) => c !== undefined ? new Set([...a, ...c]) : a, new Set([]))
+    },
+    descriptionTextByLang() {
+      return descriptionTextByLang[this.$store.state.lang]
     },
     tagTextBySlug() {
       return tagTextByLang[this.$store.state.lang]
@@ -191,6 +214,7 @@ export default {
     },
     filterToggleSelected(selected) {
       // TODO: test this when selected tools become available
+      console.log(selected)
       if (this.filterCollection == 'selected') {
         if (this.filterSelected != selected) this.filterReRoute({collection: 'selected', filterA: selected})
         else this.filterReRoute({collection: 'selected'})
@@ -205,6 +229,15 @@ export default {
         this.filterReRoute(this.filterCollection == 'story'
             ? {collection: this.filterCollection, filterA: this.filterRegion}
             : {collection: this.filterCollection})
+      }
+    },
+    getFilterClasses(filterPaneActive, selection) {
+      let filter = this[`filter${filterPaneActive}`]
+      return {
+        [selection]: true,
+        block: true,
+        active: filter == selection,
+        inactive: filter != ALL && filter != selection,
       }
     },
   },
@@ -223,28 +256,102 @@ export default {
 </script>
 
 <style lang="scss">
+@import 'common.scss';
+
 .filter {
-    height: 100px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
+.widget-wrapper {
+  border: 1px solid $bgdark1;
+  margin-bottom: 1rem;
+  border-radius: 5px;
+}
+.widget {
+  $filterHeight: 18rem;
+  min-height: $filterHeight;
+  background-color: $bggray;
+  border-left: 1px solid white;
+  border-top: 1px solid white;
+  border-radius: 5px;
+
+  h3 {
+    margin: 0;
+    text-align: center;
+  }
+  .by {
+    display: flex;
+    min-height: $filterHeight;
+  }
+  .by-tag {
+    max-height: $filterHeight;
+    flex-wrap: wrap;
+    padding: 1rem 3rem;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: space-between;
+    span {
+      min-height: 2rem;
+      font-size: 1rem;
+      cursor: pointer;
+      padding: 0 1rem;
+      display: inline-flex;
+      align-items: center;
+      &.active {
+        font-weight: bold;
+      }
+      &.disabled {
+        color: $bgdark2;
+        pointer-events: none;
+      }
+    }
+  }
+  .block {
+    height: $filterHeight;
+    border-left: 1px solid white;
+
+    cursor: pointer;
+    flex: 1 2 14%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    &.active {
+      background: $bgdark1;
+    }
+    &.inactive {
+      opacity: .5;
+    }
+    p {
+      min-height: 35%;
+      text-align: center;
+    }
+  }
+  .icon {
+    margin: .5rem;
+    width: 8rem;
+    height: 4rem;
+    &.smaller {
+      width: 3rem;
+    }
+  }
+  .selected {
+    fill: $selected;
+  }
+}
+// OLD styles
 .active {
-  text-decoration: underline;
+  //text-decoration: underline;
 }
 .by-collection > div {
   display: inline-block;
   padding: 1rem;
 }
 .by-tag > span {
-  border: 1px dashed pink;
-  padding: 0 .5rem;
-  cursor: pointer;
-  display: inline-block;
-  &.active {
-    font-weight: bold;
-  }
-  &.disabled {
-    color: #ccc;
-    pointer-events: none;
-  }
+  //border: 1px dashed pink;
+  //padding: 0 .5rem;
 }
 .tools {
   > div {
@@ -257,7 +364,7 @@ export default {
 
 // Transition-group animation
 .tool-tile {
-  transition: all .2s ease-out;
+  transition: all .1s linear;
 }
 .tools-list-leave-active {
   position: absolute;

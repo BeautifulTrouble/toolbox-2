@@ -7,8 +7,11 @@ $methodology: #874493;
 
 $text: #6b6b6b;
 $bggray: #f4f4f4;
-$bgdark: darken(#f4f4f4, 30%);
-$dark: #333;
+$bglight: lighten($bggray, 20%);
+$bgdark1: darken($bggray, 5%);
+$bgdark2: darken($bggray, 20%);
+$bgdark3: darken($bggray, 30%);
+$selected: #005577;
 
 $ztop: 10;
 $uppermenu: 2.75rem;
@@ -34,6 +37,12 @@ $lowermenu: 7rem;
 @import url('https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@300;400;700&family=Roboto+Condensed:wght@700&display=swap');
 
 // Elements
+:focus {
+  outline: none;
+}
+::-moz-focus-inner {
+  border: 0;
+}
 html {
   overflow-y: scroll;
   box-sizing: border-box;
@@ -67,6 +76,7 @@ hr {
 h1, h2, h3 {
   font-family: 'Roboto', sans-serif; 
   text-transform: uppercase;
+  line-height: 1.1;
 }
 h1 {
   font-size: 3.125rem;
@@ -125,11 +135,12 @@ input{
 .story { @include type-particulars($story); }
 .principle { @include type-particulars($principle); }
 .methodology { @include type-particulars($methodology); }
+.selected { @include type-particulars($selected); } // XXX: this might be poor naming
 
 .box {
   position: relative;
   margin: 1rem 0;
-  border: 1px solid $bgdark;
+  border: 1px solid $bgdark3;
   padding: 1rem 2rem;
   background-color: $bggray;
   h1, h2, h3, h4, h5, h6, p { color: $text; }
@@ -147,11 +158,11 @@ input{
     background-color: $principle;
   }
 }
-.centered { 
-  text-align: center; 
-}
 .clear { // Disgusting, but only used after floated blockquotes
   clear: both;
+}
+.container {
+  min-height: calc(100vh - #{$uppermenu + $lowermenu}); // TODO: calculate in real-time
 }
 .router-link-active {
   font-weight: bold;
