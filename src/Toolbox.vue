@@ -40,7 +40,9 @@
               </div>
 
               <div class="by by-region" v-if="filterPaneActive == 'region'" :key="'region'">
-                <div :class="{block: true, active: filterRegion == 'world'}" @click="filterToggleRegion('world')">
+
+                <!-- <div :class="{block: true, active: [ALL, 'world'].includes(filterRegion)}" @click="filterToggleRegion('world')"> -->
+                <div class="block" @click="filterToggleRegion('world')">
                   <img svg-inline class="icon" src="./assets/regions/world.svg">
                   <p>THE WHOLE WORLD</p>
                 </div>
@@ -329,6 +331,20 @@ export default {
       align-items: center;
       &.active {
         font-weight: bold;
+        position: relative;
+        &::after {
+          content: "×";
+          font-size: 2.5rem;
+          line-height: 1rem;
+          color: $theory;
+          position: relative;
+          bottom: 2px;
+          left: 5px;
+          .rtl & {
+            left: 0;
+            right: 5px;
+          }
+        }
       }
       &.disabled {
         color: $bgdark2;
@@ -382,6 +398,7 @@ export default {
 .tools {
   > div {
     display: flex;
+    //justify-content: center;
     flex-wrap: wrap;
     flex-direction: row;
     position: relative; // For transition animation
