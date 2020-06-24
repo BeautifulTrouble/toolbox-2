@@ -40,13 +40,12 @@
               </div>
 
               <div class="by by-region" v-if="filterPaneActive == 'region'" :key="'region'">
-                <div :class="getFilterClasses('Region', 'world')" @click="filterToggleRegion('world')">
+                <div :class="{block: true, active: filterRegion == 'world'}" @click="filterToggleRegion('world')">
                   <img svg-inline class="icon" src="./assets/regions/world.svg">
-                  <p>EVERYWHERE</p>
+                  <p>THE WHOLE WORLD</p>
                 </div>
                 <div v-for="region in ['Africa', 'Asia', 'Europe', 'Latin America and the Caribbean', 'Middle East', 'North America']"
-                  :class="getFilterClasses('Region', slugify(region))"
-                  @click="filterToggleRegion(slugify(region))">
+                  :class="{block: true, active: filterRegion == slugify(region)}" @click="filterToggleRegion(slugify(region))">
                   <img svg-inline v-if="region == 'Africa'" class="icon" src="./assets/regions/africa.svg">
                   <img svg-inline v-if="region == 'Asia'" class="icon" src="./assets/regions/asia.svg">
                   <img svg-inline v-if="region == 'Europe'" class="icon" src="./assets/regions/europe.svg">
@@ -137,7 +136,10 @@ export default {
       // TODO: how does this work wrt ALL/'world' ???
       //if (this.filterCollection == 'story' && this.filterRegion != ALL)
       if (this.filterCollection == 'story' && this.filterRegion != ALL && this.filterRegion != 'world')
-        tools = tools.filter(t => (t.regions.map(this.slugify) || []).includes(this.filterRegion))
+        tools = tools.filter(t => {
+          let regionSlugs = t.regions.map(this.slugify) || []
+          return regionSlugs.includes(this.filterRegion) || regionSlugs.includes('worldwide')
+        })
       return tools
     },
     filteredTools() {
@@ -179,7 +181,6 @@ export default {
       // may subsequently be set to something else.
       let { collection, filterA, filterB } = route.params
       let filterRegion, filterSelected, filterTag
-      console.log('>>>', route, next)
 
       next = next || (() => {})
       let nextReplace = params => next({name: 'toolbox', replace: true, params})
@@ -216,7 +217,6 @@ export default {
       next()
     },
     filterReRoute(params = {}) {
-      console.log('...', params)
       this.$router.push({name: 'toolbox', params})
     },
     filterToggleCollection(collection) {
@@ -307,6 +307,9 @@ export default {
     }
   }
   .by-region {
+    .icon {
+      height: 8rem;
+    }
     .block p {
       min-height: 15%;
     }
