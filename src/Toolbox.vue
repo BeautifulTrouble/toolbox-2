@@ -9,15 +9,30 @@
 
       <div class="filter">
         <div class="sentence contain">
-          <h3 @click="filterReRoute()">
-            {{ sentence }}
-          </h3>
-
+          <span>Show me</span>
+          <span>
+            <span :class="{tab: true, active: filterPaneActive == 'collection'}"
+              @click="filterPaneActive = 'collection'">
+              {{ filterCollection == 'all' ? 'everything' : (typeTextBySlug[filterCollection] || [, filterCollection])[1] }}</span>
+          </span>
+          <span v-if="filterCollection == 'story'">
+            <span>from</span>
+            <span :class="{tab: true, active: filterPaneActive == 'region'}"
+              @click="filterPaneActive = 'region'">
+              {{ filterRegion == 'all' ? 'the whole world' : filterRegion }}</span>
+          </span>
+          <span v-if="!['saved', 'selected', ALL].includes(filterCollection)">
+            <span>about</span>
+            <span :class="{tab: true, active: filterPaneActive == 'tag'}"
+              @click="filterPaneActive = 'tag'">
+              {{ tagTextBySlug[filterTag] || 'everything' }}</span>
+          </span>
+          <img v-if="filterCollection != ALL" svg-inline class="icon reset" src="./assets/reset.svg" @click="filterReRoute()" alt="Reset">
         </div>
         <div class="widget-wrapper">
           <div class="widget contain">
             <transition name="fade" mode="out-in">
-              <div class="by by-collection" v-if="filterPaneActive == 'collection'" key="'collection'">
+              <div class="by by-collection" v-if="filterPaneActive == 'collection'">
                 <div v-for="(value, key) in typeTextBySlug" :key="key" :class="getFilterClasses('Collection', key)" @click="filterToggleCollection(key)">
                   <img svg-inline v-if="key == 'tactic'" class="icon" src="./assets/tactic.svg">
                   <img svg-inline v-if="key == 'theory'" class="icon" src="./assets/theory.svg">
@@ -41,8 +56,8 @@
 
               <div class="by by-region" v-if="filterPaneActive == 'region'" :key="'region'">
 
-                <!-- <div :class="{block: true, active: [ALL, 'world'].includes(filterRegion)}" @click="filterToggleRegion('world')"> -->
-                <div class="block" @click="filterToggleRegion('world')">
+                <!-- <div :class="{block: true, active: filterRegion == 'all'}" @click="filterToggleRegion('all')"> -->
+                <div :class="{block: true, active: filterRegion == 'all'}" @click="filterToggleRegion('all')">
                   <img svg-inline class="icon" src="./assets/regions/world.svg">
                   <p>THE WHOLE WORLD</p>
                 </div>
@@ -59,16 +74,17 @@
               </div>
 
               <div class="by by-selected" v-if="filterPaneActive == 'selected'" :key="'selected'">
+                NOT YET IMPLEMENTED...
                 <div @click="filterToggleSelected('best-of')">BEST OF</div>
                 <div @click="filterToggleSelected('andrews-list')">ANDREW'S LIST</div>
               </div>
 
               <div class="by by-tag" v-if="filterPaneActive == 'tag'" :key="'tag'">
-                <span
-                  v-for="(tag, i) in tagSlugsSorted" :key="i"
+                <span v-for="(tag, i) in tagSlugsSorted" :key="i"
                   :class="{active: filterTag == tag, disabled: !tagSlugsAvailable.has(tag)}"
-                  @click="filterToggleTag(tag)"
-                  >{{ capitalize(tagTextBySlug[tag]) }}</span>
+                  @click="filterToggleTag(tag)">
+                  {{ capitalize(tagTextBySlug[tag]) }}
+                </span>
               </div>
             </transition>
           </div>
@@ -95,7 +111,7 @@ import typeTextByLang from './types'
 // Let's have some dignity
 const ALL = 'all'
 const COLLECTIONS = ['andrews-list', 'best-of']
-const REGIONS = ['WORLD', 'Africa', 'Asia', 'Europe', 'Latin America and the Caribbean', 'Middle East', 'North America'].map(
+const REGIONS = ['all', 'Africa', 'Asia', 'Europe', 'Latin America and the Caribbean', 'Middle East', 'North America'].map(
   s => s.toLowerCase().replace(/\s/ig, '-').replace(/[^-\w]/ig, ''))
 
 export default {
@@ -135,9 +151,8 @@ export default {
       else if (config.toolTypes.includes(this.filterCollection))
         tools = tools.filter(t => t.type == this.filterCollection)
 
-      // TODO: how does this work wrt ALL/'world' ???
-      //if (this.filterCollection == 'story' && this.filterRegion != ALL)
-      if (this.filterCollection == 'story' && this.filterRegion != ALL && this.filterRegion != 'world')
+      // TODO: how does this work wrt ALL???
+      if (this.filterCollection == 'story' && this.filterRegion != ALL)
         tools = tools.filter(t => {
           let regionSlugs = t.regions.map(this.slugify) || []
           return regionSlugs.includes(this.filterRegion) || regionSlugs.includes('worldwide')
@@ -283,6 +298,33 @@ export default {
   justify-content: center;
   align-items: center;
 }
+.sentence {
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  font-size: 1.5rem;
+  margin-bottom: .5rem;
+  .tab {
+    text-transform: uppercase;
+    font-weight: bold;
+    padding: .5rem 1rem .625rem 1rem;
+    position: relative;
+    z-index: 1;
+    margin: 0 .5rem;
+    cursor: pointer;
+    &.active {
+      background-color: $bggray;
+      border-right: 1px solid $bgdark2;
+      border-radius: 5px 5px 0 0;
+    }
+  }
+  .icon {
+    margin: 0 .5rem;
+    width: 2rem;
+    height: 2rem;
+    cursor: pointer;
+  }
+}
 .widget-wrapper {
   border: 1px solid $bgdark1;
   margin-bottom: 1rem;
@@ -295,6 +337,7 @@ export default {
   border-left: 1px solid white;
   border-top: 1px solid white;
   border-radius: 5px;
+  border-right: 1px solid $bgdark2;
 
   h3 {
     margin: 0;
