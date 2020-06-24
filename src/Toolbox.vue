@@ -40,9 +40,21 @@
               </div>
 
               <div class="by by-region" v-if="filterPaneActive == 'region'" :key="'region'">
-                TODO: v-for each region
-                wat
-                <div @click="filterToggleRegion('africa')">Africa</div>
+                <div :class="getFilterClasses('Region', 'world')" @click="filterToggleRegion('world')">
+                  <img svg-inline class="icon" src="./assets/regions/world.svg">
+                  <p>EVERYWHERE</p>
+                </div>
+                <div v-for="region in ['Africa', 'Asia', 'Europe', 'Latin America and the Caribbean', 'Middle East', 'North America']"
+                  :class="getFilterClasses('Region', slugify(region))"
+                  @click="filterToggleRegion(slugify(region))">
+                  <img svg-inline v-if="region == 'Africa'" class="icon" src="./assets/regions/africa.svg">
+                  <img svg-inline v-if="region == 'Asia'" class="icon" src="./assets/regions/asia.svg">
+                  <img svg-inline v-if="region == 'Europe'" class="icon" src="./assets/regions/europe.svg">
+                  <img svg-inline v-if="region == 'Latin America and the Caribbean'" class="icon" src="./assets/regions/latin-america-and-the-caribbean.svg">
+                  <img svg-inline v-if="region == 'Middle East'" class="icon" src="./assets/regions/middle-east.svg">
+                  <img svg-inline v-if="region == 'North America'" class="icon" src="./assets/regions/north-america.svg">
+                  <p>{{ region }}</p>
+                </div>
               </div>
 
               <div class="by by-selected" v-if="filterPaneActive == 'selected'" :key="'selected'">
@@ -82,7 +94,7 @@ import typeTextByLang from './types'
 // Let's have some dignity
 const ALL = 'all'
 const COLLECTIONS = ['andrews-list', 'best-of']
-const REGIONS = ['fake', 'Africa', 'Latin America and the Caribbean'].map(
+const REGIONS = ['WORLD', 'Africa', 'Asia', 'Europe', 'Latin America and the Caribbean', 'Middle East', 'North America'].map(
   s => s.toLowerCase().replace(/\s/ig, '-').replace(/[^-\w]/ig, ''))
 
 export default {
@@ -91,6 +103,7 @@ export default {
   },
   data: () => ({
     ALL,
+    REGIONS,
     filterPaneActive: null,
     // Values filter{Collection,Region,Selected,Tag} should ONLY be manipulated by a route guard
     filterCollection: null,
@@ -121,7 +134,9 @@ export default {
       else if (config.toolTypes.includes(this.filterCollection))
         tools = tools.filter(t => t.type == this.filterCollection)
 
-      if (this.filterCollection == 'story' && this.filterRegion != ALL)
+      // TODO: how does this work wrt ALL/'world' ???
+      //if (this.filterCollection == 'story' && this.filterRegion != ALL)
+      if (this.filterCollection == 'story' && this.filterRegion != ALL && this.filterRegion != 'world')
         tools = tools.filter(t => (t.regions.map(this.slugify) || []).includes(this.filterRegion))
       return tools
     },
@@ -164,6 +179,7 @@ export default {
       // may subsequently be set to something else.
       let { collection, filterA, filterB } = route.params
       let filterRegion, filterSelected, filterTag
+      console.log('>>>', route, next)
 
       next = next || (() => {})
       let nextReplace = params => next({name: 'toolbox', replace: true, params})
@@ -178,7 +194,7 @@ export default {
         filterSelected = filterA
         this.filterPaneActive = 'selected'
       } else if (collection == 'story') {
-        if (filterB && !(filterB in this.tagTextBySlug))  return nextReplace({collection, filterA})
+        if (filterB && !(filterB in this.tagTextBySlug)) return nextReplace({collection, filterA})
         if (filterA && !REGIONS.includes(filterA)) return nextReplace({collection})
         filterRegion = filterA
         filterTag = filterB
@@ -200,6 +216,7 @@ export default {
       next()
     },
     filterReRoute(params = {}) {
+      console.log('...', params)
       this.$router.push({name: 'toolbox', params})
     },
     filterToggleCollection(collection) {
@@ -284,18 +301,26 @@ export default {
   .by {
     display: flex;
     min-height: $filterHeight;
+    .block {
+      padding: 1rem;
+      text-align: center;
+    }
+  }
+  .by-region {
+    .block p {
+      min-height: 15%;
+    }
   }
   .by-tag {
-    max-height: $filterHeight;
-    flex-wrap: wrap;
     padding: 1rem 3rem;
+    flex-wrap: wrap;
     flex-direction: column;
+    max-height: $filterHeight;
     justify-content: flex-start;
     align-items: space-between;
     span {
-      min-height: 2rem;
-      font-size: 1rem;
       cursor: pointer;
+      min-height: 1.5rem;
       padding: 0 1rem;
       display: inline-flex;
       align-items: center;
@@ -326,7 +351,6 @@ export default {
     }
     p {
       min-height: 35%;
-      text-align: center;
     }
   }
   .icon {
@@ -347,7 +371,6 @@ export default {
 }
 .by-collection > div {
   display: inline-block;
-  padding: 1rem;
 }
 .by-tag > span {
   //border: 1px dashed pink;
