@@ -38,3 +38,18 @@ for lang in LANGS:
 with open('types.json', 'w') as f:
     json.dump(types_by_lang, f, indent=2)
     
+
+
+print("Generating type description translations: descriptions.json")
+UI = 'https://api.beautifulrising.org/api/v1/text/ui'
+
+descs = {}
+for lang in LANGS:
+    text = requests.get(f'{UI}?lang={lang}').json()
+    descs[lang] = {}
+    for T in ['story', 'tactic', 'principle', 'theory', 'methodology']:
+        descs[lang][T] = text['definitions'][f'{T}-short']
+
+with open('descriptions.json', 'w') as f:
+    json.dump(descs, f, indent=2)
+    
