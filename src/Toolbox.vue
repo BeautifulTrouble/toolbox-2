@@ -2,11 +2,6 @@
   <div>
     <h1 v-if="$store.state.langRequested">Loading Toolbox...</h1>
     <div class="toolbox">
-      <div @click="filterPaneActive = 'collection'">:COLLECTION .</div>
-      <div @click="filterPaneActive = 'region'">:REGION .</div>
-      <div @click="filterPaneActive = 'selected'">:SELECTED .</div>
-      <div @click="filterPaneActive = 'tag'">:TAG .</div>
-
       <div class="filter">
         <div class="sentence contain">
           <span>Show me</span>
@@ -91,12 +86,10 @@
         </div>
       </div>
 
-      <div class="tools">
-        <transition-group name="tools-list" tag="div">
-          <tool-tile v-for="tool in filteredTools" :key="tool.slug"
-            :tool="tool" :text="typeTextBySlug"/>
-        </transition-group>
-      </div>
+      <transition-group name="tools-list" tag="div" class="tools">
+        <tool-tile v-for="tool in filteredTools" :key="tool.slug"
+          :tool="tool" :text="typeTextBySlug"/>
+      </transition-group>
     </div>
   </div>
 </template>
@@ -303,6 +296,8 @@ export default {
   justify-content: center;
   align-items: flex-end;
   font-size: 1.5rem;
+  height: 2rem;
+  margin-top: 2rem;
   margin-bottom: .5rem;
   .tab {
     text-transform: uppercase;
@@ -323,6 +318,11 @@ export default {
     width: 2rem;
     height: 2rem;
     cursor: pointer;
+    fill: $text;
+    transition: fill .2s linear;
+    &:hover {
+      fill: black;
+    }
   }
 }
 .widget-wrapper {
@@ -427,25 +427,12 @@ export default {
     fill: $selected;
   }
 }
-// OLD styles
-.active {
-  //text-decoration: underline;
-}
-.by-collection > div {
-  display: inline-block;
-}
-.by-tag > span {
-  //border: 1px dashed pink;
-  //padding: 0 .5rem;
-}
 .tools {
-  > div {
-    display: flex;
-    //justify-content: center;
-    flex-wrap: wrap;
-    flex-direction: row;
-    position: relative; // For transition animation
-  }
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+  position: relative; // For transition animation
+  margin: 0 -.25rem;
 }
 
 // Transition-group animation

@@ -135,7 +135,13 @@ input{
 .story { @include type-particulars($story); }
 .principle { @include type-particulars($principle); }
 .methodology { @include type-particulars($methodology); }
-.selected { @include type-particulars($selected); } // XXX: this might be poor naming
+.selected { @include type-particulars($selected); } // TODO: this might be poor naming
+
+.bg-tactic { background-color: $tactic; }
+.bg-theory { background-color: $theory; }
+.bg-story { background-color: $story; }
+.bg-principle { background-color: $principle; }
+.bg-methodology { background-color: $methodology; }
 
 .box {
   position: relative;
