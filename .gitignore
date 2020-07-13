@@ -21,7 +21,6 @@ yarn-error.log*
 *.sln
 *.sw?
 
-# Wordpress stuff
-bt/*
+# Wordpress stuff (the bt directory is ignored by its own local .gitignore)
 uploads
 wp-config.php
