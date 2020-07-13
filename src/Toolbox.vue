@@ -96,7 +96,7 @@
 
 <script>
 import ToolTile from './ToolTile'
-import config from '../bt.config'
+import config from './config'
 import descriptionTextByLang from './descriptions'
 import tagTextByLang from './tags'
 import typeTextByLang from './types'

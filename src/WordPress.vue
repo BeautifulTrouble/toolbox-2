@@ -6,7 +6,7 @@
 </template>
 
 <script>
-import config from '../bt.config'
+import config from './config'
 
 export default {
   name: 'WordPress',

@@ -3,7 +3,7 @@ import Storage from 'local-storage-fallback'
 import Vue from 'vue'
 import Vuex from 'vuex'
 
-import config from '../bt.config'
+import config from './config'
 
 
 // LOCALSTORAGE

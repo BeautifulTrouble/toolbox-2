@@ -148,7 +148,7 @@
 <script>
 import Expander from './Expander'
 import typeTextByLang from './types'
-import config from '../bt.config'
+import config from './config'
 
 const crlf = '%0d%0a'
 

@@ -16,7 +16,7 @@ import WordPress from './WordPress'
 import Home from './views/Home'
 
 import { store } from './store'
-import config from '../bt.config'
+import config from './config'
 
 
 // ROUTER

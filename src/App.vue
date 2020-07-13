@@ -110,7 +110,7 @@
 
 <script>
 import Headroom from 'headroom.js'
-import config from '../bt.config'
+import config from './config'
 
 export default {
   data: () => ({
