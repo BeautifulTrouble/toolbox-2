@@ -22,6 +22,6 @@ yarn-error.log*
 *.sw?
 
 # Wordpress stuff
+bt/*
 uploads
 wp-config.php
-wp-content/themes/bt

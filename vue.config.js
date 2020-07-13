@@ -23,5 +23,5 @@ module.exports = {
   // Make file paths relative to deploy path; router should have a different configuration
   publicPath: process.env.NODE_ENV == 'production' ? 'wp-content/themes/bt' : '/',
   // Place the built site in theme location
-  outputDir: 'wp-content/themes/bt'
+  outputDir: 'bt'
 }
