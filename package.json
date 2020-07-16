@@ -9,7 +9,7 @@
     "lint": "vue-cli-service lint",
     "wp": "cd wordpress && php wp-cli.phar",
     "wp-cli-install": "cd wordpress && curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar",
-    "wp-link": "cd wordpress && ln -sf ../wp-config.php && rm -rf wp-content/{plugins,themes/twenty*} && ln -s ../../plugins ../../uploads wp-content && ln -s ../../../bt wp-content/themes",
+    "wp-link": "cd wordpress && ln -sf ../wp-config.php && rm -rf wp-content/{plugins,themes/bt,themes/twenty*,uploads} && ln -s ../../plugins ../../uploads wp-content && ln -s ../../../bt wp-content/themes",
     "git-submodule": "git submodule init && git submodule update"
   },
   "dependencies": {
