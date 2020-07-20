@@ -45,6 +45,7 @@ $lowermenu: 7rem;
 }
 html {
   overflow-y: scroll;
+  overflow-x: hidden;
   box-sizing: border-box;
 }
 *, *::before, *::after {
