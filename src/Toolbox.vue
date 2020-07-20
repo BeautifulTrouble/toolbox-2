@@ -437,10 +437,11 @@ export default {
 
 // Transition-group animation
 .tool-tile {
-  transition: all .1s linear;
+  transition: opacity .1s linear;
 }
 .tools-list-leave-active {
-  position: absolute;
+  // Absolute positioning causes existing tiles to stretch which is slow
+  //position: absolute;
 }
 .tools-list-enter-active, .tools-list-leave-active {
   opacity: 1;
