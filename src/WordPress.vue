@@ -1,5 +1,6 @@
 <template>
   <div>
+    <h1>This page was provided by WordPress, which is not installed.</h1>
     <div v-if="$store.state.wordPressRequested">Loading...</div>
     <div @click="handleLink" v-html="$store.state.wordPress" class="wordpress"></div>
   </div>

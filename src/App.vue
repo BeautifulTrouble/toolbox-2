@@ -38,7 +38,8 @@
       <router-view class="container" />
     </transition>
     <div v-if="$store.state.langRequested">Loading...</div>
-    <div id="nav">
+    <!-- TODO: -->
+    <div id="nav" style="display: none;">
       <router-link to="/">Home</router-link> |
       <router-link to="/en/about">En About</router-link> |
       <router-link to="/es/about">Sp About</router-link> |
