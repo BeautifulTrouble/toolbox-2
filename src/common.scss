@@ -169,7 +169,7 @@ input{
   clear: both;
 }
 .container {
-  min-height: calc(100vh - #{$uppermenu + $lowermenu}); // TODO: calculate in real-time
+  //min-height: calc(100vh - #{$uppermenu + $lowermenu}); // TODO: calculate in real-time
 }
 .router-link-active {
   font-weight: bold;
@@ -180,8 +180,8 @@ input{
 
 // Animations
 @keyframes add-favorite {
-  0% {opacity: 0; transform: scale(2);}
-  100% {opacity: 1; transform: scale(1);}
+  0% {z-index: 1; opacity: 0; transform: scale(2);}
+  100% {z-index: 1; opacity: 1; transform: scale(1);}
 }
 
 // Transitions

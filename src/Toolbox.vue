@@ -51,7 +51,6 @@
 
               <div class="by by-region" v-if="filterPaneActive == 'region'" :key="'region'">
 
-                <!-- <div :class="{block: true, active: filterRegion == 'all'}" @click="filterToggleRegion('all')"> -->
                 <div :class="{block: true, active: filterRegion == 'all'}" @click="filterToggleRegion('all')">
                   <img svg-inline class="icon" src="./assets/regions/world.svg">
                   <p>THE WHOLE WORLD</p>
@@ -89,6 +88,10 @@
       <transition-group name="tools-list" tag="div" class="tools">
         <tool-tile v-for="tool in filteredTools" :key="tool.slug"
           :tool="tool" :text="typeTextBySlug"/>
+        <a class="tool-tile add-tool" :href="config.submissionForm" target="_blank" :key="-1">
+          <div class="add">+</div>
+          <h3>SUGGEST A TOOL</h3>
+        </a>
       </transition-group>
     </div>
   </div>
@@ -114,6 +117,7 @@ export default {
   data: () => ({
     ALL,
     REGIONS,
+    config,
     filterPaneActive: null,
     // Values filter{Collection,Region,Selected,Tag} should ONLY be manipulated by a route guard
     filterCollection: null,
@@ -327,7 +331,6 @@ export default {
 }
 .widget-wrapper {
   border: 1px solid $bgdark1;
-  margin-bottom: 1rem;
   border-radius: 5px;
 }
 .widget {
@@ -432,7 +435,34 @@ export default {
   flex-wrap: wrap;
   flex-direction: row;
   position: relative; // For transition animation
-  margin: 0 -.25rem;
+  margin: .25rem -.25rem;
+  .add-tool {
+    background: $bggray;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    text-decoration: none;
+    color: $bgdark2;
+    transition: color .2s linear;
+    &:hover {
+      color: $bgdark3;
+    }
+    &::after {
+      content: "";
+      position: absolute;
+      top: 0; bottom: 0;
+      left: 0; right: 0;
+      border: .25rem dashed $bgdark2;
+    }
+    .add {
+      font-size: 14rem;
+      line-height: 10rem;
+      margin-top: -3rem;
+      font-weight: bold;
+    }
+  }
 }
 
 // Transition-group animation

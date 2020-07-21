@@ -138,6 +138,8 @@
           <hr>
         </section>
         <section class="author">
+          {{ tool.byline }}
+          <h3>AUTHOR INFORMATION FROM API</h3>
           <hr>
         </section>
       </aside>
@@ -255,8 +257,8 @@ export default {
 <style lang="scss">
 @import 'common.scss';
 
-$image-height: 45rem;
-//$image-height: calc(100vh - ($uppermenu + $lowermenu));
+//$image-height: 45rem;
+$image-height: calc(100vh - #{$uppermenu + $lowermenu});
 
 .tool {
   .lazy-background {
@@ -314,7 +316,8 @@ $image-height: 45rem;
       filter: drop-shadow(0px 0px 20px rgba(black, .2));
     }
     .upper {
-      height: 70%;
+      //height: 70%; // Adjusted because of calc-based $image-height
+      height: 80%;
       margin-top: 10rem;
       display: flex;
       flex-direction: column;
@@ -322,7 +325,7 @@ $image-height: 45rem;
     }
     .lower {
       width: 100%;
-      min-height: 20rem;
+      //min-height: 20rem; // Disabled because of calc-based $image-height
       text-align: initial;
       display: flex;
       flex-direction: row;
@@ -459,6 +462,7 @@ $image-height: 45rem;
       img {
         max-height: 20rem;
         margin: .5rem 0 .5rem 0;
+        //border: 1px solid $bgdark3;
       }
       p {
         margin: 0;

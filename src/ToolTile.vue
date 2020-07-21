@@ -16,15 +16,13 @@
           <h3>{{ text[tool.type][0] }}</h3>
         </div>
         <div @click.stop="$store.dispatch('TOOL_SAVE_TOGGLE', tool.slug)">
-          <img svg-inline v-if="$store.state.savedTools.has(tool.slug)" class="icon" src="./assets/favorite-active.svg">
+          <img svg-inline v-if="$store.state.savedTools.has(tool.slug)" class="icon active" src="./assets/favorite-active.svg">
           <img svg-inline v-else class="icon" src="./assets/favorite.svg">
         </div>
       </div>
       <div class="lower">
         <h2 class="title">{{ tool.title }}</h2>
-        <div class="snapshot">
-          {{ tool.snapshot }}
-        </div>
+        <div class="snapshot" v-html="markdown(tool.snapshot)" />
       </div>
     </div>
   </div>
@@ -66,10 +64,22 @@ export default {
       align-items: center;
     }
   }
+  .upper, .lower {
+    position: relative;
+    z-index: 1;
+    color: white;
+  }
+  .snapshot {
+    opacity: 0;
+    padding: 0 1rem;
+    transition: opacity .4s;
+  }
+  .title {
+    margin: .5rem 1rem;
+  }
   h3 {
     font-size: 1rem;
     margin: 0;
-    color: white;
   }
   svg {
     margin: 0 1rem 0 1rem;
@@ -81,19 +91,30 @@ export default {
   }
   .icon {
     fill: white;
+    &.active {
+      animation-name: add-favorite;
+      animation-duration: .5s;
+      animation-iteration-count: 1;
+    }
   }
 }
 
 @mixin hover-particulars($color) {
-  &:hover::after {
+  &::after { // Colored background
     background: $color;
+    content: "";
+    position: absolute;
+    top: 0; left: 0;
+    bottom: 0; right: 0;
+    opacity: 0;
+    transition: opacity .2s linear;
+  }
+  &:hover::after {
+    opacity: 1;
   }
   &:hover {
     .snapshot {
-      display: block;
-    }
-    .title {
-      //display: none;
+      opacity: 1;
     }
   }
 }
@@ -110,37 +131,18 @@ export default {
   transition: opacity .5s linear;
   height: 100%;
   position: relative;
-  &::after {
+  &::before { // Dark gradient
     content: "";
     position: absolute;
     top: 0; left: 0;
     bottom: 0; right: 0;
-    background: linear-gradient(0deg, rgba(0,0,0,0) 55%, rgba(0,0,0,1) 100%);
-    transition: background-opacity .5s linear;
-  }
-  &:hover::after {
+    background: linear-gradient(0deg, rgba(0,0,0,0) 35%, rgba(0,0,0,1) 100%);
   }
   &[lazy="loading"] {
     opacity: .5;
   }
   &[lazy="loaded"] {
     opacity: 1;
-  }
-  .upper, .lower {
-    position: relative;
-    z-index: 1;
-  }
-  .snapshot {
-    display: none;
-    color: white;
-    padding: 1rem;
-    font-size: 1.1rem;
-    //line-height: 1.25;
-    font-family: 'Roboto', sans-serif;
-  }
-  .title {
-    color: white;
-    margin: .5rem 1rem 0 1rem;
   }
 }
 </style>
