@@ -6,8 +6,8 @@
         <div class="sentence contain">
           <span>Show me</span>
           <span>
-            <span :class="{tab: true, active: filterPaneActive == 'collection'}"
-              @click="filterPaneActive = 'collection'">
+            <span :class="{tab: true, active: ['collection', 'selected'].includes(filterPaneActive)}"
+              @click="filterPaneActive = filterCollection == 'selected' ? 'selected' : 'collection'">
               {{ filterCollection == 'all' ? 'everything' : (typeTextBySlug[filterCollection] || [, filterCollection])[1] }}</span>
           </span>
           <span v-if="filterCollection == 'story'">
@@ -18,8 +18,7 @@
           </span>
           <span v-if="!['saved', 'selected', ALL].includes(filterCollection)">
             <span>about</span>
-            <span :class="{tab: true, active: filterPaneActive == 'tag'}"
-              @click="filterPaneActive = 'tag'">
+            <span :class="{tab: true, active: filterPaneActive == 'tag'}" @click="filterPaneActive = 'tag'">
               {{ tagTextBySlug[filterTag] || 'everything' }}</span>
           </span>
           <img v-if="filterCollection != ALL" svg-inline class="icon reset" src="./assets/reset.svg" @click="filterReRoute()" alt="Reset">
@@ -45,7 +44,7 @@
                 <div :class="getFilterClasses('Collection', 'selected')" @click="filterToggleCollection('selected')">
                   <img svg-inline class="icon smaller" src="./assets/selected.svg">
                   <h3>SELECTED TOOLS</h3>
-                  <p>COLLECTIONS OF TOOLS WE'VE SELECTED BASED ON SPECIFIC CRITERIA</p>
+                  <p>COLLECTIONS OF TOOLS WE'VE SELECTED BASED ON SOME CRITERIA</p>
                 </div>
               </div>
 
@@ -68,7 +67,7 @@
               </div>
 
               <div class="by by-selected" v-if="filterPaneActive == 'selected'" :key="'selected'">
-                NOT YET IMPLEMENTED...
+                <h1>Backend connection required</h1>
                 <div @click="filterToggleSelected('best-of')">BEST OF</div>
                 <div @click="filterToggleSelected('andrews-list')">ANDREW'S LIST</div>
               </div>
@@ -88,10 +87,14 @@
       <transition-group name="tools-list" tag="div" class="tools">
         <tool-tile v-for="tool in filteredTools" :key="tool.slug"
           :tool="tool" :text="typeTextBySlug"/>
-        <a class="tool-tile add-tool" :href="config.submissionForm" target="_blank" :key="-1">
+        <a v-if="!['selected', 'saved'].includes(filterCollection)"
+          class="tool-tile add-tool" :href="config.submissionForm" target="_blank" :key="-1">
           <div class="add">+</div>
           <h3>SUGGEST A TOOL</h3>
         </a>
+        <div v-if="filterCollection == 'saved'" class="tool-tile tool-add" :key="-2">
+          LOOKS LIKE YOU HAVENT SAVED ANY TOOLS BLAH BLAH BLAH I WISH SOMEBODY HAD DESIGNED HOW THIS SHOULD LOOK
+        </div>
       </transition-group>
     </div>
   </div>

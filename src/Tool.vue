@@ -17,7 +17,7 @@
           <h3>{{ typeTextBySlug[tool.type][0] }}</h3>
         </router-link>
         <h1>{{ tool.title }}</h1>
-        <img svg-inline v-if="showDocumentLinks" @click="openDocument" class="edit" alt="Edit this Google Doc" src="./assets/edit.svg">
+        <img svg-inline v-if="showDocumentLinks" @click="openTab(tool.document_link)" class="edit" alt="Edit this Google Doc" src="./assets/edit.svg">
       </div>
       <div class="lower">
         <div><!-- Always render two divs to ensure proper placement -->
@@ -137,10 +137,17 @@
           </div>
           <hr>
         </section>
-        <section class="author">
-          {{ tool.byline }}
-          <h3>AUTHOR INFORMATION FROM API</h3>
-          <hr>
+        <section v-if="authors.length" class="authors">
+          <div v-for="a in authors">
+            <div class="upper">
+              <img :src="`${config.imagePrefix}/icon-${a.image}`">
+              <div>
+                <h3>{{ a.title }}</h3>
+                <div>{{ a['team-title'] }}</div>
+              </div>
+            </div>
+            <div class="lower" v-html="markdown(a.bio)" />
+          </div>
         </section>
       </aside>
     </main>
@@ -157,6 +164,7 @@ const crlf = '%0d%0a'
 export default {
   name: 'Tool',
   data: () => ({
+    authors: null,
     config,
     showDocumentLinks: window.btData.showDocumentLinks,
     types: {story: 'stories', tactic: 'tactics', theory: 'theories', principle: 'principles', methodology: 'methodologies'},
@@ -235,21 +243,20 @@ export default {
         }
       }
     },
-    openDocument() {
-      window.open(this.tool.document_link, '_blank')
-    },
-    resetExpandRelated() {
+    initPage() {
       this.expandRelated = {story: false, tactic: false, theory: false, principle: false, methodology: false}
+      this.authors = []
+      this.tool.authors.map(a => this.$http.get(`${this.config.api}/person/${a}?lang=${this.$store.state.lang}`)
+                                  .then(r => this.authors.push(r.data)))
     },
   },
   watch: {
     $route() {
-      this.resetExpandRelated()
+      this.initPage()
     },
   },
   created() {
-    this.resetExpandRelated()
-    console.log('created tool')
+    this.initPage()
   },
 };
 </script>
@@ -259,6 +266,7 @@ export default {
 
 //$image-height: 45rem;
 $image-height: calc(100vh - #{$uppermenu + $lowermenu});
+$sidebar: 18rem;
 
 .tool {
   .lazy-background {
@@ -510,9 +518,9 @@ $image-height: calc(100vh - #{$uppermenu + $lowermenu});
           animation-iteration-count: 1;
         }
       }
-      .email-form {
-        width: 100%;
-      }
+    }
+    .risks {
+      max-width: $sidebar;
     }
     .related {
       .type {
@@ -562,6 +570,33 @@ $image-height: calc(100vh - #{$uppermenu + $lowermenu});
       .story { @include type-related($story); }
       .principle { @include type-related($principle); }
       .methodology { @include type-related($methodology); }
+    }
+    .authors {
+      max-width: $sidebar;
+      img {
+        border-radius: 50%;
+        margin: 0 1rem 0 0;
+        .rtl & {
+          margin: 0 0 0 1rem;
+        }
+      }
+      .upper {
+        display: flex;
+        align-items: center;
+        h3 {
+          font-weight: normal;
+          color: $text;
+          margin: 0 0 .1rem 0;
+        }
+        div {
+          display: flex;
+          align-items: flex-start;
+          flex-direction: column;
+        }
+      }
+      .lower {
+        margin-bottom: 2rem;
+      }
     }
   }
 }

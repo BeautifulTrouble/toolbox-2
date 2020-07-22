@@ -26,7 +26,7 @@ const router = new Router({
   mode: 'history',
   base: '/',
   routes: [
-    {path: '/', name: 'home', component: Home},
+    {path: '/', name: 'home', component: WordPress},
     {path: '/about', name: 'about', component: () => import(/* webpackChunkName: "about" */ './views/About.vue')},
     {path: '/tool', redirect: {name: 'toolbox'}},
     {path: '/story/:slug', redirect: {name: 'tool'}},
@@ -124,6 +124,9 @@ Vue.mixin({
       // Regex from https://github.com/showdownjs/showdown/issues/206
       //string = string.replace(/^[\w'<][^\n]*\n+/gm, s => s.match(/\n{2}/) ? s : s.trim() + "\n\n")
       return showdown.makeHtml(string)
+    },
+    openTab(url) {
+      window.open(url, '_blank')
     },
     slugify(string) {
       return string.toLowerCase().replace(/\s/ig, '-').replace(/[^-\w]/ig, '');
