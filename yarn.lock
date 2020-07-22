@@ -1752,6 +1752,11 @@ braces@~3.0.2:
   dependencies:
     fill-range "^7.0.1"
 
+breakpoint-sass@^2.7.1:
+  version "2.7.1"
+  resolved "https://registry.yarnpkg.com/breakpoint-sass/-/breakpoint-sass-2.7.1.tgz#8ef6c4744dcc25ba83d969b6c9a17e5daa29980a"
+  integrity sha1-jvbEdE3MJbqD2Wm2yaF+XaopmAo=
+
 brorand@^1.0.1:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/brorand/-/brorand-1.1.0.tgz#12c25efe40a45e3c323eb8675a0a0ce57b22371f"
@@ -3883,6 +3888,13 @@ flatted@^2.0.0:
   version "2.0.2"
   resolved "https://registry.yarnpkg.com/flatted/-/flatted-2.0.2.tgz#4575b21e2bcee7434aa9be662f4b7b5f9c2b5138"
   integrity sha512-r5wGx7YeOwNWNlCA0wQ86zKyDLMQr+/RB8xy74M4hTphfmjlijTSSXGuH8rnvKZnfT9i+75zmd8jcKdMR4O6jA==
+
+flexboxgrid-sass@^8.0.5:
+  version "8.0.5"
+  resolved "https://registry.yarnpkg.com/flexboxgrid-sass/-/flexboxgrid-sass-8.0.5.tgz#18027bc7a92f98ce877725cb36f0173bd1e74f17"
+  integrity sha1-GAJ7x6kvmM6HdyXLNvAXO9HnTxc=
+  dependencies:
+    sass-flex-mixin "^1.0.3"
 
 flush-write-stream@^1.0.0:
   version "1.1.1"
@@ -7366,6 +7378,11 @@ safe-regex@^1.1.0:
   version "2.1.2"
   resolved "https://registry.yarnpkg.com/safer-buffer/-/safer-buffer-2.1.2.tgz#44fa161b0187b9549dd84bb91802f9bd8385cd6a"
   integrity sha512-YZo3K82SD7Riyi0E1EQPojLz7kpepnSQI9IyPbHHg1XXXevb5dJI7tpyN2ADxGcQbHG7vcyRHk0cbwqcQriUtg==
+
+sass-flex-mixin@^1.0.3:
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/sass-flex-mixin/-/sass-flex-mixin-1.0.3.tgz#a504d62062f7b0e773aebc395de1f45aaa6e4fd0"
+  integrity sha1-pQTWIGL3sOdzrrw5XeH0WqpuT9A=
 
 sass-graph@2.2.5:
   version "2.2.5"

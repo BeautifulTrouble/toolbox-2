@@ -72,7 +72,7 @@ export default {
   .snapshot {
     opacity: 0;
     padding: 0 1rem;
-    transition: opacity .4s;
+    transition: opacity .2s;
   }
   .title {
     margin: .5rem 1rem;
@@ -128,7 +128,7 @@ export default {
   background-repeat: no-repeat;
   background-position: top center;
   background-size: cover;
-  transition: opacity .5s linear;
+  transition: opacity .2s linear;
   height: 100%;
   position: relative;
   &::before { // Dark gradient

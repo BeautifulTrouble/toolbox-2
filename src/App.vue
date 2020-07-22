@@ -78,14 +78,14 @@
       </div>
       <div class="lower">
         <div class="contain">
-          <div class="a column">
+          <div class="a">
             <router-link to="/">
               <img class="logo" src="./assets/logo-large.png">
             </router-link>
             <span>BeautifulTrouble.org 2020</span>
             <span>Webdesign by <a href="https://rabotnik.coop" target="_blank">Rabotnik.coop</a></span>
           </div>
-          <div class="b column">
+          <div class="b">
             <a :href="config.trainingForm" target="_blank" class="button">REQUEST A TRAINING</a>
             <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/3.0/" target="_blank">
               <img alt="Creative Commons License" src="./assets/cc-by-nc-sa.png">
@@ -94,7 +94,7 @@
               BeautifulTrouble.org by Beautiful Trouble is licensed under a Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License
             </a>
           </div>
-          <div class="c column">
+          <div class="c">
             <h3>JOIN THE COMMUNITY</h3>
             <span>Provide your e-mail to receive the latest updates.</span>
             <span>We promise not to sell your info!</span>
@@ -354,6 +354,8 @@ footer {
       margin-bottom: 1rem;
     }
     .a, .b, .c {
+      display: flex;
+      flex-direction: column;
       margin: 1rem;
     }
     .a {

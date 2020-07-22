@@ -1,3 +1,12 @@
+// Utilities
+@function tint($color, $percentage) {
+  @return mix(white, $color, $percentage);
+}
+@function shade($color, $percentage) {
+  @return mix(black, $color, $percentage);
+}
+
+
 // Colors & other variables
 $tactic: #f48c2d;
 $theory: #de193b;
@@ -17,24 +26,54 @@ $ztop: 10;
 $uppermenu: 2.75rem;
 $lowermenu: 7rem;
 
-// Breakpoints
 
-// Grid system & layout
-.contain {
-  width: 80rem;
-  max-width: 80rem;
+// Breakpoints
+@import 'breakpoint-sass/stylesheets/_breakpoint.scss';
+$lg-width: 1280px;
+$md-width: 960px;
+$sm-width: 0px;
+$lg: $lg-width;
+$md: $md-width $lg-width - 1px;
+$sm: $sm-width $md-width - 1px;
+$upper: $md-width;
+$lower: $sm-width $lg-width - 1px;
+
+
+// Grid system
+$outer-margin: 0;
+$gutter-width: 8px;
+$breakpoints:
+    sm 0px $md-width - 1px,
+    md $md-width $lg-width - 1px,
+    lg $lg-width 10000px;
+$flexboxgrid-max-width: $lg-width - $gutter-width;
+@import 'flexboxgrid-sass/flexboxgrid.scss';
+
+// Augment the grid system with a couple missing features
+@each $breakpoint in $breakpoints {
+  $name: nth($breakpoint, 1);
+  $size: nth($breakpoint, 2);
+  $container: nth($breakpoint, 3);
+  @media only screen and (min-width: $size) {
+    .hide-#{$name}-up {
+      display: none !important;
+    }
+    .col-#{$name}-offset-0 {
+      @include flexboxgrid-sass-col-common;
+      margin-left: 0;
+    }
+  }
 }
-.column {
-  display: flex;
-  flex-direction: column;
+.hide-sm {
+  @media only screen and (max-width: $md-width - 1px) {
+    display: none !important;
+  }
 }
-.row {
-  display: flex;
-  flex-direction: row;
-}
+
 
 // Fonts
 @import url('https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@300;400;700&family=Roboto+Condensed:wght@700&display=swap');
+
 
 // Elements
 :focus {
@@ -126,6 +165,7 @@ input{
   }
 }
 
+
 // Classes
 @mixin type-particulars($color) {
   a:link, a:visited, a:hover, h1, h2, h3, h4, h5, h6 { color: $color; }
@@ -168,6 +208,10 @@ input{
 .clear { // Disgusting, but only used after floated blockquotes
   clear: both;
 }
+.contain {
+  width: 80rem;
+  max-width: 80rem;
+}
 .container {
   //min-height: calc(100vh - #{$uppermenu + $lowermenu}); // TODO: calculate in real-time
 }
@@ -178,11 +222,13 @@ input{
   direction: rtl;
 }
 
+
 // Animations
 @keyframes add-favorite {
   0% {z-index: 1; opacity: 0; transform: scale(2);}
   100% {z-index: 1; opacity: 1; transform: scale(1);}
 }
+
 
 // Transitions
 // fade
