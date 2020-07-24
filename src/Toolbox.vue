@@ -92,7 +92,7 @@
           <div class="add">+</div>
           <h3>SUGGEST A TOOL</h3>
         </a>
-        <div v-if="filterCollection == 'saved'" class="tool-tile tool-add" :key="-2">
+        <div v-if="filterCollection == 'saved' && !$store.state.savedTools.size" class="tool-tile tool-add" :key="-2">
           LOOKS LIKE YOU HAVENT SAVED ANY TOOLS BLAH BLAH BLAH I WISH SOMEBODY HAD DESIGNED HOW THIS SHOULD LOOK
         </div>
       </transition-group>
@@ -217,7 +217,7 @@ export default {
         filterRegion = filterA
         filterTag = filterB
         this.filterPaneActive = filterA ? (filterB ? 'tag' : 'region') : 'collection'
-      } else if (collection in this.typeTextBySlug) {
+      } else if (collection in this.config.toolTypes) {
         if (filterB) return nextReplace({collection, filterA})
         if (filterA && !(filterA in this.tagTextBySlug)) return nextReplace({collection})
         filterTag = filterA
