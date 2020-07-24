@@ -78,7 +78,7 @@
               </a>
             </div>
           </expander>
-          <expander :open="true" :name="'contribute'">
+          <expander :open="false" :name="'contribute'">
             <template v-slot:title>HAVE YOU SEEN OR USED THIS {{ typeTextBySlug[tool.type][0] }}?</template>
           </expander>
         </div>
@@ -138,6 +138,7 @@
           <hr>
         </section>
         <section v-if="authors.length" class="authors">
+          <h4>CONTRIBUTORS</h4>
           <div v-for="a in authors">
             <div class="upper">
               <img :src="`${config.imagePrefix}/icon-${a.image}`">
@@ -266,6 +267,7 @@ export default {
 
 //$image-height: 45rem;
 $image-height: calc(100vh - #{$uppermenu + $lowermenu});
+$image-height-max: 60rem;
 $sidebar: 18rem;
 
 .tool {
@@ -273,6 +275,7 @@ $sidebar: 18rem;
     position: absolute;
     z-index: 0;
     height: $image-height;
+    max-height: $image-height-max;
   }
   .lazy-background-image {
     background: black;
@@ -294,6 +297,7 @@ $sidebar: 18rem;
     align-items: center;
     position: relative;
     height: $image-height;
+    max-height: $image-height-max;
     a {
       text-decoration: none;
     }

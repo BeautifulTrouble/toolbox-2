@@ -35,11 +35,11 @@
       </div>
     </nav>
     <transition name="fade" mode="out-in">
-      <router-view class="container" />
+      <router-view />
     </transition>
     <div v-if="$store.state.langRequested">Loading...</div>
     <!-- TODO: -->
-    <div id="nav" style="display: none;">
+    <div id="nav" v-if="false">
       <router-link to="/">Home</router-link> |
       <router-link to="/en/about">En About</router-link> |
       <router-link to="/es/about">Sp About</router-link> |

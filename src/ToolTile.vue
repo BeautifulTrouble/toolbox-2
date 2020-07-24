@@ -1,9 +1,6 @@
 <template>
   <div class="tool-tile" v-if="tool"
     @click="$router.push({name: 'tool', params: {slug: tool.slug}})">
-    <!--
-      @click="$store.dispatch('TOOL_SAVE_TOGGLE', tool.slug)">
-    -->
     <!-- Use VueLazyLoad for loading images on scroll -->
     <div :class="['tool-tile-image', `hover-${tool.type}`]" v-lazy:background-image="`${config.imagePrefix}/tile-${tool.image}`">
       <div :class="['upper', `bg-${tool.type}`]">
