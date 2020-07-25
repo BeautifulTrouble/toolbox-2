@@ -53,6 +53,7 @@ Vue.use(Vuex)
 
 export const store = new Vuex.Store({
   state: {
+    debug: 'Ready.',
     lang: null,
     langRequested: null,
     savedTools: storageGetSavedTools(),
@@ -123,6 +124,7 @@ export const store = new Vuex.Store({
     },
     // SAVED TOOLS
     TOOL_SAVE_TOGGLE(context, slug) {
+      context.commit('setDebug', `${context.state.savedTools.has(slug) ? 'TOOL_UNSAVE' : 'TOOL_SAVE'}: ${slug}`)
       context.dispatch(context.state.savedTools.has(slug) ? 'TOOL_UNSAVE' : 'TOOL_SAVE', slug)
     },
     TOOL_SAVE(context, slug) {
@@ -136,6 +138,11 @@ export const store = new Vuex.Store({
     },
   },
   mutations: {
+    // DEBUG
+    setDebug(state, s) {
+      console.warn(`Debug: ${s}`)
+      state.debug = s
+    },
     // API TOOLS
     setLang(state, [tools, lang, cache]) {
       Storage.setItem(keyNameLang, lang)

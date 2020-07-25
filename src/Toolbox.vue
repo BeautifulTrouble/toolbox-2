@@ -202,36 +202,43 @@ export default {
       next = next || (() => {})
       let nextReplace = params => next({name: 'toolbox', replace: true, params})
 
-      let warn = s => console.warn(`Toolbox routing: ${s}`)
+      let warn = s => this.$store.commit('setDebug', `Toolbox routing condition: ${s}`)
       // Each branch 1. REJECTS invalid routes, 2. SETS positional filter params, 3. SELECTS filterPaneActive
+      // TODO: Prefer redirecting to /toolbox over /toolbox/all
       if (collection == 'saved') {
-        warn(`a`)
+        // My tools
+        warn(`1`)
         if (filterA || filterB) return nextReplace({collection})
         this.filterPaneActive = 'collection'
       } else if (collection == 'selected') {
-        warn(`b`)
+        // Selected tools
+        warn(`2`)
         if (filterB) return nextReplace({collection, filterA})
         if (!COLLECTIONS.includes(filterA)) return nextReplace({collection, filterA: config.defaultCollection})
         filterSelected = filterA
         this.filterPaneActive = 'selected'
       } else if (collection == 'story') {
-        warn(`c`)
+        // Stories (filterA becomes region, filterB becomes tag)
+        warn(`3`)
         if (filterB && !(filterB in this.tagTextBySlug)) return nextReplace({collection, filterA})
         if (filterA && !REGIONS.includes(filterA)) return nextReplace({collection})
         filterRegion = filterA
         filterTag = filterB
         this.filterPaneActive = filterA ? (filterB ? 'tag' : 'region') : 'collection'
-      } else if (this.config.toolTypes.includes(collection)) {
-        warn(`d`)
+      } else if ([ALL, ...this.config.toolTypes].includes(collection)) {
+        // Collection is a tool type or ALL
+        warn(`4`)
         if (filterB) return nextReplace({collection, filterA})
         if (filterA && !(filterA in this.tagTextBySlug)) return nextReplace({collection})
         filterTag = filterA
         this.filterPaneActive = filterA ? 'tag' : (collection == 'story' ? 'region' : 'collection')
       } else if (collection) {
-        warn(`e`)
+        // Invalid collection, redirect to toolbox root
+        warn(`5`)
         return nextReplace({})
       } else {
-        warn(`f`)
+        // Default
+        warn(`6`)
         this.filterPaneActive = 'collection'
       }
       this.filterCollection = collection || ALL

@@ -38,8 +38,16 @@
       <router-view />
     </transition>
     <div v-if="$store.state.langRequested">Loading...</div>
+
+
     <!-- TODO: -->
-    <div id="nav" v-if="false">
+    <div class="debug-panel">
+      <p class="debug">{{ $store.state.debug }}</p>
+      <div @click="debugPanel.reset">Reset Settings</div>
+      <div @click="debugPanel.clutter = !debugPanel.clutter">Toggle testing clutter</div>
+    </div>
+    <div id="nav" v-if="debugPanel.clutter">
+      BETA LINK TESTING:
       <router-link to="/">Home</router-link> |
       <router-link to="/en/about">En About</router-link> |
       <router-link to="/es/about">Sp About</router-link> |
@@ -55,6 +63,9 @@
       <router-link to="/tool/not-real">tool (fake)</router-link> |
       <router-link to="/toolbox">toolbox</router-link>
     </div>
+
+
+
     <footer>
       <div class="upper">
         <div class="contain">
@@ -118,6 +129,10 @@ export default {
     btData: window.btData,
     config: config,
     showSearch: false,
+    debugPanel: {
+      clutter: false,
+      reset: () => [localStorage.clear(), window.location.reload()] ,
+    }
   }),
   methods: {
     getMenuPath(url) {
@@ -136,6 +151,47 @@ export default {
 
 <style lang="scss">
 @import 'common.scss';
+
+.debug-panel {
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  z-index: 100;
+  padding: .5rem;
+  background: yellow;
+  border: 6px dashed black;
+  color: black;
+  font-size: .75rem;
+  font-family: monospace;
+  .expand {
+    display: block;
+    font-size: 2rem;
+    padding: 0 .5rem;
+  }
+  .debug {
+    margin: 0;
+  }
+  &:hover {
+    .expand, .debug {
+      display: none;
+    }
+    >div {
+      display: block;
+    }
+  }
+  >div {
+    display: none;
+    cursor: pointer;
+    padding: .5rem 1rem;
+    border: 1px dashed orange;
+    &:hover {
+      color: yellow;
+      background: black;
+    }
+  }
+}
 
 nav {
   user-select: none;
