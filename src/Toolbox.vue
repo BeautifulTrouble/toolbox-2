@@ -93,7 +93,7 @@
           <h3>SUGGEST A TOOL</h3>
         </a>
         <div v-if="filterCollection == 'saved' && !$store.state.savedTools.size" class="tool-tile tool-add" :key="-2">
-          LOOKS LIKE YOU HAVENT SAVED ANY TOOLS BLAH BLAH BLAH I WISH SOMEBODY HAD DESIGNED HOW THIS SHOULD LOOK
+          LOOKS LIKE YOU HAVENT SAVED ANY TOOLS...
         </div>
       </transition-group>
     </div>
@@ -202,29 +202,36 @@ export default {
       next = next || (() => {})
       let nextReplace = params => next({name: 'toolbox', replace: true, params})
 
+      let warn = s => console.warn(`Toolbox routing: ${s}`)
       // Each branch 1. REJECTS invalid routes, 2. SETS positional filter params, 3. SELECTS filterPaneActive
       if (collection == 'saved') {
+        warn(`a`)
         if (filterA || filterB) return nextReplace({collection})
         this.filterPaneActive = 'collection'
       } else if (collection == 'selected') {
+        warn(`b`)
         if (filterB) return nextReplace({collection, filterA})
         if (!COLLECTIONS.includes(filterA)) return nextReplace({collection, filterA: config.defaultCollection})
         filterSelected = filterA
         this.filterPaneActive = 'selected'
       } else if (collection == 'story') {
+        warn(`c`)
         if (filterB && !(filterB in this.tagTextBySlug)) return nextReplace({collection, filterA})
         if (filterA && !REGIONS.includes(filterA)) return nextReplace({collection})
         filterRegion = filterA
         filterTag = filterB
         this.filterPaneActive = filterA ? (filterB ? 'tag' : 'region') : 'collection'
-      } else if (collection in this.config.toolTypes) {
+      } else if (this.config.toolTypes.includes(collection)) {
+        warn(`d`)
         if (filterB) return nextReplace({collection, filterA})
         if (filterA && !(filterA in this.tagTextBySlug)) return nextReplace({collection})
         filterTag = filterA
         this.filterPaneActive = filterA ? 'tag' : (collection == 'story' ? 'region' : 'collection')
       } else if (collection) {
+        warn(`e`)
         return nextReplace({})
       } else {
+        warn(`f`)
         this.filterPaneActive = 'collection'
       }
       this.filterCollection = collection || ALL
