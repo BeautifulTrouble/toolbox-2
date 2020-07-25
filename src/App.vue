@@ -82,7 +82,7 @@
             <router-link to="/">
               <img class="logo" src="./assets/logo-large.png">
             </router-link>
-            <span>BeautifulTrouble.org 2020</span>
+            <span>BeautifulTrouble.org {{ new Date().getFullYear() }}</span>
             <span>Webdesign by <a href="https://rabotnik.coop" target="_blank">Rabotnik.coop</a></span>
           </div>
           <div class="b">
