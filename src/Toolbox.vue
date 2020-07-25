@@ -16,12 +16,12 @@
               @click="filterPaneActive = 'region'">
               {{ filterRegion == 'all' ? 'the whole world' : filterRegion }}</span>
           </span>
-          <span v-if="!['saved', 'selected', ALL].includes(filterCollection)">
+          <span v-if="!['saved', 'selected'].includes(filterCollection)">
             <span>about</span>
             <span :class="{tab: true, active: filterPaneActive == 'tag'}" @click="filterPaneActive = 'tag'">
               {{ tagTextBySlug[filterTag] || 'everything' }}</span>
           </span>
-          <img v-if="filterCollection != ALL" svg-inline class="icon reset" src="./assets/reset.svg" @click="filterReRoute()" alt="Reset">
+          <img v-if="filterCollection != ALL || filterTag != ALL" svg-inline class="icon reset" src="./assets/reset.svg" @click="filterReRoute()" alt="Reset">
         </div>
         <div class="widget-wrapper">
           <div class="widget contain">
