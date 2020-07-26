@@ -23,7 +23,7 @@
         <div><!-- Always render two divs to ensure proper placement -->
           <div v-if="tool['image-caption']" :class="['caption', tool.type]" v-html="markdown(tool['image-caption'])" />
         </div>
-        <a href="#" v-scroll-to="{el: '#video', offset: -100, duration: 200}">
+        <a href="#" v-scroll-to="{el: '#video', offset: -16 * 6.5, duration: 200}">
           <img svg-inline v-if="tool.video" class="icon video" src="./assets/video.svg">
         </a>
       </div>
@@ -51,10 +51,14 @@
             <p><img :src="`${config.imagePrefix}/medium-${tool['image-2']}`"></p>
           </div>
 
-          <div class="write-up" v-html="markdown(writeUp)" />
+          <div v-if="tool.video && /youtube/.test(tool.video)">
+            <div class="write-up" v-html="writeUpSplit[0]" />
+            <youtube id="video" ref="video" :videoId="tool.video" />
+            <div class="write-up" v-html="writeUpSplit[1]" />
+          </div>
+          <div v-else class="write-up" v-html="writeUp" />
           <div class="clear" />
 
-          <youtube v-if="tool.video && /youtube/.test(tool.video)" id="video" ref="video" :videoId="tool.video" />
 
           <div v-if="tool['key-modules']" class="key-tools">
             <expander v-for="(v, k) of tool['key-modules']" :key="k" :open="true" :name="k" :class="keyTextByEntry[k][2]">
@@ -213,19 +217,27 @@ export default {
       return typeTextByLang[this.$store.state.lang]
     },
     writeUp() {
+      return this.writeUpAsParagraphArray.join(' ')
+    },
+    writeUpAsParagraphArray() {
       // TODO: module-type-effective logic (see RED text document prepared for Troels)
       let text = this.tool['full-write-up'] || this.tool['short-write-up'] || this.tool['snapshot']
       text = this.markdown(text)
+      // Remove outermost <p>...</p> tags, split to array on inner </p><p> junctions, and re-wrap
+      let paragraphs = text.replace(/(^<p>|<\/p>$)/g, '').split(/<\/p>\s*<p>/).map(p => `<p>${p}</p>`)
       if (this.tool['pull-quote']) {
-        // Remove outermost <p>...</p> tags, split to array on inner </p><p> junctions, and re-wrap
-        let paragraphs = text.replace(/(^<p>|<\/p>$)/g, '').split(/<\/p>\s*<p>/).map(p => `<p>${p}</p>`)
         if (paragraphs.length > 1) {
           let quote = `<blockquote class="pull-quote">${this.markdown(this.tool['pull-quote'])}</blockquote>`
           paragraphs.splice(paragraphs.length < 4 ? 1 : 2, 0, quote)
-          text = paragraphs.join(' ')
         }
       }
-      return text
+      return paragraphs
+    },
+    writeUpSplit() {
+      return [
+        this.writeUpAsParagraphArray.slice(0, 5).join(' '),
+        this.writeUpAsParagraphArray.slice(5).join(' ')
+      ]
     },
     randomRelated() {
       return Object.fromEntries(
@@ -512,7 +524,7 @@ $sidebar: 18rem;
       img {
         max-height: 20rem;
         margin: .5rem 0 .5rem 0;
-        //border: 1px solid $bgdark3;
+        border: 1px solid $bgdark1;
       }
       p {
         margin: 0;
