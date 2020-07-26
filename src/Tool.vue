@@ -23,7 +23,7 @@
         <div><!-- Always render two divs to ensure proper placement -->
           <div v-if="tool['image-caption']" :class="['caption', tool.type]" v-html="markdown(tool['image-caption'])" />
         </div>
-        <a href="#" v-scroll-to="{el: '#video', offset: -100, duration: 200, onDone: () => this.$refs.video.player.play()}">
+        <a href="#" v-scroll-to="{el: '#video', offset: -100, duration: 200}">
           <img svg-inline v-if="tool.video" class="icon video" src="./assets/video.svg">
         </a>
       </div>
