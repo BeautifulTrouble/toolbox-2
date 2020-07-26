@@ -157,9 +157,19 @@
               </div>
             </div>
           </div>
-        </section>
-        <section v-if="authors.length" class="authors">
           <hr>
+        </section>
+        <section v-if="tool['why-it-worked']" class="worked">
+          <h4>WHY IT WORKED</h4>
+          <div v-html="markdown(tool['why-it-worked'])" />
+          <hr>
+        </section>
+        <section v-if="tool['why-it-failed']" class="failed">
+          <h4>WHY IT FAILED</h4>
+          <div v-html="markdown(tool['why-it-failed'])" />
+          <hr>
+        </section>
+        <section v-if="authors && authors.length" class="authors">
           <h4>CONTRIBUTORS</h4>
           <div v-for="a in authors">
             <div class="upper">
@@ -188,7 +198,7 @@ const crlf = '%0d%0a'
 export default {
   name: 'Tool',
   data: () => ({
-    authors: [],
+    authors: null,
     config,
     showDocumentLinks: window.btData.showDocumentLinks,
     types: {story: 'stories', tactic: 'tactics', theory: 'theories', principle: 'principles', methodology: 'methodologies'},
@@ -587,7 +597,7 @@ $sidebar: 18rem;
         }
       }
     }
-    .risks {
+    .risks, .worked, .failed {
       max-width: $sidebar;
     }
     .related {
