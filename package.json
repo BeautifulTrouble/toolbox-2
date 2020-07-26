@@ -23,6 +23,7 @@
     "vue-lazy-image-loading": "^1.2.1",
     "vue-lazyload": "^1.3.3",
     "vue-router": "^3.0.3",
+    "vue-scrollto": "^2.18.1",
     "vuex": "^3.1.3"
   },
   "devDependencies": {

@@ -23,9 +23,9 @@
         <div><!-- Always render two divs to ensure proper placement -->
           <div v-if="tool['image-caption']" :class="['caption', tool.type]" v-html="markdown(tool['image-caption'])" />
         </div>
-        <div>
+        <a href="#" v-scroll-to="{el: '#video', offset: -100, duration: 200, onDone: () => this.$refs.video.player.play()}">
           <img svg-inline v-if="tool.video" class="icon video" src="./assets/video.svg">
-        </div>
+        </a>
       </div>
     </header>
 
@@ -53,6 +53,8 @@
 
           <div class="write-up" v-html="markdown(writeUp)" />
           <div class="clear" />
+
+          <youtube v-if="tool.video && /youtube/.test(tool.video)" id="video" ref="video" :videoId="tool.video" />
 
           <div v-if="tool['key-modules']" class="key-tools">
             <expander v-for="(v, k) of tool['key-modules']" :key="k" :open="true" :name="k" :class="keyTextByEntry[k][2]">
@@ -190,6 +192,7 @@ export default {
   }),
   components: {
     Expander,
+    Youtube: () => import(/* webpackPrefetch: true */ './Youtube.vue'),
   },
   computed: {
     tool() {
@@ -385,6 +388,12 @@ $sidebar: 18rem;
       p {
         margin: 0;
       }
+    }
+    .video {
+      margin: 1rem 2.5rem;
+      fill: white;
+      max-width: 2.5rem;
+      max-height: 3.5rem;
     }
   }
   main {

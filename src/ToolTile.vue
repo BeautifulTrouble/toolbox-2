@@ -12,9 +12,12 @@
           <img svg-inline v-else-if="tool.type == 'methodology'" class="icon" src="./assets/methodology-inverse.svg">
           <h3>{{ text[tool.type][0] }}</h3>
         </div>
-        <div @click.stop="$store.dispatch('TOOL_SAVE_TOGGLE', tool.slug)">
-          <img svg-inline v-if="$store.state.savedTools.has(tool.slug)" class="icon active" src="./assets/favorite-active.svg">
-          <img svg-inline v-else class="icon" src="./assets/favorite.svg">
+        <div>
+          <img svg-inline v-if="tool.video" class="icon video" src="./assets/video.svg">
+          <div @click.stop="$store.dispatch('TOOL_SAVE_TOGGLE', tool.slug)">
+            <img svg-inline v-if="$store.state.savedTools.has(tool.slug)" class="icon favorite active" src="./assets/favorite-active.svg">
+            <img svg-inline v-else class="icon favorite" src="./assets/favorite.svg">
+          </div>
         </div>
       </div>
       <div class="lower">
@@ -56,6 +59,7 @@ export default {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    padding: 0 .25rem;
     > div {
       display: flex;
       align-items: center;
@@ -76,22 +80,21 @@ export default {
   }
   h3 {
     font-size: 1rem;
-    margin: 0;
   }
   svg {
-    margin: 0 1rem 0 1rem;
     max-width: 1.5rem;
     max-height: 2.5rem;
-    .rtl & {
-      margin: 0 1rem 0 .5rem;
-    }
   }
   .icon {
     fill: white;
+    margin: 0 .5rem;
     &.active {
       animation-name: add-favorite;
       animation-duration: .5s;
       animation-iteration-count: 1;
+    }
+    &.video {
+      margin: 0;
     }
   }
 }

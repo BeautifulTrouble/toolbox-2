@@ -7,6 +7,7 @@ import Showdown from 'showdown'
 import ShowdownTargetBlank from 'showdown-target-blank'
 import VueLazyload from 'vue-lazyload'
 import VueLazyImageLoading from 'vue-lazy-image-loading'
+import VueScollTo from 'vue-scrollto'
 
 import App from './App'
 import Tool from './Tool'
@@ -113,6 +114,9 @@ Vue.use(VueLazyload, {
 Vue.use(VueLazyImageLoading, {
   cache: true, // Don't animate already-loaded images
 })
+
+// Smooth scroll to element
+Vue.use(VueScollTo)
 
 Vue.mixin({
   methods: {
