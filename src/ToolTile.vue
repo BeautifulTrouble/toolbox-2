@@ -6,10 +6,10 @@
       <div :class="['upper', `bg-${tool.type}`]">
         <div>
           <img svg-inline v-if="tool.type == 'tactic'" class="icon" src="./assets/tactic-inverse.svg">
-          <img svg-inline v-if="tool.type == 'theory'" class="icon" src="./assets/theory-inverse.svg">
-          <img svg-inline v-if="tool.type == 'story'" class="icon" src="./assets/story-inverse.svg">
-          <img svg-inline v-if="tool.type == 'principle'" class="icon" src="./assets/principle-inverse.svg">
-          <img svg-inline v-if="tool.type == 'methodology'" class="icon" src="./assets/methodology-inverse.svg">
+          <img svg-inline v-else-if="tool.type == 'theory'" class="icon" src="./assets/theory-inverse.svg">
+          <img svg-inline v-else-if="tool.type == 'story'" class="icon" src="./assets/story-inverse.svg">
+          <img svg-inline v-else-if="tool.type == 'principle'" class="icon" src="./assets/principle-inverse.svg">
+          <img svg-inline v-else-if="tool.type == 'methodology'" class="icon" src="./assets/methodology-inverse.svg">
           <h3>{{ text[tool.type][0] }}</h3>
         </div>
         <div @click.stop="$store.dispatch('TOOL_SAVE_TOGGLE', tool.slug)">

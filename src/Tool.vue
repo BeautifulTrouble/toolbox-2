@@ -10,10 +10,10 @@
       <div class="upper">
         <router-link :to="{name: 'toolbox', params: {collection: tool.type}}">
           <img svg-inline v-if="tool.type == 'tactic'" class="icon" src="./assets/tactic.svg">
-          <img svg-inline v-if="tool.type == 'theory'" class="icon" src="./assets/theory.svg">
-          <img svg-inline v-if="tool.type == 'story'" class="icon" src="./assets/story.svg">
-          <img svg-inline v-if="tool.type == 'principle'" class="icon" src="./assets/principle.svg">
-          <img svg-inline v-if="tool.type == 'methodology'" class="icon" src="./assets/methodology.svg">
+          <img svg-inline v-else-if="tool.type == 'theory'" class="icon" src="./assets/theory.svg">
+          <img svg-inline v-else-if="tool.type == 'story'" class="icon" src="./assets/story.svg">
+          <img svg-inline v-else-if="tool.type == 'principle'" class="icon" src="./assets/principle.svg">
+          <img svg-inline v-else-if="tool.type == 'methodology'" class="icon" src="./assets/methodology.svg">
           <h3>{{ typeTextBySlug[tool.type][0] }}</h3>
         </router-link>
         <h1>{{ tool.title }}</h1>
@@ -54,7 +54,22 @@
           <div class="write-up" v-html="markdown(writeUp)" />
           <div class="clear" />
 
-          <expander :key="`how-${tool.slug}`" :open="true" :name="'how-to-use'" v-if="tool['how-to-use']">
+          <div v-if="tool['key-modules']" class="key-tools">
+            <expander v-for="(v, k) of tool['key-modules']" :key="k" :open="true" :name="k" :class="keyTextByEntry[k][2]">
+              <template v-slot:title>
+                <img svg-inline v-if="keyTextByEntry[k][2] == 'tactic'" class="icon" src="./assets/tactic.svg">
+                <img svg-inline v-else-if="keyTextByEntry[k][2] == 'theory'" class="icon" src="./assets/theory.svg">
+                <img svg-inline v-else-if="keyTextByEntry[k][2] == 'story'" class="icon" src="./assets/story.svg">
+                <img svg-inline v-else-if="keyTextByEntry[k][2] == 'principle'" class="icon" src="./assets/principle.svg">
+                <img svg-inline v-else-if="keyTextByEntry[k][2] == 'methodology'" class="icon" src="./assets/methodology.svg">
+                {{ keyTextByEntry[k][+(v.length > 1)] }}
+              </template>
+              <div v-for="(each, i) in v" :key="i">
+                <div v-html="markdown(`[**${each[0]}**](/tool/${each[2]}) – ${each[1]}`)"/>
+              </div>
+            </expander>
+          </div>
+          <expander :key="`how-${tool.slug}`" :open="true" class="methodology" :name="'how-to-use'" v-if="tool['how-to-use']">
             <template v-slot:title>HOW TO USE</template>
             <div v-html="markdown(tool['how-to-use'])" />
           </expander>
@@ -116,10 +131,10 @@
             <div class="type">
               <router-link :to="{name: 'toolbox', params: {collection: T}}">
                 <img svg-inline v-if="T == 'tactic'" class="icon" src="./assets/tactic.svg">
-                <img svg-inline v-if="T == 'theory'" class="icon" src="./assets/theory.svg">
-                <img svg-inline v-if="T == 'story'" class="icon" src="./assets/story.svg">
-                <img svg-inline v-if="T == 'principle'" class="icon" src="./assets/principle.svg">
-                <img svg-inline v-if="T == 'methodology'" class="icon" src="./assets/methodology.svg">
+                <img svg-inline v-else-if="T == 'theory'" class="icon" src="./assets/theory.svg">
+                <img svg-inline v-else-if="T == 'story'" class="icon" src="./assets/story.svg">
+                <img svg-inline v-else-if="T == 'principle'" class="icon" src="./assets/principle.svg">
+                <img svg-inline v-else-if="T == 'methodology'" class="icon" src="./assets/methodology.svg">
                 <h2>{{ typeTextBySlug[T][1] }}</h2>
               </router-link>
               <span :class="{T: true, open: expandRelated[T]}" v-if="randomRelated[T].length > 5"
@@ -129,15 +144,16 @@
               <div class="related-link" v-for="[s, show] in randomRelated[T]" :key="s">
                 <transition name="fade">
                   <div v-if="expandRelated[T] || show">
-                    <router-link :to="{name: 'tool', params: {slug: s}}">{{ $store.state.toolsBySlug[s].title }}</router-link>
+                    <router-link :to="{name: 'tool', params: {slug: s}}"
+                      :class="{'key-related': keySlugs.has(s)}">{{ $store.state.toolsBySlug[s].title }}</router-link>
                   </div>
                 </transition>
               </div>
             </div>
           </div>
-          <hr>
         </section>
         <section v-if="authors.length" class="authors">
+          <hr>
           <h4>CONTRIBUTORS</h4>
           <div v-for="a in authors">
             <div class="upper">
@@ -158,6 +174,7 @@
 <script>
 import Expander from './Expander'
 import typeTextByLang from './types'
+import keyTextByLang from './keys'
 import config from './config'
 
 const crlf = '%0d%0a'
@@ -165,7 +182,7 @@ const crlf = '%0d%0a'
 export default {
   name: 'Tool',
   data: () => ({
-    authors: null,
+    authors: [],
     config,
     showDocumentLinks: window.btData.showDocumentLinks,
     types: {story: 'stories', tactic: 'tactics', theory: 'theories', principle: 'principles', methodology: 'methodologies'},
@@ -177,6 +194,17 @@ export default {
   computed: {
     tool() {
       return this.$store.state.toolsBySlug[this.$route.params.slug]
+    },
+    keySlugs() {
+      let slugs = new Set()
+      Object.values(this.tool['key-modules'] || []).forEach(a => a.forEach(i => slugs.add(i[2])))
+      return slugs
+    },
+    keyTextByEntry() { // 'key-type-plural' -> ['Key singular', 'Key plural', 'type-slug']
+      let text = keyTextByLang[this.$store.state.lang]
+      return Object.fromEntries(
+        Object.entries(this.types).map(([k, v]) => [`key-${v}`, [text[`key-${k}`], text[`key-${v}`], k]])
+      )
     },
     typeTextBySlug() {
       return typeTextByLang[this.$store.state.lang]
@@ -205,10 +233,6 @@ export default {
             let indices = new Set([...Array(slugs.length).keys()].sort(() => 0.5 - Math.random()).slice(0, 5))
             return [T, slugs.map((s, i) => [s, indices.has(i)])]
           })
-        /*
-          .filter(T => (this.tool[this.types[T]] || []).length)
-          .map(T => [T, [...this.tool[this.types[T]]].sort(() => 0.5 - Math.random()).slice(0, 5)])
-        */
       )
     },
     shareUrlEmail() {
@@ -385,6 +409,11 @@ $sidebar: 18rem;
       color: $text;
       margin: .5rem 0;
     }
+    .expander {
+      h4 {
+        text-transform: uppercase;
+      }
+    }
   }
   article {
     flex: 1 0 66%;
@@ -487,6 +516,20 @@ $sidebar: 18rem;
       display: block;
       margin-bottom: .5rem;
     }
+    .key-tools {
+      p:first-of-type {
+        margin-top: .25rem;
+      }
+      .icon {
+        display: inline;
+        max-height: 1.5rem;
+        max-width: 1.5rem;
+        margin: 0 .25rem -.4rem 0;
+        .rtl & {
+          margin: .25rem 0 -.4rem .5rem;
+        }
+      }
+    }
   }
   aside {
     height: 100%;
@@ -544,7 +587,7 @@ $sidebar: 18rem;
           &::after {
             transition: all .2s ease-out;
             position: absolute;
-            top: .7rem;
+            top: .5rem;
             content: "";
             border-top-width: .7rem;
             border-top-style: solid;
@@ -563,6 +606,19 @@ $sidebar: 18rem;
         margin-bottom: -.2rem;
         .rtl & {
           margin: .25rem 0 0 .5rem;
+        }
+      }
+      .related-link a {
+        position: relative;
+      }
+      .key-related::before {
+        content: "*";
+        position: absolute;
+        left: -10px;
+        top: 3px;
+        .rtl & {
+          left: unset;
+          right: -10px;
         }
       }
       @mixin type-related($color) {
@@ -585,6 +641,7 @@ $sidebar: 18rem;
         }
       }
       .upper {
+        margin-top: 1rem;
         display: flex;
         align-items: center;
         h3 {
@@ -597,9 +654,6 @@ $sidebar: 18rem;
           align-items: flex-start;
           flex-direction: column;
         }
-      }
-      .lower {
-        margin-bottom: 2rem;
       }
     }
   }

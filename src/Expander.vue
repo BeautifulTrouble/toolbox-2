@@ -4,7 +4,7 @@
       <slot name="title" />
     </h4>
     <transition name="slide-fade">
-      <div v-if="isOpen">
+      <div class="content" v-if="isOpen">
         <slot />
       </div>
     </transition>
@@ -19,7 +19,7 @@ export default {
     isOpen: false,
   }),
   props: {
-    open: {type: Boolean, default: false},
+    open: {type: Boolean, default: true},
     name: {type: String, default: ''},
   },
   created() {
@@ -30,6 +30,7 @@ export default {
 
 <style lang="scss">
 @import 'common.scss';
+
 .box.expander {
   padding: 3.5rem 2rem 1rem 2rem; // padding-top assumes a padded h4 title
   h4 {
@@ -61,6 +62,10 @@ export default {
   h4.open::after {
     top: 1.5rem;
     transform: scaleY(1);
+  }
+  .content {
+    position: relative;
+    z-index: 1;
   }
 }
 </style>

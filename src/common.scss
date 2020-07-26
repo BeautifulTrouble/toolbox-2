@@ -191,6 +191,19 @@ input{
   padding: 1rem 2rem;
   background-color: $bggray;
   h1, h2, h3, h4, h5, h6, p { color: $text; }
+  @mixin type-box($color) {
+    border: 1px solid shade($color, 10%);
+    background-color: tint($color, 90%);
+    a:link, a:visited, a:hover, h1, h2, h3, h4, h5, h6 { color: $color; }
+    h4::after { // Specific to expanders
+      border-bottom-color: shade($color, 10%);
+    }
+  }
+  &.tactic { @include type-box($tactic); }
+  &.theory { @include type-box($theory); }
+  &.story { @include type-box($story); }
+  &.principle { @include type-box($principle); }
+  &.methodology { @include type-box($methodology); }
 }
 .button {
   border: 1px solid white;
@@ -211,9 +224,6 @@ input{
 .contain {
   width: 80rem;
   max-width: 80rem;
-}
-.container {
-  //min-height: calc(100vh - #{$uppermenu + $lowermenu}); // TODO: calculate in real-time
 }
 .router-link-active {
   font-weight: bold;
