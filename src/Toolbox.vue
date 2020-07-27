@@ -3,6 +3,8 @@
     <h1 v-if="$store.state.langRequested">Loading Toolbox...</h1>
     <div class="toolbox">
       <div class="filter">
+
+        <!-- SENTENCE -->
         <div class="sentence contain">
           <span>Show me</span>
           <span>
@@ -23,9 +25,13 @@
           </span>
           <img v-if="filterCollection != ALL || filterTag != ALL" svg-inline class="icon reset" src="./assets/reset.svg" @click="filterReRoute()" alt="Reset">
         </div>
+
+        <!-- FILTER WIDGET -->
         <div class="widget-wrapper">
           <div class="widget contain">
             <transition name="fade" mode="out-in">
+
+              <!-- BY COLLECTION -->
               <div class="by by-collection" v-if="filterPaneActive == 'collection'">
                 <div v-for="(value, key) in typeTextBySlug" :key="key" :class="getFilterClasses('Collection', key)" @click="filterToggleCollection(key)">
                   <img svg-inline v-if="key == 'tactic'" class="icon" src="./assets/tactic.svg">
@@ -48,13 +54,13 @@
                 </div>
               </div>
 
+              <!-- BY REGION -->
               <div class="by by-region" v-if="filterPaneActive == 'region'" :key="'region'">
-
                 <div :class="{block: true, active: filterRegion == 'all'}" @click="filterToggleRegion('all')">
                   <img svg-inline class="icon" src="./assets/regions/world.svg">
                   <p>THE WHOLE WORLD</p>
                 </div>
-                <div v-for="region in ['Africa', 'Asia', 'Europe', 'Latin America and the Caribbean', 'Middle East', 'North America']"
+                <div v-for="region in REGIONS" :key="region"
                   :class="{block: true, active: filterRegion == slugify(region)}" @click="filterToggleRegion(slugify(region))">
                   <img svg-inline v-if="region == 'Africa'" class="icon" src="./assets/regions/africa.svg">
                   <img svg-inline v-if="region == 'Asia'" class="icon" src="./assets/regions/asia.svg">
@@ -62,16 +68,19 @@
                   <img svg-inline v-if="region == 'Latin America and the Caribbean'" class="icon" src="./assets/regions/latin-america-and-the-caribbean.svg">
                   <img svg-inline v-if="region == 'Middle East'" class="icon" src="./assets/regions/middle-east.svg">
                   <img svg-inline v-if="region == 'North America'" class="icon" src="./assets/regions/north-america.svg">
+                  <img svg-inline v-if="region == 'Oceania'" class="icon" src="./assets/regions/oceania.svg">
                   <p>{{ region }}</p>
                 </div>
               </div>
 
+              <!-- BY SELECTED TOOLS -->
               <div class="by by-selected" v-if="filterPaneActive == 'selected'" :key="'selected'">
                 <h1>Backend connection required</h1>
                 <div @click="filterToggleSelected('best-of')">BEST OF</div>
                 <div @click="filterToggleSelected('andrews-list')">ANDREW'S LIST</div>
               </div>
 
+              <!-- BY TAG -->
               <div class="by by-tag" v-if="filterPaneActive == 'tag'" :key="'tag'">
                 <span v-for="(tag, i) in tagSlugsSorted" :key="i"
                   :class="{active: filterTag == tag, disabled: !tagSlugsAvailable.has(tag)}"
@@ -110,8 +119,8 @@ import typeTextByLang from './types'
 // Let's have some dignity
 const ALL = 'all'
 const COLLECTIONS = ['andrews-list', 'best-of']
-const REGIONS = ['all', 'Africa', 'Asia', 'Europe', 'Latin America and the Caribbean', 'Middle East', 'North America'].map(
-  s => s.toLowerCase().replace(/\s/ig, '-').replace(/[^-\w]/ig, ''))
+const REGIONS = ['Africa', 'Asia', 'Europe', 'Latin America and the Caribbean', 'Middle East', 'North America', 'Oceania']
+const REGION_SLUGS = ['all', ...REGIONS.map(s => s.toLowerCase().replace(/ /g, '-'))]
 
 export default {
   name: 'Toolbox',
@@ -132,12 +141,6 @@ export default {
     ToolTile,
   },
   computed: {
-    sentence() {
-      if (this.filterCollection == 'story')
-        return `Show me ${this.filterCollection} from (region) ${this.filterRegion} about (tag) ${this.filterTag}`
-      else
-        return `Show me ${this.filterCollection} about (tag) ${this.filterTag}`
-    },
     filteredToolsAllTags() {
       let tools = this.$store.state.tools.filter(
         t => t['module-type'] != 'snapshot' && t['module-type-effective'] != 'snapshot')
@@ -169,11 +172,12 @@ export default {
       return Object.keys(this.tagTextBySlug)
               .sort((a, b) => this.tagTextBySlug[a].localeCompare(this.tagTextBySlug[b]))
     },
-    tagSlugsAvailable() { // Relies on filteredToolsAllTags to
+    tagSlugsAvailable() { // Relies on filteredToolsAllTags
       return this.filteredToolsAllTags
         .map(t => t.tags)
         .reduce((a, c) => c !== undefined ? new Set([...a, ...c]) : a, new Set([]))
     },
+    // Translated text
     descriptionTextByLang() {
       return descriptionTextByLang[this.$store.state.lang]
     },
@@ -221,7 +225,7 @@ export default {
         // Stories (filterA becomes region, filterB becomes tag)
         warn(`3`)
         if (filterB && !(filterB in this.tagTextBySlug)) return nextReplace({collection, filterA})
-        if (filterA && !REGIONS.includes(filterA)) return nextReplace({collection})
+        if (filterA && !REGION_SLUGS.includes(filterA)) return nextReplace({collection})
         filterRegion = filterA
         filterTag = filterB
         this.filterPaneActive = filterA ? (filterB ? 'tag' : 'region') : 'collection'
@@ -374,9 +378,14 @@ export default {
   .by-region {
     .icon {
       height: 8rem;
+      width: 7rem;
+      margin: 0;
     }
-    .block p {
-      min-height: 15%;
+    .block {
+      flex: 1 2 12.5%;
+      p {
+        min-height: 15%;
+      }
     }
   }
   .by-tag {
