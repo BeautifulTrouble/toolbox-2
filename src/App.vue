@@ -140,7 +140,7 @@ export default {
   },
   mounted() {
     let headroom = new Headroom(this.$refs.nav, {
-      offset: 100,
+      offset: 16,
       tolerance: 10,
     })
     headroom.init()
