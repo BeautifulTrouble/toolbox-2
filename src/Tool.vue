@@ -464,7 +464,7 @@ $sidebar: 18rem;
       display: block;
       position: relative;
       float: left;
-      text-transform: uppercase;
+      //text-transform: uppercase;
       color: $text;
       font-size: 1.25rem;
       user-select: none;
