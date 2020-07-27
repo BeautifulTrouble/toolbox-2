@@ -174,7 +174,7 @@
         </section>
         <section v-if="authors && authors.length" class="authors">
           <h4>CONTRIBUTORS</h4>
-          <div v-for="a in authors">
+          <div v-for="a in authors" :key="a">
             <div class="upper">
               <img :src="`${config.imagePrefix}/icon-${a.image}`">
               <div>

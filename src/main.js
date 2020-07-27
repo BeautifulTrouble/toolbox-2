@@ -14,8 +14,6 @@ import Tool from './Tool'
 import Toolbox from './Toolbox'
 import WordPress from './WordPress'
 
-import Home from './views/Home'
-
 import { store } from './store'
 import config from './config'
 
