@@ -156,7 +156,7 @@ export default {
   flex-direction: column;
   position: fixed;
   bottom: 0;
-  right: 0;
+  left: 0;
   z-index: 100;
   padding: .5rem;
   background: yellow;
