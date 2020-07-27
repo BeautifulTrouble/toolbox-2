@@ -452,7 +452,7 @@ export default {
   flex-wrap: wrap;
   flex-direction: row;
   position: relative; // For transition animation
-  margin: .25rem -.25rem;
+  //margin: .25rem -.25rem;
   .add-tool {
     background: $bggray;
     position: relative;

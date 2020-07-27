@@ -51,7 +51,7 @@ export default {
   flex: 0 0 20%;
   height: 20vw;
   overflow: hidden;
-  border: .25rem solid white;
+  //border: .25rem solid white;
 
   .upper {
     height: 10%;
