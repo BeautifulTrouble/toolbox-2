@@ -151,7 +151,10 @@
                 <transition name="fade">
                   <div v-if="expandRelated[T] || show">
                     <router-link :to="{name: 'tool', params: {slug: s}}"
-                      :class="{'key-related': keySlugs.has(s)}">{{ $store.state.toolsBySlug[s].title }}</router-link>
+                      :class="{'key-related': keySlugs.has(s)}">
+                      {{ $store.state.toolsBySlug[s].title }}
+                      <div class="snapshot-popup" v-html="markdown($store.state.toolsBySlug[s].snapshot)"></div>
+                    </router-link>
                   </div>
                 </transition>
               </div>
@@ -328,10 +331,10 @@ $sidebar: 18rem;
   }
   .lazy-background-image {
     background: black;
-    transition: all .1s ease-in-out;
+    transition: all .4s linear;
     &::before {
       content: "";
-      transition: opacity .1s ease-in-out;
+      //transition: opacity .1s ease-in-out;
       background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,.3) 80%, rgba(0,0,0,.7) 100%);
       position: absolute;
       top: 0; left: 0;
@@ -452,7 +455,7 @@ $sidebar: 18rem;
     display: flex;
     flex-direction: row;
     justify-content: flex-end;
-    box-shadow: 5px 0 8px #d3d3d3;
+    box-shadow: 5px 0 8px $shadow;
     padding: 2rem;
     blockquote p {
       margin: 0;
@@ -463,8 +466,7 @@ $sidebar: 18rem;
       float: left;
       text-transform: uppercase;
       color: $text;
-      font-size: 1.1rem;
-      font-style: normal;
+      font-size: 1.25rem;
       user-select: none;
       margin: 3rem 1rem 3rem -20%;
       padding: 0 1rem;
@@ -639,8 +641,34 @@ $sidebar: 18rem;
           margin: .25rem 0 0 .5rem;
         }
       }
-      .related-link a {
-        position: relative;
+      .related-link {
+        a {
+          position: relative;
+          display: inline-block;
+          z-index: 2;
+        }
+        @include breakpoint($upper) {
+          &:hover {
+            a {
+              &::before {
+                content: "";
+                top: -1px; bottom: -3px;
+                left: -3rem; right: -1rem;
+                background: white;
+                box-shadow: 5px 0 8px $shadow;
+                border-radius: 2rem;
+                position: absolute;
+                z-index: -1;
+                .rtl & {
+                  left: -1rem; right: -3rem;
+                }
+              }
+            }
+            .snapshot-popup {
+              display: initial;
+            }
+          }
+        }
       }
       .key-related::before {
         content: "*";
@@ -661,6 +689,46 @@ $sidebar: 18rem;
       .story { @include type-related($story); }
       .principle { @include type-related($principle); }
       .methodology { @include type-related($methodology); }
+      .snapshot-popup {
+        pointer-events: none;
+        background: white;
+        box-shadow: 5px 0 8px $shadow;
+        position: absolute;
+        bottom: -16px - 3px;
+        right: 100%;
+        width: 24rem;
+        display: none;
+        padding: 1rem 2rem;
+        margin: 1rem;
+        border-width: .3rem;
+        border-left-style: solid;
+        &::after {
+          content: "";
+          position: absolute;
+          bottom: 0;
+          height: 16px + 4px + 3px;
+          background: white;
+          width: 2rem;
+          right: -1rem;
+          .rtl & {
+            right: unset;
+            left: -1rem;
+          }
+        }
+        .rtl & {
+          right: unset;
+          left: 100%;
+          border-left-style: none;
+          border-right-style: solid;
+        }
+        p {
+          margin: 0;
+          color: $text;
+          //text-transform: uppercase;
+          font-style: italic;
+          font-size: 1.25rem;
+        }
+      }
     }
     .authors {
       max-width: $sidebar;

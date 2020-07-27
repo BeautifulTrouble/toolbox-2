@@ -47,14 +47,13 @@
       <div @click="debugPanel.clutter = !debugPanel.clutter">Toggle testing clutter</div>
     </div>
     <div id="nav" v-if="debugPanel.clutter">
-      BETA LINK TESTING:
       <router-link to="/">Home</router-link> |
       <router-link to="/en/about">En About</router-link> |
       <router-link to="/es/about">Sp About</router-link> |
       <router-link to="/ar/about">Ar About</router-link> |
       <router-link to="/about">About</router-link> |
-      <router-link to="/privacy-policy">pp</router-link> |
-      <router-link to="/privacy-policy/another">pp another</router-link> |
+      <router-link to="/privacy-policy">p.p.</router-link> |
+      <router-link to="/privacy-policy/another">p.p. another</router-link> |
       <router-link to="/top">top</router-link> |
       <router-link to="/top/">top/</router-link> |
       <router-link to="/top/another">top another</router-link> |
