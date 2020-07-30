@@ -26,8 +26,6 @@ const router = new Router({
   base: '/',
   routes: [
     {path: '/', name: 'home', component: WordPress},
-    // # TODO: For testing lazily-loaded routes. Not needed.
-    {path: '/about', name: 'about', component: () => import(/* webpackChunkName: "about" */ './views/About.vue')},
     {path: '/tool', redirect: {name: 'toolbox'}},
     {path: '/story/:slug', redirect: {name: 'tool'}},
     {path: '/tactic/:slug', redirect: {name: 'tool'}},
