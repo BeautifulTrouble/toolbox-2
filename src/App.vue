@@ -21,17 +21,17 @@
               :to="getMenuPath(item.url)" :key="i">{{ item.title }}</router-link>
           </div>
         </div>
-        <div class="resources">
-          <router-link to="/toolbox/saved" class="saved">
+        <div class="lookup">
+          <router-link to="/toolbox/saved" :class="{saved: true, moved: showSearch}">
             <span>MY TOOLS</span>
             <img svg-inline class="icon favorite" src="./assets/favorite-active.svg">
             <span v-if="$store.state.savedTools.size" class="count">{{ $store.state.savedTools.size }}</span>
           </router-link>
-          <img svg-inline @click="showSearch = !showSearch" class="icon search" src="./assets/search.svg">
+          <transition name="fade">
+            <search v-show="showSearch" ref="search" />
+          </transition>
+          <img svg-inline @click="toggleSearch" class="icon" src="./assets/search.svg">
         </div>
-      </div>
-      <div v-show="showSearch" class="search-bar">
-        <input type="text">SEARCH........
       </div>
     </nav>
     <transition name="fade" mode="out-in">
@@ -124,6 +124,9 @@ import Headroom from 'headroom.js'
 import config from './config'
 
 export default {
+  components: {
+    Search: () => import(/* webpackPrefetch: true */ './Search.vue'),
+  },
   data: () => ({
     btData: window.btData,
     config: config,
@@ -136,6 +139,10 @@ export default {
   methods: {
     getMenuPath(url) {
       return url.startsWith('/') ? url : (new URL(url)).pathname
+    },
+    toggleSearch() {
+      this.showSearch = !this.showSearch
+      this.$refs.search.focus()
     },
   },
   mounted() {
@@ -245,6 +252,7 @@ nav {
     position: relative;
     align-items: center;
     justify-content: space-between;
+    overflow: hidden;
     &::after {
       z-index: 0; // Place a transparent white rectangle below the menu items
       top: 0; bottom: 0;
@@ -282,7 +290,7 @@ nav {
         }
       }
     }
-    .resources {
+    .lookup {
       z-index: 1;
       display: flex;
       align-items: center;
@@ -294,11 +302,18 @@ nav {
         position: relative;
         display: flex;
         align-items: center;
+        transition: .2s;
+        position: absolute;
+        right: 5rem;
+        &.moved {
+          right: 28rem; // TODO: couple this with the search widget size
+        }
       }
       .icon {
         max-width: 3rem;
         padding: .5rem;
         fill: white;
+        cursor: pointer;
       }
       .count {
         top: 25%; right: 0;
@@ -306,9 +321,6 @@ nav {
         background: black;
         padding: .1rem .25rem;
         font-weight: normal;
-      }
-      .search {
-        cursor: pointer;
       }
     }
   }
@@ -330,12 +342,14 @@ nav {
     }
 
   }
+  /*
   .search-bar {
     background-image: url('assets/gradient.jpg');
     background-size: contain;
     width: 100%;
     background-color: red;
   }
+  */
 }
 nav, footer {
   .links a.link {
@@ -397,6 +411,9 @@ footer {
     display: flex;
     justify-content: center;
     font-size: .8rem;
+    input {
+      margin-top: 1rem;
+    }
     h3 {
       margin: 0 0 .5rem 0;
     }
