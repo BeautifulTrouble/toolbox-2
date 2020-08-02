@@ -36,7 +36,6 @@ const router = new Router({
     {path: '/tool',               redirect: {name: 'toolbox'}},
     {path: '/tool/:slug',         name: 'tool', component: Tool},
     // Toolbox filtering
-    {path: '/toolbox',                      name: 'toolbox', component: Toolbox},
     {path: '/toolbox/story/:region?/:tag?', name: 'toolbox-story', component: Toolbox},
     {path: '/toolbox/tactic/:tag?',         name: 'toolbox-tactic', component: Toolbox},
     {path: '/toolbox/principle/:tag?',      name: 'toolbox-principle', component: Toolbox},
@@ -45,6 +44,7 @@ const router = new Router({
     {path: '/toolbox/saved',                name: 'toolbox-saved', component: Toolbox},
     {path: '/toolbox/search/:query',        name: 'toolbox-search', component: Toolbox},
     {path: '/toolbox/set/:set?',            name: 'toolbox-set', component: Toolbox},
+    {path: '/toolbox/:tag?',                name: 'toolbox', component: Toolbox},
     {path: '/toolbox/*',                    redirect: {name: 'toolbox'}},
     // Fallback
     {path: '/*',                  name: 'wordpress', component: WordPress},

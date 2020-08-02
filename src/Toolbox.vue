@@ -23,7 +23,8 @@
             <span :class="{tab: true, active: activeTab == 'tag'}" @click="activeTab = 'tag'">
               {{ tagTextBySlug[$route.params.tag] || 'everything' }}</span>
           </span>
-          <img v-if="routeCollection != ALL || !$route.params.tag" svg-inline class="icon reset" src="./assets/reset.svg" @click="$router.push({name: 'toolbox'})" alt="Reset">
+          <img v-if="routeCollection != ALL || routeTag != ALL" svg-inline class="icon reset" src="./assets/reset.svg" alt="Reset"
+            @click="activeTab = 'collection'; $router.push({name: 'toolbox'})">
         </div>
 
         <!-- FILTER WIDGET -->
@@ -56,7 +57,7 @@
               </div>
 
               <!-- BY REGION -->
-              <div class="by by-region" v-if="activeTab == 'region'" :key="'region'">
+              <div class="by by-region" v-if="activeTab == 'region'">
                 <div :class="{block: true, active: routeRegion == 'all'}" @click="selectRegion('all')">
                   <img svg-inline class="icon" src="./assets/regions/world.svg">
                   <p>THE WHOLE WORLD</p>
@@ -75,7 +76,7 @@
               </div>
 
               <!-- BY SET -->
-              <div class="by by-set" v-if="activeTab == 'set'" :key="'set'">
+              <div class="by by-set" v-if="activeTab == 'set'">
                 <h1>Backend connection required</h1>
                 <div @click="selectSet('best-of')">BEST OF</div>
                 <div @click="selectSet('andrews-list')">ANDREW'S LIST</div>
@@ -125,23 +126,11 @@ const REGION_SLUGS = ['all', ...REGIONS.map(s => s.toLowerCase().replace(/ /g, '
 
 export default {
   name: 'Toolbox',
-  props: {
-  },
   data: () => ({
     ALL,
     REGIONS,
     config,
-    // activeTab is one of: collection, region, set, tag
     activeTab: 'collection',
-    /*
-    // Values filter{Collection,Region,Set,Tag} should ONLY be manipulated by a route guard
-    filterCollection: null,
-    filterRegion: null,
-    filterSet: null,
-    filterTag: null,
-    // ...
-    filterPaneActive: null,
-    */
   }),
   components: {
     ToolTile,
@@ -151,7 +140,8 @@ export default {
       let tools = this.$store.state.tools.filter(t => t['module-type-effective'] != 'snapshot')
       if (this.routeCollection == 'saved') {
         tools = tools.filter(t => this.$store.state.savedTools.has(t.slug))
-      } else if (this.routeCollection == 'set' && this.routeSet != ALL) {
+      } else if (this.routeCollection == 'set') {
+      //} else if (this.routeCollection == 'set' && this.routeSet != ALL) {
         // TODO: implement real set filter (collectionLists isn't real)
         tools = tools.filter(t => (this.$store.state.collectionLists || ['action-logic']).includes(t.slug))
       } else if (config.toolTypes.includes(this.routeCollection)) {
@@ -220,176 +210,44 @@ export default {
     },
     selectTag(tag) {
       tag = this.$route.params.tag != tag ? tag : undefined
-      let collection =
-      this.$router.push({name: this.$route.name, params: {...this.$route.params, tag}})
+      this.$router.push({
+        name: this.routeCollection == ALL ? 'toolbox' : this.$route.name,
+        params: {...this.$route.params, tag}
+      })
     },
     guardRoute(route, next) {
-      let { name } = route
       let { query, region, set, tag } = route.params
-
       // Reject invalid regions, tags, or sets. Fall back to top-level toolbox.
       if ((region && !REGION_SLUGS.includes(region)) ||
           (tag && !(tag in this.tagTextBySlug)) ||
           (set && !SETS.includes(set)))
         return next({name: 'toolbox', replace: true})
-
       // Set an appropriate activeTab (one of: collection, region, set, tag)
       if (query || region) {
         this.activeTab = 'tag'
-      } else if (set) {
+      } else if (this.routeCollection == 'set') {
         this.activeTab = 'set'
       } else if (this.routeCollection == 'story') {
         this.activeTab = 'region'
-      } else if (['saved', 'set'].includes(this.routeCollection)) {
+      } else if (this.routeCollection == ALL && this.activeTab == 'tag') {
+        // Don't go back to collection tab when unselecting the last tag
+        this.activeTab = 'tag'
+      } else if ([ALL, 'saved'].includes(this.routeCollection)) {
         this.activeTab = 'collection'
       } else {
         this.activeTab = 'tag'
       }
-
-      console.log('P0:', route.params, this.activeTab)
-
       next()
     },
-    /*
-    // TODO: This logic is unsustainable. Use explicit routes to handle the variety of meanings
-    //       assigned to filterA and filterB.
-    _filterGuardAndSet(route, next) {
-      // Validates and sets filters specified by a route. When passed the next function from a
-      // route guard, re-routes to a path with a valid filter (or none). A default filterPaneActive
-      // is selected, but if this guard was triggered by a filterToggle* function, filterPaneActive
-      // may subsequently be set to something else.
-      let { collection, filterA, filterB } = route.params
-      let filterRegion, filterSet, filterTag
-
-      next = next || (() => {})
-      let nextReplace = params => next({name: 'toolbox', replace: true, params})
-
-      let debug = s => this.$store.commit('setDebug', `Toolbox routing condition: ${s}`)
-      // Each branch 1. REJECTS invalid routes, 2. SETS positional filter params, 3. SELECTS filterPaneActive
-
-      // Toolbox only search
-      if (collection == 'search') {
-        debug(`search`)
-
-      // My tools
-      } else if (collection == 'saved') {
-        debug(`saved`)
-        if (filterA || filterB) { // Remove invalid filters
-          return nextReplace({collection})
-        }
-        this.filterPaneActive = 'collection'
-
-      // Set of tools
-      } else if (collection == 'set') {
-        debug(`set`)
-        if (filterB) {
-          return nextReplace({collection, filterA})
-        } else if (!SETS.includes(filterA)) {
-          return nextReplace({collection, filterA: config.defaultCollection})
-        }
-        filterSet = filterA
-        this.filterPaneActive = 'set'
-
-      // Stories (filterA becomes region, filterB becomes tag)
-      } else if (collection == 'story') {
-        debug(`story`)
-        if (filterB && !(filterB in this.tagTextBySlug)) { // Remove invalid tag
-          return nextReplace({collection, filterA})
-        } else if (filterA && !REGION_SLUGS.includes(filterA)) { // Remove invalid region
-          return nextReplace({collection})
-        }
-        filterRegion = filterA
-        filterTag = filterB
-        this.filterPaneActive = filterA ? (filterB ? 'tag' : 'region') : 'collection'
-
-      // Collection is a tool type or ALL
-      } else if ([ALL, ...this.config.toolTypes].includes(collection)) {
-        debug(`collection / all`)
-        if (filterB) { // Remove invalid secondary filter
-          return nextReplace({collection, filterA})
-        } else if (filterA && !(filterA in this.tagTextBySlug)) { // Remove invalid tag
-          return nextReplace({collection})
-        }
-        filterTag = filterA
-        this.filterPaneActive = filterA ? 'tag' : (collection == 'story' ? 'region' : 'collection')
-
-      // Invalid collection, redirect to toolbox root
-      } else if (collection) {
-        debug(`invalid collection`)
-        return nextReplace({})
-
-      // Default
-      } else {
-        debug(`default`)
-        this.filterPaneActive = 'collection'
-      }
-      this.filterCollection = collection || ALL
-      this.filterRegion = filterRegion || ALL
-      this.filterSet = filterSet || ALL
-      this.filterTag = filterTag || ALL
-      next()
-    },
-    filterReRoute(params = {}) {
-      // Double redirects throw an error.
-      // Vue says next() can be called exactly once per routing action, so this probably needs fixing.
-      this.$router.push({name: 'toolbox', params})
-        .catch(e => console.debug(`filterReRoute: ${e.message}`))
-    },
-    _filterToggleCollection(collection) {
-      // Update route and advance active filter pane
-      if (this.filterCollection != collection) this.filterReRoute({collection})
-      this.filterPaneActive = {story: 'region', saved: 'collection', set: 'set'}[collection] || 'tag'
-    },
-    filterToggleRegion(region) {
-      // Update route and advance to tag filter pane
-      if (this.filterCollection == 'story') {
-        if (this.filterRegion != region) this.filterReRoute({collection: 'story', filterA: region})
-        this.filterPaneActive = 'tag'
-      }
-    },
-    filterToggleSet(set) {
-      // TODO: test this when sets of tools become available
-      console.log(set)
-      if (this.filterCollection == 'set') {
-        if (this.filterSet != set) this.filterReRoute({collection: 'set', filterA: set})
-        else this.filterReRoute({collection: 'set'})
-      }
-    },
-    filterToggleTag(tag) {
-      // Update route with filterA or filterB as the tag
-      let params = {collection: this.filterCollection}
-      if (this.filterCollection == 'story') {
-        params.filterA = this.filterRegion
-        if (this.filterTag != tag) {
-          params.filterB = tag
-        }
-      } else if (this.filterTag != tag) {
-        params.filterA = tag
-      }
-      this.filterReRoute(params)
-    },
-    getFilterClasses(filterPaneActive, selection) {
-      // Use filterWhatever properties on this component to set active/inactive classes
-      let filter = this[`filter${filterPaneActive}`]
-      return {
-        [selection]: true,
-        block: true,
-        active: filter == selection,
-        inactive: filter != ALL && filter != selection,
-      }
-    },
-    */
   },
   beforeRouteUpdate(to, from, next) {
-    console.warn('beforeRouteUpdate')
     this.guardRoute(to, next)
   },
   beforeRouteEnter(to, from, next) {
-    console.warn('beforeRouteEnter')
     next(vm => vm.guardRoute(to, next))
   },
   created() {
-    console.warn('created toolbox', this.$route)
+    console.log('created toolbox', this.$route)
     // TODO: Determine whether this is needed in production (it's needed for the webpack dev server)
     this.guardRoute(this.$route, () => {})
   },
@@ -493,6 +351,7 @@ export default {
       &.active {
         font-weight: bold;
         position: relative;
+        /*
         &::after {
           content: "×";
           font-size: 2.5rem;
@@ -506,6 +365,7 @@ export default {
             right: 5px;
           }
         }
+        */
       }
       &.disabled {
         color: $bgdark2;
