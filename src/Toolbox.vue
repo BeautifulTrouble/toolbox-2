@@ -8,8 +8,8 @@
         <div class="sentence contain">
           <span>Show me</span>
           <span>
-            <span :class="{tab: true, active: ['collection', 'selected'].includes(filterPaneActive)}"
-              @click="filterPaneActive = filterCollection == 'selected' ? 'selected' : 'collection'">
+            <span :class="{tab: true, active: ['collection', 'set'].includes(filterPaneActive)}"
+              @click="filterPaneActive = filterCollection == 'set' ? 'set' : 'collection'">
               {{ filterCollection == 'all' ? 'everything' : (typeTextBySlug[filterCollection] || [, filterCollection])[1] }}</span>
           </span>
           <span v-if="filterCollection == 'story'">
@@ -18,7 +18,7 @@
               @click="filterPaneActive = 'region'">
               {{ filterRegion == 'all' ? 'the whole world' : filterRegion }}</span>
           </span>
-          <span v-if="!['saved', 'selected'].includes(filterCollection)">
+          <span v-if="!['saved', 'set'].includes(filterCollection)">
             <span>about</span>
             <span :class="{tab: true, active: filterPaneActive == 'tag'}" @click="filterPaneActive = 'tag'">
               {{ tagTextBySlug[filterTag] || 'everything' }}</span>
@@ -45,12 +45,12 @@
                 <div :class="getFilterClasses('Collection', 'saved')" @click="filterToggleCollection('saved')">
                   <img svg-inline class="icon smaller" src="./assets/favorite-active.svg">
                   <h3>MY TOOLS</h3>
-                  <p>TOOLS YOU'VE SAVED BY CLICKING THE HEART ICON</p>
+                  <p>Your favorite tools</p>
                 </div>
-                <div :class="getFilterClasses('Collection', 'selected')" @click="filterToggleCollection('selected')">
-                  <img svg-inline class="icon smaller" src="./assets/selected.svg">
-                  <h3>SELECTED TOOLS</h3>
-                  <p>COLLECTIONS OF TOOLS WE'VE SELECTED BASED ON SOME CRITERIA</p>
+                <div :class="getFilterClasses('Collection', 'set')" @click="filterToggleCollection('set')">
+                  <img svg-inline class="icon" src="./assets/set.svg">
+                  <h3>SETS</h3>
+                  <p>Custom sets of tools</p>
                 </div>
               </div>
 
@@ -73,11 +73,11 @@
                 </div>
               </div>
 
-              <!-- BY SELECTED TOOLS -->
-              <div class="by by-selected" v-if="filterPaneActive == 'selected'" :key="'selected'">
+              <!-- BY SET -->
+              <div class="by by-set" v-if="filterPaneActive == 'set'" :key="'set'">
                 <h1>Backend connection required</h1>
-                <div @click="filterToggleSelected('best-of')">BEST OF</div>
-                <div @click="filterToggleSelected('andrews-list')">ANDREW'S LIST</div>
+                <div @click="filterToggleSet('best-of')">BEST OF</div>
+                <div @click="filterToggleSet('andrews-list')">ANDREW'S LIST</div>
               </div>
 
               <!-- BY TAG -->
@@ -96,7 +96,7 @@
       <transition-group name="tools-list" tag="div" class="tools">
         <tool-tile v-for="tool in filteredTools" :key="tool.slug"
           :tool="tool" :text="typeTextBySlug"/>
-        <a v-if="!['selected', 'saved'].includes(filterCollection)"
+        <a v-if="!['set', 'saved'].includes(filterCollection)"
           class="tool-tile add-tool" :href="config.submissionForm" target="_blank" :key="-1">
           <div class="add">+</div>
           <h3>SUGGEST A TOOL</h3>
@@ -118,7 +118,7 @@ import typeTextByLang from './types'
 
 // Let's have some dignity
 const ALL = 'all'
-const COLLECTIONS = ['andrews-list', 'best-of']
+const SETS = ['andrews-list', 'best-of']
 const REGIONS = ['Africa', 'Asia', 'Europe', 'Latin America and the Caribbean', 'Middle East', 'North America', 'Oceania']
 const REGION_SLUGS = ['all', ...REGIONS.map(s => s.toLowerCase().replace(/ /g, '-'))]
 
@@ -131,10 +131,10 @@ export default {
     REGIONS,
     config,
     filterPaneActive: null,
-    // Values filter{Collection,Region,Selected,Tag} should ONLY be manipulated by a route guard
+    // Values filter{Collection,Region,Set,Tag} should ONLY be manipulated by a route guard
     filterCollection: null,
     filterRegion: null,
-    filterSelected: null,
+    filterSet: null,
     filterTag: null,
   }),
   components: {
@@ -147,9 +147,9 @@ export default {
 
       if (this.filterCollection == 'saved')
         tools = tools.filter(t => this.$store.state.savedTools.has(t.slug))
-      else if (this.filterCollection == 'selected' && this.filterSelected != ALL)
+      else if (this.filterCollection == 'set' && this.filterSet != ALL)
       // TODO: select actual filter
-      //else if (COLLECTIONS.includes(this.filterCollection))
+      //else if (SETS.includes(this.filterCollection))
         tools = tools.filter(t => (this.$store.state.collectionLists || ['action-logic']).includes(t.slug))
       else if (config.toolTypes.includes(this.filterCollection))
         tools = tools.filter(t => t.type == this.filterCollection)
@@ -189,101 +189,125 @@ export default {
     }
   },
   methods: {
-    // XXX: Why is filter & routing logic creeping toward 100 LOC?
-    //      Justification 2020-4-30: the logic does 3 things:
-    //      1. REJECT invalid filter routes and redirect to a next-best route
-    //      2. SHOW the active selection when a user arrives at a filtered URL (e.g.: landing on
-    //         /toolbox/story SHOWS that story is selected, not tags for FURTHER filtering)
-    //      3. it needs to UPDATE the filterPaneActive when navigating between panes.
+    // TODO: This logic is unsustainable. Use explicit routes to handle the variety of meanings
+    //       assigned to filterA and filterB.
     filterGuardAndSet(route, next) {
       // Validates and sets filters specified by a route. When passed the next function from a
       // route guard, re-routes to a path with a valid filter (or none). A default filterPaneActive
       // is selected, but if this guard was triggered by a filterToggle* function, filterPaneActive
       // may subsequently be set to something else.
       let { collection, filterA, filterB } = route.params
-      let filterRegion, filterSelected, filterTag
+      let filterRegion, filterSet, filterTag
 
       next = next || (() => {})
       let nextReplace = params => next({name: 'toolbox', replace: true, params})
 
-      let warn = s => this.$store.commit('setDebug', `Toolbox routing condition: ${s}`)
+      let debug = s => this.$store.commit('setDebug', `Toolbox routing condition: ${s}`)
       // Each branch 1. REJECTS invalid routes, 2. SETS positional filter params, 3. SELECTS filterPaneActive
-      // TODO: Prefer redirecting to /toolbox over /toolbox/all
-      if (collection == 'saved') {
-        // My tools
-        warn(`1`)
-        if (filterA || filterB) return nextReplace({collection})
+
+      // Toolbox only search
+      if (collection == 'search') {
+        debug(`search`)
+
+      // My tools
+      } else if (collection == 'saved') {
+        debug(`saved`)
+        if (filterA || filterB) { // Remove invalid filters
+          return nextReplace({collection})
+        }
         this.filterPaneActive = 'collection'
-      } else if (collection == 'selected') {
-        // Selected tools
-        warn(`2`)
-        if (filterB) return nextReplace({collection, filterA})
-        if (!COLLECTIONS.includes(filterA)) return nextReplace({collection, filterA: config.defaultCollection})
-        filterSelected = filterA
-        this.filterPaneActive = 'selected'
+
+      // Set of tools
+      } else if (collection == 'set') {
+        debug(`set`)
+        if (filterB) {
+          return nextReplace({collection, filterA})
+        } else if (!SETS.includes(filterA)) {
+          return nextReplace({collection, filterA: config.defaultCollection})
+        }
+        filterSet = filterA
+        this.filterPaneActive = 'set'
+
+      // Stories (filterA becomes region, filterB becomes tag)
       } else if (collection == 'story') {
-        // Stories (filterA becomes region, filterB becomes tag)
-        warn(`3`)
-        if (filterB && !(filterB in this.tagTextBySlug)) return nextReplace({collection, filterA})
-        if (filterA && !REGION_SLUGS.includes(filterA)) return nextReplace({collection})
+        debug(`story`)
+        if (filterB && !(filterB in this.tagTextBySlug)) { // Remove invalid tag
+          return nextReplace({collection, filterA})
+        } else if (filterA && !REGION_SLUGS.includes(filterA)) { // Remove invalid region
+          return nextReplace({collection})
+        }
         filterRegion = filterA
         filterTag = filterB
         this.filterPaneActive = filterA ? (filterB ? 'tag' : 'region') : 'collection'
+
+      // Collection is a tool type or ALL
       } else if ([ALL, ...this.config.toolTypes].includes(collection)) {
-        // Collection is a tool type or ALL
-        warn(`4`)
-        if (filterB) return nextReplace({collection, filterA})
-        if (filterA && !(filterA in this.tagTextBySlug)) return nextReplace({collection})
+        debug(`collection / all`)
+        if (filterB) { // Remove invalid secondary filter
+          return nextReplace({collection, filterA})
+        } else if (filterA && !(filterA in this.tagTextBySlug)) { // Remove invalid tag
+          return nextReplace({collection})
+        }
         filterTag = filterA
         this.filterPaneActive = filterA ? 'tag' : (collection == 'story' ? 'region' : 'collection')
+
+      // Invalid collection, redirect to toolbox root
       } else if (collection) {
-        // Invalid collection, redirect to toolbox root
-        warn(`5`)
+        debug(`invalid collection`)
         return nextReplace({})
+
+      // Default
       } else {
-        // Default
-        warn(`6`)
+        debug(`default`)
         this.filterPaneActive = 'collection'
       }
       this.filterCollection = collection || ALL
       this.filterRegion = filterRegion || ALL
-      this.filterSelected = filterSelected || ALL
+      this.filterSet = filterSet || ALL
       this.filterTag = filterTag || ALL
       next()
     },
     filterReRoute(params = {}) {
+      // Double redirects throw an error.
+      // Vue says next() can be called exactly once per routing action, so this probably needs fixing.
       this.$router.push({name: 'toolbox', params})
+        .catch(e => console.debug(`filterReRoute: ${e.message}`))
     },
     filterToggleCollection(collection) {
+      // Update route and advance active filter pane
       if (this.filterCollection != collection) this.filterReRoute({collection})
-      this.filterPaneActive = {story: 'region', saved: 'collection', selected: 'selected'}[collection] || 'tag'
+      this.filterPaneActive = {story: 'region', saved: 'collection', set: 'set'}[collection] || 'tag'
     },
     filterToggleRegion(region) {
+      // Update route and advance to tag filter pane
       if (this.filterCollection == 'story') {
         if (this.filterRegion != region) this.filterReRoute({collection: 'story', filterA: region})
         this.filterPaneActive = 'tag'
       }
     },
-    filterToggleSelected(selected) {
-      // TODO: test this when selected tools become available
-      console.log(selected)
-      if (this.filterCollection == 'selected') {
-        if (this.filterSelected != selected) this.filterReRoute({collection: 'selected', filterA: selected})
-        else this.filterReRoute({collection: 'selected'})
+    filterToggleSet(set) {
+      // TODO: test this when sets of tools become available
+      console.log(set)
+      if (this.filterCollection == 'set') {
+        if (this.filterSet != set) this.filterReRoute({collection: 'set', filterA: set})
+        else this.filterReRoute({collection: 'set'})
       }
     },
     filterToggleTag(tag) {
-      if (this.filterTag != tag) {
-        this.filterReRoute(this.filterCollection == 'story'
-          ? {collection: this.filterCollection, filterA: this.filterRegion, filterB: tag}
-          : {collection: this.filterCollection, filterA: tag})
-      } else {
-        this.filterReRoute(this.filterCollection == 'story'
-            ? {collection: this.filterCollection, filterA: this.filterRegion}
-            : {collection: this.filterCollection})
+      // Update route with filterA or filterB as the tag
+      let params = {collection: this.filterCollection}
+      if (this.filterCollection == 'story') {
+        params.filterA = this.filterRegion
+        if (this.filterTag != tag) {
+          params.filterB = tag
+        }
+      } else if (this.filterTag != tag) {
+        params.filterA = tag
       }
+      this.filterReRoute(params)
     },
     getFilterClasses(filterPaneActive, selection) {
+      // Use filterWhatever properties on this component to set active/inactive classes
       let filter = this[`filter${filterPaneActive}`]
       return {
         [selection]: true,
@@ -452,8 +476,8 @@ export default {
       width: 3rem;
     }
   }
-  .selected {
-    fill: $selected;
+  .set {
+    fill: $set;
   }
 }
 .tools {
