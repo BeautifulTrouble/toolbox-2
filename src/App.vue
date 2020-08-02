@@ -50,7 +50,7 @@
     </div>
 
 
-    <footer>
+    <footer :class="{debugLowercase: debugPanel.lowercase}">
       <div class="upper">
         <div class="contain">
           <div v-if="btData.menuData" class="links">
@@ -90,7 +90,7 @@
             </a>
           </div>
           <div class="c">
-            <h3>JOIN THE COMMUNITY</h3>
+            <h3>Join the community</h3>
             <span>Provide your e-mail to receive the latest updates.</span>
             <span>We promise not to sell your info!</span>
             <form action="https://beautifultrouble.us7.list-manage.com/subscribe/post?u=2aa3b5c34f535e74090f9098d&amp;id=4a7c9e1689" method="post" id="mc-embedded-subscribe-form" name="mc-embedded-subscribe-form" class="validate" target="_blank" novalidate="">
