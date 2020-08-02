@@ -173,7 +173,7 @@
           <hr>
         </section>
         <section v-if="authors && authors.length" class="authors">
-          <h4>CONTRIBUTORS</h4>
+          <h4>{{ ['CONTRIBUTOR', 'CONTRIBUTORS'][+(authors.length > 1)] }}</h4>
           <div v-for="a in authors" :key="a.slug">
             <div class="upper">
               <img :src="`${config.imagePrefix}/icon-${a.image}`">
