@@ -117,7 +117,7 @@ export default {
     config: config,
     showSearch: false,
     debugPanel: {
-      lowercase: false,
+      lowercase: true,
       toolMargin: false,
       reset: () => [localStorage.clear(), window.location.reload()] ,
     }
@@ -154,8 +154,11 @@ export default {
   }
 }
 .debugLowercase {
-  h1, h2, h3, .sentence span.tab, .link, {
-   text-transform: unset !important;
+  h1, h2, h3, .link, {
+    text-transform: unset !important;
+  }
+  .sentence span.tab {
+    text-transform: unset !important;
   }
 }
 .debugPanel {
