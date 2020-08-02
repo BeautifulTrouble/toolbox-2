@@ -9,21 +9,22 @@
           <span>Show me</span>
           <span>
             <span :class="{tab: true, active: ['collection', 'set'].includes(activeTab)}"
-              @click="activeTab = filterCollection == 'set' ? 'set' : 'collection'">
-              {{ filterCollection == 'all' ? 'everything' : (typeTextBySlug[filterCollection] || [, filterCollection])[1] }}</span>
+              @click="activeTab = routeCollection == 'set' ? 'set' : 'collection'">
+              {{ $route.name == 'toolbox' ? 'everything' : (typeTextBySlug[routeCollection] || [, routeCollection])[1] }}
+            </span>
           </span>
-          <span v-if="filterCollection == 'story'">
+          <span v-if="routeCollection == 'story'">
             <span>from</span>
             <span :class="{tab: true, active: activeTab == 'region'}"
               @click="activeTab = 'region'">
-              {{ filterRegion == 'all' ? 'the whole world' : filterRegion }}</span>
+              {{ $route.params.region == 'all' ? 'the whole world' : $route.params.region }}</span>
           </span>
-          <span v-if="!['saved', 'set'].includes(filterCollection)">
+          <span v-if="!['saved', 'set'].includes(routeCollection)">
             <span>about</span>
             <span :class="{tab: true, active: activeTab == 'tag'}" @click="activeTab = 'tag'">
-              {{ tagTextBySlug[filterTag] || 'everything' }}</span>
+              {{ tagTextBySlug[$route.params.tag] || 'everything' }}</span>
           </span>
-          <img v-if="filterCollection != ALL || filterTag != ALL" svg-inline class="icon reset" src="./assets/reset.svg" @click="filterReRoute()" alt="Reset">
+          <img v-if="routeCollection != ALL || !$route.params.tag" svg-inline class="icon reset" src="./assets/reset.svg" @click="$router.push({name: 'toolbox'})" alt="Reset">
         </div>
 
         <!-- FILTER WIDGET -->
@@ -33,7 +34,8 @@
 
               <!-- BY COLLECTION -->
               <div class="by by-collection" v-if="activeTab == 'collection'">
-                <div v-for="(value, key) in typeTextBySlug" :key="key" :class="getFilterClasses('Collection', key)" @click="selectCollection(key)">
+                <div v-for="(value, key) in typeTextBySlug" :key="key"
+                  :class="filterBlockClasses(key)" @click="selectCollection(key)">
                   <img svg-inline v-if="key == 'tactic'" class="icon" src="./assets/tactic.svg">
                   <img svg-inline v-if="key == 'theory'" class="icon" src="./assets/theory.svg">
                   <img svg-inline v-if="key == 'story'" class="icon" src="./assets/story.svg">
@@ -42,12 +44,12 @@
                   <h3>{{ value[1] }}</h3>
                   <p>{{ descriptionTextByLang[key] }}</p>
                 </div>
-                <div :class="getFilterClasses('Collection', 'saved')" @click="selectCollection('saved')">
+                <div :class="filterBlockClasses('saved')" @click="selectCollection('saved')">
                   <img svg-inline class="icon smaller" src="./assets/favorite-active.svg">
                   <h3>MY TOOLS</h3>
                   <p>Your favorite tools</p>
                 </div>
-                <div :class="getFilterClasses('Collection', 'set')" @click="selectCollection('set')">
+                <div :class="filterBlockClasses('set')" @click="selectCollection('set')">
                   <img svg-inline class="icon" src="./assets/set.svg">
                   <h3>SETS</h3>
                   <p>Custom sets of tools</p>
@@ -96,12 +98,12 @@
       <transition-group name="tools-list" tag="div" class="tools">
         <tool-tile v-for="tool in filteredTools" :key="tool.slug"
           :tool="tool" :text="typeTextBySlug"/>
-        <a v-if="!['set', 'saved'].includes(filterCollection)"
+        <a v-if="!['set', 'saved'].includes(routeCollection)"
           class="tool-tile add-tool" :href="config.submissionForm" target="_blank" :key="-1">
           <div class="add">+</div>
           <h3>SUGGEST A TOOL</h3>
         </a>
-        <div v-if="filterCollection == 'saved' && !$store.state.savedTools.size" class="tool-tile tool-add" :key="-2">
+        <div v-if="routeCollection == 'saved' && !$store.state.savedTools.size" class="tool-tile tool-add" :key="-2">
           LOOKS LIKE YOU HAVENT SAVED ANY TOOLS...
         </div>
       </transition-group>
@@ -131,7 +133,7 @@ export default {
     REGIONS,
     config,
     filterPaneActive: null,
-    activeTab: null,
+    activeTab: 'collection',
     // Values filter{Collection,Region,Set,Tag} should ONLY be manipulated by a route guard
     filterCollection: null,
     filterRegion: null,
@@ -187,7 +189,11 @@ export default {
     },
     typeTextBySlug() {
       return typeTextByLang[this.$store.state.lang]
-    }
+    },
+    // Refactor
+    routeCollection() {
+      return this.$route.name.replace('toolbox-', '') || ALL
+    },
   },
   methods: {
     selectCollection(collection) {
@@ -197,8 +203,9 @@ export default {
         this.$router.push({name: `toolbox-${collection}`})
       }
       this.activeTab = {
-        story: 'region',
+        saved: 'collection',
         set: 'set',
+        story: 'region',
       }[collection] || 'tag'
     },
     selectRegion(region) {
@@ -227,27 +234,21 @@ export default {
           (set && !SETS.includes(set)))
         return next({name: 'toolbox', replace: true})
 
+      // Reject invalid activeTabs
+      // TODO
+
       //this.filterQuery = query || null
       //this.filterRegion = region || ALL
       //this.filterSet = set || ALL
       //this.filterTag = tag || ALL
 
-      // Set default filterPaneActive
-      this.filterPaneActive = {
-        /*
-        'toolbox': 'collection',
-        'toolbox-by-story': 'collection',
-        'toolbox-by-type': 'collection',
-        'toolbox-saved': 'collection',
-        */
-        'toolbox-search': 'tag',
-        'toolbox-set': 'set',
-      }[name] || 'collection'
-
       console.log('P0:', params)
 
       next()
 
+    },
+    filterBlockClasses(collection) {
+      return ['block', collection, [ALL, collection].includes(this.routeCollection) ? 'active' : 'inactive']
     },
     // TODO: This logic is unsustainable. Use explicit routes to handle the variety of meanings
     //       assigned to filterA and filterB.
