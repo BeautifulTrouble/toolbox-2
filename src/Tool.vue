@@ -153,7 +153,10 @@
                     <router-link :to="{name: 'tool', params: {slug: s}}"
                       :class="{'key-related': keySlugs.has(s)}">
                       {{ $store.state.toolsBySlug[s].title }}
-                      <div class="snapshot-popup" v-html="markdown($store.state.toolsBySlug[s].snapshot)"></div>
+                      <div class="snapshot-popup">
+                        <h3>{{ $store.state.toolsBySlug[s].title }}</h3>
+                        <div v-html="markdown($store.state.toolsBySlug[s].snapshot)"/>
+                      </div>
                     </router-link>
                   </div>
                 </transition>
@@ -478,9 +481,6 @@ $sidebar: 18rem;
       &:hover {
         border-width: .6rem;
       }
-      &::before {
-        content: none;
-      }
       .rtl & {
         margin: 3rem -5rem 3rem 1rem;
         float: right;
@@ -655,8 +655,8 @@ $sidebar: 18rem;
                 top: -1px; bottom: -3px;
                 left: -3rem; right: -1rem;
                 background: white;
-                box-shadow: 5px 0 8px $shadow;
-                border-radius: 2rem;
+                //box-shadow: 5px 0 8px $shadow;
+                //border-radius: 2rem;
                 position: absolute;
                 z-index: -1;
                 .rtl & {
@@ -670,7 +670,7 @@ $sidebar: 18rem;
           }
         }
       }
-      .key-related::before {
+      .key-related::after {
         content: "*";
         position: absolute;
         left: -10px;
@@ -681,7 +681,7 @@ $sidebar: 18rem;
         }
       }
       @mixin type-related($color) {
-        a, h2 { color: $color; }
+        a, h2, h3 { color: $color; }
         span::after { border-top-color: $color; }
       }
       .tactic { @include type-related($tactic); }
@@ -694,7 +694,10 @@ $sidebar: 18rem;
         background: white;
         box-shadow: 5px 0 8px $shadow;
         position: absolute;
-        bottom: -16px - 3px;
+        //top: -16px - 1px;
+        top: -2.5rem;
+        //bottom: -16px - 3px;
+        //bottom: -29px - 3px;
         right: 100%;
         width: 24rem;
         display: none;
@@ -702,10 +705,12 @@ $sidebar: 18rem;
         margin: 1rem;
         border-width: .3rem;
         border-left-style: solid;
-        &::after {
-          content: "";
+        &::after { // Small white square which covers shadow
+          //content: "";
           position: absolute;
-          bottom: 0;
+          //top: 0;
+          top: 1.45rem;
+          //bottom: 29px - 16px;
           height: 16px + 4px + 3px;
           background: white;
           width: 2rem;
@@ -725,8 +730,12 @@ $sidebar: 18rem;
           margin: 0;
           color: $text;
           //text-transform: uppercase;
-          font-style: italic;
-          font-size: 1.25rem;
+          //font-style: italic;
+          //font-size: 1.25rem;
+        }
+        h3 {
+          margin: .25rem 0;
+          text-transform: none;
         }
       }
     }

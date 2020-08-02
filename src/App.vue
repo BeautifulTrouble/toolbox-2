@@ -37,6 +37,7 @@
     <transition name="fade" mode="out-in">
       <router-view :class="{debugToolMargin: debugPanel.toolMargin}"/>
     </transition>
+    <!-- TODO: Use CSS-based rectangles -->
     <div v-if="$store.state.langRequested">Loading...</div>
 
 
