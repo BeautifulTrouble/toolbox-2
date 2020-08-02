@@ -105,8 +105,7 @@ a:link, a:visited, a:hover {
   color: $theory;
 }
 blockquote {
-  //font-style: italic;
-  text-transform: uppercase;
+  font-style: italic;
   position: relative;
   quotes: '“' '”';
   color: lighten($text, 15%);
