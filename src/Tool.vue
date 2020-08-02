@@ -8,7 +8,7 @@
 
     <header slot="content">
       <div class="upper">
-        <router-link :to="{name: 'toolbox', params: {collection: tool.type}}">
+        <router-link :to="{name: `toolbox-${tool.type}`}">
           <img svg-inline v-if="tool.type == 'tactic'" class="icon" src="./assets/tactic.svg">
           <img svg-inline v-else-if="tool.type == 'theory'" class="icon" src="./assets/theory.svg">
           <img svg-inline v-else-if="tool.type == 'story'" class="icon" src="./assets/story.svg">
@@ -34,8 +34,8 @@
       <article>
         <div class="inner">
           <div :class="['breadcrumbs', tool.type]">
-            <router-link to="/toolbox">TOOLBOX</router-link> /
-            <router-link :to="{name: 'toolbox', params: {collection: tool.type}}">{{ typeTextBySlug[tool.type][0] }}</router-link> /
+            <router-link to="/toolbox">Toolbox</router-link> /
+            <router-link :to="{name: `toolbox-${tool.type}`}">{{ typeTextBySlug[tool.type][0] }}</router-link> /
             <router-link :to="{name: 'tool', params: {slug: tool.slug}}">{{ tool.title }}</router-link>
           </div>
           <div class="epigraphs" v-if="tool.epigraphs">
@@ -135,7 +135,7 @@
           <h4>RELATED TOOLS</h4>
           <div v-for="T in Object.keys(randomRelated)" :key="T" :class="T">
             <div class="type">
-              <router-link :to="{name: 'toolbox', params: {collection: T}}">
+              <router-link :to="{name: `toolbox-${T}`}">
                 <img svg-inline v-if="T == 'tactic'" class="icon" src="./assets/tactic.svg">
                 <img svg-inline v-else-if="T == 'theory'" class="icon" src="./assets/theory.svg">
                 <img svg-inline v-else-if="T == 'story'" class="icon" src="./assets/story.svg">
