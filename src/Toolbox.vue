@@ -15,9 +15,8 @@
           </span>
           <span v-if="routeCollection == 'story'">
             <span>from</span>
-            <span :class="{tab: true, active: activeTab == 'region'}"
-              @click="activeTab = 'region'">
-              {{ $route.params.region == 'all' ? 'the whole world' : $route.params.region }}</span>
+            <span :class="{tab: true, active: activeTab == 'region'}" @click="activeTab = 'region'">
+              {{ routeRegion == 'all' ? 'the whole world' : routeRegion }}</span>
           </span>
           <span v-if="!['saved', 'set'].includes(routeCollection)">
             <span>about</span>
@@ -35,7 +34,7 @@
               <!-- BY COLLECTION -->
               <div class="by by-collection" v-if="activeTab == 'collection'">
                 <div v-for="(value, key) in typeTextBySlug" :key="key"
-                  :class="filterBlockClasses(key)" @click="selectCollection(key)">
+                   :class="{block: true, [key]: true, active: routeCollection == key}" @click="selectCollection(key)">
                   <img svg-inline v-if="key == 'tactic'" class="icon" src="./assets/tactic.svg">
                   <img svg-inline v-if="key == 'theory'" class="icon" src="./assets/theory.svg">
                   <img svg-inline v-if="key == 'story'" class="icon" src="./assets/story.svg">
@@ -44,12 +43,12 @@
                   <h3>{{ value[1] }}</h3>
                   <p>{{ descriptionTextByLang[key] }}</p>
                 </div>
-                <div :class="filterBlockClasses('saved')" @click="selectCollection('saved')">
+                <div :class="{block: true, saved: true, active: routeCollection == 'saved'}" @click="selectCollection('saved')">
                   <img svg-inline class="icon smaller" src="./assets/favorite-active.svg">
                   <h3>MY TOOLS</h3>
                   <p>Your favorite tools</p>
                 </div>
-                <div :class="filterBlockClasses('set')" @click="selectCollection('set')">
+                <div :class="{block: true, set: true, active: routeCollection == 'set'}" @click="selectCollection('set')">
                   <img svg-inline class="icon" src="./assets/set.svg">
                   <h3>SETS</h3>
                   <p>Custom sets of tools</p>
@@ -58,12 +57,12 @@
 
               <!-- BY REGION -->
               <div class="by by-region" v-if="activeTab == 'region'" :key="'region'">
-                <div :class="{block: true, active: filterRegion == 'all'}" @click="selectRegion('all')">
+                <div :class="{block: true, active: routeRegion == 'all'}" @click="selectRegion('all')">
                   <img svg-inline class="icon" src="./assets/regions/world.svg">
                   <p>THE WHOLE WORLD</p>
                 </div>
                 <div v-for="region in REGIONS" :key="region"
-                  :class="{block: true, active: filterRegion == slugify(region)}" @click="selectRegion(slugify(region))">
+                  :class="{block: true, active: $route.params.region == slugify(region)}" @click="selectRegion(slugify(region))">
                   <img svg-inline v-if="region == 'Africa'" class="icon" src="./assets/regions/africa.svg">
                   <img svg-inline v-if="region == 'Asia'" class="icon" src="./assets/regions/asia.svg">
                   <img svg-inline v-if="region == 'Europe'" class="icon" src="./assets/regions/europe.svg">
@@ -78,14 +77,14 @@
               <!-- BY SET -->
               <div class="by by-set" v-if="activeTab == 'set'" :key="'set'">
                 <h1>Backend connection required</h1>
-                <div @click="filterToggleSet('best-of')">BEST OF</div>
-                <div @click="filterToggleSet('andrews-list')">ANDREW'S LIST</div>
+                <div @click="selectSet('best-of')">BEST OF</div>
+                <div @click="selectSet('andrews-list')">ANDREW'S LIST</div>
               </div>
 
               <!-- BY TAG -->
               <div class="by by-tag" v-if="activeTab == 'tag'" :key="'tag'">
                 <span v-for="(tag, i) in tagSlugsSorted" :key="i"
-                  :class="{active: filterTag == tag, disabled: !tagSlugsAvailable.has(tag)}"
+                  :class="{active: routeTag == tag, disabled: !tagSlugsAvailable.has(tag)}"
                   @click="selectTag(tag)">
                   {{ capitalize(tagTextBySlug[tag]) }}
                 </span>
@@ -132,50 +131,51 @@ export default {
     ALL,
     REGIONS,
     config,
-    filterPaneActive: null,
+    // activeTab is one of: collection, region, set, tag
     activeTab: 'collection',
+    /*
     // Values filter{Collection,Region,Set,Tag} should ONLY be manipulated by a route guard
     filterCollection: null,
     filterRegion: null,
     filterSet: null,
     filterTag: null,
+    // ...
+    filterPaneActive: null,
+    */
   }),
   components: {
     ToolTile,
   },
   computed: {
     filteredToolsAllTags() {
-      let tools = this.$store.state.tools.filter(
-        t => t['module-type'] != 'snapshot' && t['module-type-effective'] != 'snapshot')
-
-      if (this.filterCollection == 'saved')
+      let tools = this.$store.state.tools.filter(t => t['module-type-effective'] != 'snapshot')
+      if (this.routeCollection == 'saved') {
         tools = tools.filter(t => this.$store.state.savedTools.has(t.slug))
-      else if (this.filterCollection == 'set' && this.filterSet != ALL)
-      // TODO: select actual filter
-      //else if (SETS.includes(this.filterCollection))
+      } else if (this.routeCollection == 'set' && this.routeSet != ALL) {
+        // TODO: implement real set filter (collectionLists isn't real)
         tools = tools.filter(t => (this.$store.state.collectionLists || ['action-logic']).includes(t.slug))
-      else if (config.toolTypes.includes(this.filterCollection))
-        tools = tools.filter(t => t.type == this.filterCollection)
-
-      // TODO: how does this work wrt ALL???
-      if (this.filterCollection == 'story' && this.filterRegion != ALL)
+      } else if (config.toolTypes.includes(this.routeCollection)) {
+        tools = tools.filter(t => t.type == this.routeCollection)
+      }
+      if (this.routeCollection == 'story' && this.routeRegion != ALL) {
         tools = tools.filter(t => {
           let regionSlugs = t.regions.map(this.slugify) || []
-          return regionSlugs.includes(this.filterRegion) || regionSlugs.includes('worldwide')
+          return regionSlugs.includes(this.routeRegion) || regionSlugs.includes('worldwide')
         })
+      }
       return tools
     },
     filteredTools() {
       let tools = this.filteredToolsAllTags
-      if (this.filterTag != ALL)
-        tools = tools.filter(t => (t.tags || []).includes(this.filterTag))
+      if (this.routeTag != ALL)
+        tools = tools.filter(t => (t.tags || []).includes(this.routeTag))
       return tools
     },
     tagSlugsSorted() { // Sorted in current language
       return Object.keys(this.tagTextBySlug)
               .sort((a, b) => this.tagTextBySlug[a].localeCompare(this.tagTextBySlug[b]))
     },
-    tagSlugsAvailable() { // Relies on filteredToolsAllTags
+    tagSlugsAvailable() {
       return this.filteredToolsAllTags
         .map(t => t.tags)
         .reduce((a, c) => c !== undefined ? new Set([...a, ...c]) : a, new Set([]))
@@ -192,41 +192,40 @@ export default {
     },
     // Refactor
     routeCollection() {
-      return this.$route.name.replace('toolbox-', '') || ALL
+      return this.$route.name.replace(/^toolbox-?/, '') || ALL
+    },
+    routeRegion() {
+      return this.$route.params.region || ALL
+    },
+    routeSet() {
+      return this.$route.params.set || ALL
+    },
+    routeTag() {
+      return this.$route.params.tag || ALL
     },
   },
   methods: {
     selectCollection(collection) {
-      // Select a top-level collection, reset region/tag/set, and advance activeTab
       let name = `toolbox-${collection}`
-      if (this.$route.name != name) {
+      if (this.$route.name != name)
         this.$router.push({name: `toolbox-${collection}`})
-      }
-      this.activeTab = {
-        saved: 'collection',
-        set: 'set',
-        story: 'region',
-      }[collection] || 'tag'
     },
     selectRegion(region) {
-      if (this.$route.params.region != region) {
+      if (this.$route.params.region != region)
         this.$router.push({name: this.$route.name, params: {region}})
-      }
-      this.activeTab = 'tag'
+    },
+    selectSet(set) {
+      if (this.$route.params.set != set)
+        this.$route.push({name: this.$route.name, params: {set}})
     },
     selectTag(tag) {
-      if (this.$route.params.tag != tag) {
-        let params = Object.assign({}, this.$route.params)
-        params.tag = tag
-        this.$router.push({name: this.$route.name, params})
-      }
+      tag = this.$route.params.tag != tag ? tag : undefined
+      let collection =
+      this.$router.push({name: this.$route.name, params: {...this.$route.params, tag}})
     },
-    filterGuardAndSet(route, next) {
+    guardRoute(route, next) {
       let { name } = route
-      let params = Object.assign({}, route.params)
-      let { query, region, set, tag } = params
-
-      next = next || (() => {})
+      let { query, region, set, tag } = route.params
 
       // Reject invalid regions, tags, or sets. Fall back to top-level toolbox.
       if ((region && !REGION_SLUGS.includes(region)) ||
@@ -234,22 +233,24 @@ export default {
           (set && !SETS.includes(set)))
         return next({name: 'toolbox', replace: true})
 
-      // Reject invalid activeTabs
-      // TODO
+      // Set an appropriate activeTab (one of: collection, region, set, tag)
+      if (query || region) {
+        this.activeTab = 'tag'
+      } else if (set) {
+        this.activeTab = 'set'
+      } else if (this.routeCollection == 'story') {
+        this.activeTab = 'region'
+      } else if (['saved', 'set'].includes(this.routeCollection)) {
+        this.activeTab = 'collection'
+      } else {
+        this.activeTab = 'tag'
+      }
 
-      //this.filterQuery = query || null
-      //this.filterRegion = region || ALL
-      //this.filterSet = set || ALL
-      //this.filterTag = tag || ALL
-
-      console.log('P0:', params)
+      console.log('P0:', route.params, this.activeTab)
 
       next()
-
     },
-    filterBlockClasses(collection) {
-      return ['block', collection, [ALL, collection].includes(this.routeCollection) ? 'active' : 'inactive']
-    },
+    /*
     // TODO: This logic is unsustainable. Use explicit routes to handle the variety of meanings
     //       assigned to filterA and filterB.
     _filterGuardAndSet(route, next) {
@@ -377,17 +378,20 @@ export default {
         inactive: filter != ALL && filter != selection,
       }
     },
+    */
   },
   beforeRouteUpdate(to, from, next) {
-    this.filterGuardAndSet(to, next)
+    console.warn('beforeRouteUpdate')
+    this.guardRoute(to, next)
   },
   beforeRouteEnter(to, from, next) {
-    next(vm => vm.filterGuardAndSet(to, next))
+    console.warn('beforeRouteEnter')
+    next(vm => vm.guardRoute(to, next))
   },
   created() {
-    console.log('created toolbox', this.$route)
-    // TODO: Determine if this is EVER needed on a prod version, or only from development webpack
-    this.filterGuardAndSet(this.$route)
+    console.warn('created toolbox', this.$route)
+    // TODO: Determine whether this is needed in production (it's needed for the webpack dev server)
+    this.guardRoute(this.$route, () => {})
   },
 };
 </script>
@@ -521,9 +525,6 @@ export default {
     align-items: center;
     &.active {
       background: $bgdark1;
-    }
-    &.inactive {
-      opacity: .5;
     }
     p {
       min-height: 35%;
