@@ -10,7 +10,8 @@
           <span>
             <span :class="{tab: true, active: ['collection', 'set'].includes(activeTab)}"
               @click="activeTab = routeCollection == 'set' ? 'set' : 'collection'">
-              {{ $route.name == 'toolbox' ? 'everything' : (typeTextBySlug[routeCollection] || [, routeCollection])[1] }}
+              {{ $route.name == 'toolbox' ? 'everything' : (typeTextBySlug[routeCollection] || [, routeCollection])[1].toLowerCase() }}
+              <!-- TODO: ^ toLowerCase because of debug -->
             </span>
           </span>
           <span v-if="routeCollection == 'story'">
@@ -46,12 +47,12 @@
                 </div>
                 <div :class="{block: true, saved: true, active: routeCollection == 'saved'}" @click="selectCollection('saved')">
                   <img svg-inline class="icon smaller" src="./assets/favorite-active.svg">
-                  <h3>MY TOOLS</h3>
+                  <h3>My tools</h3>
                   <p>Your favorite tools</p>
                 </div>
                 <div :class="{block: true, set: true, active: routeCollection == 'set'}" @click="selectCollection('set')">
                   <img svg-inline class="icon" src="./assets/set.svg">
-                  <h3>SETS</h3>
+                  <h3>Sets</h3>
                   <p>Custom sets of tools</p>
                 </div>
               </div>

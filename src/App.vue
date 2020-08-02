@@ -35,7 +35,7 @@
       </div>
     </nav>
     <transition name="fade" mode="out-in">
-      <router-view :class="{debugToolMargin: debugPanel.toolMargin}"/>
+      <router-view :class="{debugToolMargin: debugPanel.toolMargin, debugLowercase: debugPanel.lowercase}"/>
     </transition>
     <!-- TODO: Use CSS-based rectangles -->
     <div v-if="$store.state.langRequested">Loading...</div>
@@ -46,6 +46,7 @@
       <p class="debug">{{ $store.state.debug }}</p>
       <div @click="debugPanel.reset">Reset Settings</div>
       <div @click="debugPanel.toolMargin = !debugPanel.toolMargin">Toggle toolbox margins</div>
+      <div @click="debugPanel.lowercase = !debugPanel.lowercase">Toggle UPPERCASE TITLES</div>
     </div>
 
 
@@ -116,6 +117,7 @@ export default {
     config: config,
     showSearch: false,
     debugPanel: {
+      lowercase: false,
       toolMargin: false,
       reset: () => [localStorage.clear(), window.location.reload()] ,
     }
@@ -149,6 +151,11 @@ export default {
   }
   .tool-tile {
     border: .25rem solid white;
+  }
+}
+.debugLowercase {
+  h1, h2, h3, .sentence span.tab, .link, {
+   text-transform: unset !important;
   }
 }
 .debugPanel {

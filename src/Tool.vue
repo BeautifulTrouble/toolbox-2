@@ -256,12 +256,15 @@ export default {
       ]
     },
     randomRelated() {
+      // TODO use keySlugs
       return Object.fromEntries(
         Object.keys(this.types)
           .filter(T => (this.tool[this.types[T]] || []).length)
           .map(T => {
+            // this.types.forEach
             let slugs = this.tool[this.types[T]]
             let indices = new Set([...Array(slugs.length).keys()].sort(() => 0.5 - Math.random()).slice(0, 5))
+            //console.log('i', indices)
             return [T, slugs.map((s, i) => [s, indices.has(i)])]
           })
       )
@@ -695,7 +698,7 @@ $sidebar: 18rem;
         box-shadow: 5px 0 8px $shadow;
         position: absolute;
         //top: -16px - 1px;
-        top: -2.5rem;
+        top: -16px - 24px;
         //bottom: -16px - 3px;
         //bottom: -29px - 3px;
         right: 100%;
@@ -709,7 +712,7 @@ $sidebar: 18rem;
           //content: "";
           position: absolute;
           //top: 0;
-          top: 1.45rem;
+          top: 24px;
           //bottom: 29px - 16px;
           height: 16px + 4px + 3px;
           background: white;
