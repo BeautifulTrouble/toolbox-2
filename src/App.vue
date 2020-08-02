@@ -35,34 +35,17 @@
       </div>
     </nav>
     <transition name="fade" mode="out-in">
-      <router-view />
+      <router-view :class="{debugToolMargin: debugPanel.toolMargin}"/>
     </transition>
     <div v-if="$store.state.langRequested">Loading...</div>
 
 
     <!-- TODO: -->
-    <div class="debug-panel">
+    <div class="debugPanel">
       <p class="debug">{{ $store.state.debug }}</p>
       <div @click="debugPanel.reset">Reset Settings</div>
-      <div @click="debugPanel.clutter = !debugPanel.clutter">Toggle testing clutter</div>
+      <div @click="debugPanel.toolMargin = !debugPanel.toolMargin">Toggle toolbox margins</div>
     </div>
-    <div id="nav" v-if="debugPanel.clutter">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/en/about">En About</router-link> |
-      <router-link to="/es/about">Sp About</router-link> |
-      <router-link to="/ar/about">Ar About</router-link> |
-      <router-link to="/about">About</router-link> |
-      <router-link to="/privacy-policy">p.p.</router-link> |
-      <router-link to="/privacy-policy/another">p.p. another</router-link> |
-      <router-link to="/top">top</router-link> |
-      <router-link to="/top/">top/</router-link> |
-      <router-link to="/top/another">top another</router-link> |
-      <router-link to="/does/not/exist">404</router-link> |
-      <router-link to="/tool/action-logic">tool (real)</router-link> |
-      <router-link to="/tool/not-real">tool (fake)</router-link> |
-      <router-link to="/toolbox">toolbox</router-link>
-    </div>
-
 
 
     <footer>
@@ -132,7 +115,7 @@ export default {
     config: config,
     showSearch: false,
     debugPanel: {
-      clutter: false,
+      toolMargin: false,
       reset: () => [localStorage.clear(), window.location.reload()] ,
     }
   }),
@@ -158,7 +141,16 @@ export default {
 <style lang="scss">
 @import 'common.scss';
 
-.debug-panel {
+// DEBUG
+.debugToolMargin {
+  .tools {
+    margin: .25rem -.25rem;
+  }
+  .tool-tile {
+    border: .25rem solid white;
+  }
+}
+.debugPanel {
   display: flex;
   flex-direction: column;
   position: fixed;
