@@ -25,16 +25,29 @@ const router = new Router({
   mode: 'history',
   base: '/',
   routes: [
-    {path: '/', name: 'home', component: WordPress},
-    {path: '/tool', redirect: {name: 'toolbox'}},
-    {path: '/story/:slug', redirect: {name: 'tool'}},
-    {path: '/tactic/:slug', redirect: {name: 'tool'}},
-    {path: '/principle/:slug', redirect: {name: 'tool'}},
-    {path: '/theory/:slug', redirect: {name: 'tool'}},
-    {path: '/methodology/:slug', redirect: {name: 'tool'}},
-    {path: '/tool/:slug', name: 'tool', component: Tool},
-    {path: '/toolbox/:collection?/:filterA?/:filterB?', name: 'toolbox', component: Toolbox},
-    {path: '/*', name: 'wordpress', component: WordPress},
+    {path: '/',                   name: 'home', component: WordPress},
+    // Legacy redirects
+    {path: '/story/:slug',        redirect: {name: 'tool'}},
+    {path: '/tactic/:slug',       redirect: {name: 'tool'}},
+    {path: '/principle/:slug',    redirect: {name: 'tool'}},
+    {path: '/theory/:slug',       redirect: {name: 'tool'}},
+    {path: '/methodology/:slug',  redirect: {name: 'tool'}},
+    // Tool pages
+    {path: '/tool',               redirect: {name: 'toolbox'}},
+    {path: '/tool/:slug',         name: 'tool', component: Tool},
+    // Toolbox filtering
+    {path: '/toolbox',                      name: 'toolbox', component: Toolbox},
+    {path: '/toolbox/story/:region?/:tag?', name: 'toolbox-story', component: Toolbox},
+    {path: '/toolbox/tactic/:tag?',         name: 'toolbox-tactic', component: Toolbox},
+    {path: '/toolbox/principle/:tag?',      name: 'toolbox-principle', component: Toolbox},
+    {path: '/toolbox/theory/:tag?',         name: 'toolbox-theory', component: Toolbox},
+    {path: '/toolbox/methodology/:tag?',    name: 'toolbox-methodology', component: Toolbox},
+    {path: '/toolbox/saved',                name: 'toolbox-saved', component: Toolbox},
+    {path: '/toolbox/search/:query',        name: 'toolbox-search', component: Toolbox},
+    {path: '/toolbox/set/:set?',            name: 'toolbox-set', component: Toolbox},
+    {path: '/toolbox/*',                    redirect: {name: 'toolbox'}},
+    // Fallback
+    {path: '/*',                  name: 'wordpress', component: WordPress},
   ],
   scrollBehavior(to, from, savedPosition) {
     if (to.hash) {

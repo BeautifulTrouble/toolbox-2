@@ -8,19 +8,19 @@
         <div class="sentence contain">
           <span>Show me</span>
           <span>
-            <span :class="{tab: true, active: ['collection', 'set'].includes(filterPaneActive)}"
-              @click="filterPaneActive = filterCollection == 'set' ? 'set' : 'collection'">
+            <span :class="{tab: true, active: ['collection', 'set'].includes(activeTab)}"
+              @click="activeTab = filterCollection == 'set' ? 'set' : 'collection'">
               {{ filterCollection == 'all' ? 'everything' : (typeTextBySlug[filterCollection] || [, filterCollection])[1] }}</span>
           </span>
           <span v-if="filterCollection == 'story'">
             <span>from</span>
-            <span :class="{tab: true, active: filterPaneActive == 'region'}"
-              @click="filterPaneActive = 'region'">
+            <span :class="{tab: true, active: activeTab == 'region'}"
+              @click="activeTab = 'region'">
               {{ filterRegion == 'all' ? 'the whole world' : filterRegion }}</span>
           </span>
           <span v-if="!['saved', 'set'].includes(filterCollection)">
             <span>about</span>
-            <span :class="{tab: true, active: filterPaneActive == 'tag'}" @click="filterPaneActive = 'tag'">
+            <span :class="{tab: true, active: activeTab == 'tag'}" @click="activeTab = 'tag'">
               {{ tagTextBySlug[filterTag] || 'everything' }}</span>
           </span>
           <img v-if="filterCollection != ALL || filterTag != ALL" svg-inline class="icon reset" src="./assets/reset.svg" @click="filterReRoute()" alt="Reset">
@@ -32,8 +32,8 @@
             <transition name="fade" mode="out-in">
 
               <!-- BY COLLECTION -->
-              <div class="by by-collection" v-if="filterPaneActive == 'collection'">
-                <div v-for="(value, key) in typeTextBySlug" :key="key" :class="getFilterClasses('Collection', key)" @click="filterToggleCollection(key)">
+              <div class="by by-collection" v-if="activeTab == 'collection'">
+                <div v-for="(value, key) in typeTextBySlug" :key="key" :class="getFilterClasses('Collection', key)" @click="selectCollection(key)">
                   <img svg-inline v-if="key == 'tactic'" class="icon" src="./assets/tactic.svg">
                   <img svg-inline v-if="key == 'theory'" class="icon" src="./assets/theory.svg">
                   <img svg-inline v-if="key == 'story'" class="icon" src="./assets/story.svg">
@@ -42,12 +42,12 @@
                   <h3>{{ value[1] }}</h3>
                   <p>{{ descriptionTextByLang[key] }}</p>
                 </div>
-                <div :class="getFilterClasses('Collection', 'saved')" @click="filterToggleCollection('saved')">
+                <div :class="getFilterClasses('Collection', 'saved')" @click="selectCollection('saved')">
                   <img svg-inline class="icon smaller" src="./assets/favorite-active.svg">
                   <h3>MY TOOLS</h3>
                   <p>Your favorite tools</p>
                 </div>
-                <div :class="getFilterClasses('Collection', 'set')" @click="filterToggleCollection('set')">
+                <div :class="getFilterClasses('Collection', 'set')" @click="selectCollection('set')">
                   <img svg-inline class="icon" src="./assets/set.svg">
                   <h3>SETS</h3>
                   <p>Custom sets of tools</p>
@@ -55,13 +55,13 @@
               </div>
 
               <!-- BY REGION -->
-              <div class="by by-region" v-if="filterPaneActive == 'region'" :key="'region'">
-                <div :class="{block: true, active: filterRegion == 'all'}" @click="filterToggleRegion('all')">
+              <div class="by by-region" v-if="activeTab == 'region'" :key="'region'">
+                <div :class="{block: true, active: filterRegion == 'all'}" @click="selectRegion('all')">
                   <img svg-inline class="icon" src="./assets/regions/world.svg">
                   <p>THE WHOLE WORLD</p>
                 </div>
                 <div v-for="region in REGIONS" :key="region"
-                  :class="{block: true, active: filterRegion == slugify(region)}" @click="filterToggleRegion(slugify(region))">
+                  :class="{block: true, active: filterRegion == slugify(region)}" @click="selectRegion(slugify(region))">
                   <img svg-inline v-if="region == 'Africa'" class="icon" src="./assets/regions/africa.svg">
                   <img svg-inline v-if="region == 'Asia'" class="icon" src="./assets/regions/asia.svg">
                   <img svg-inline v-if="region == 'Europe'" class="icon" src="./assets/regions/europe.svg">
@@ -74,17 +74,17 @@
               </div>
 
               <!-- BY SET -->
-              <div class="by by-set" v-if="filterPaneActive == 'set'" :key="'set'">
+              <div class="by by-set" v-if="activeTab == 'set'" :key="'set'">
                 <h1>Backend connection required</h1>
                 <div @click="filterToggleSet('best-of')">BEST OF</div>
                 <div @click="filterToggleSet('andrews-list')">ANDREW'S LIST</div>
               </div>
 
               <!-- BY TAG -->
-              <div class="by by-tag" v-if="filterPaneActive == 'tag'" :key="'tag'">
+              <div class="by by-tag" v-if="activeTab == 'tag'" :key="'tag'">
                 <span v-for="(tag, i) in tagSlugsSorted" :key="i"
                   :class="{active: filterTag == tag, disabled: !tagSlugsAvailable.has(tag)}"
-                  @click="filterToggleTag(tag)">
+                  @click="selectTag(tag)">
                   {{ capitalize(tagTextBySlug[tag]) }}
                 </span>
               </div>
@@ -131,6 +131,7 @@ export default {
     REGIONS,
     config,
     filterPaneActive: null,
+    activeTab: null,
     // Values filter{Collection,Region,Set,Tag} should ONLY be manipulated by a route guard
     filterCollection: null,
     filterRegion: null,
@@ -189,9 +190,68 @@ export default {
     }
   },
   methods: {
+    selectCollection(collection) {
+      // Select a top-level collection, reset region/tag/set, and advance activeTab
+      let name = `toolbox-${collection}`
+      if (this.$route.name != name) {
+        this.$router.push({name: `toolbox-${collection}`})
+      }
+      this.activeTab = {
+        story: 'region',
+        set: 'set',
+      }[collection] || 'tag'
+    },
+    selectRegion(region) {
+      if (this.$route.params.region != region) {
+        this.$router.push({name: this.$route.name, params: {region}})
+      }
+      this.activeTab = 'tag'
+    },
+    selectTag(tag) {
+      if (this.$route.params.tag != tag) {
+        let params = Object.assign({}, this.$route.params)
+        params.tag = tag
+        this.$router.push({name: this.$route.name, params})
+      }
+    },
+    filterGuardAndSet(route, next) {
+      let { name } = route
+      let params = Object.assign({}, route.params)
+      let { query, region, set, tag } = params
+
+      next = next || (() => {})
+
+      // Reject invalid regions, tags, or sets. Fall back to top-level toolbox.
+      if ((region && !REGION_SLUGS.includes(region)) ||
+          (tag && !(tag in this.tagTextBySlug)) ||
+          (set && !SETS.includes(set)))
+        return next({name: 'toolbox', replace: true})
+
+      //this.filterQuery = query || null
+      //this.filterRegion = region || ALL
+      //this.filterSet = set || ALL
+      //this.filterTag = tag || ALL
+
+      // Set default filterPaneActive
+      this.filterPaneActive = {
+        /*
+        'toolbox': 'collection',
+        'toolbox-by-story': 'collection',
+        'toolbox-by-type': 'collection',
+        'toolbox-saved': 'collection',
+        */
+        'toolbox-search': 'tag',
+        'toolbox-set': 'set',
+      }[name] || 'collection'
+
+      console.log('P0:', params)
+
+      next()
+
+    },
     // TODO: This logic is unsustainable. Use explicit routes to handle the variety of meanings
     //       assigned to filterA and filterB.
-    filterGuardAndSet(route, next) {
+    _filterGuardAndSet(route, next) {
       // Validates and sets filters specified by a route. When passed the next function from a
       // route guard, re-routes to a path with a valid filter (or none). A default filterPaneActive
       // is selected, but if this guard was triggered by a filterToggle* function, filterPaneActive
@@ -273,7 +333,7 @@ export default {
       this.$router.push({name: 'toolbox', params})
         .catch(e => console.debug(`filterReRoute: ${e.message}`))
     },
-    filterToggleCollection(collection) {
+    _filterToggleCollection(collection) {
       // Update route and advance active filter pane
       if (this.filterCollection != collection) this.filterReRoute({collection})
       this.filterPaneActive = {story: 'region', saved: 'collection', set: 'set'}[collection] || 'tag'
