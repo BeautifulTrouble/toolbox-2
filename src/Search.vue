@@ -26,6 +26,7 @@ export default {
   methods: {
     buildIndex() {
       if (!this.indices[this.$store.state.lang]) {
+        this.$store.commit('setDebug', `Building search index for ${this.$store.state.lang}`)
         let self = this
         this.indices[this.$store.state.lang] = lunr(function() {
           this.ref('slug')
