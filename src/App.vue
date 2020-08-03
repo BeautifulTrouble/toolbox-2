@@ -43,7 +43,7 @@
 
     <!-- TODO: -->
     <div class="debugPanel">
-      <p class="debug">{{ $store.state.debug }}</p>
+      <p class="debug">{{ $store.state.debug }}<br>{{ debugPanel }}</p>
       <div @click="debugPanel.reset">Reset Settings</div>
       <div @click="debugPanel.toolMargin = !debugPanel.toolMargin">Toggle toolbox margins</div>
       <div @click="debugPanel.lowercase = !debugPanel.lowercase">Toggle UPPERCASE TITLES</div>
@@ -157,9 +157,6 @@ export default {
   h1, h2, h3, .link, {
     text-transform: unset !important;
   }
-  .sentence span.tab {
-    text-transform: unset !important;
-  }
 }
 .debugPanel {
   display: flex;
@@ -169,16 +166,12 @@ export default {
   left: 0;
   z-index: 100;
   padding: .5rem;
-  background: yellow;
-  border: 6px dashed black;
-  color: black;
+  background: aquamarine;
+  border: 1px dotted darkturquoise;
+  color: teal;
   font-size: .75rem;
-  font-family: monospace;
-  .expand {
-    display: block;
-    font-size: 2rem;
-    padding: 0 .5rem;
-  }
+  font-family: sans-serif;
+  letter-spacing: .05rem;
   .debug {
     margin: 0;
   }
@@ -194,9 +187,9 @@ export default {
     display: none;
     cursor: pointer;
     padding: .5rem 1rem;
-    border: 1px dashed orange;
+    border: 1px dashed darkturquoise;
     &:hover {
-      color: yellow;
+      color: white;
       background: black;
     }
   }
