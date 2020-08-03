@@ -100,7 +100,7 @@ export default {
       animation-iteration-count: 1;
     }
     &.video {
-      margin: 0;
+      margin: 0 !important;
     }
   }
 }
