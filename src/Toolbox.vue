@@ -202,6 +202,8 @@ export default {
       let name = `toolbox-${collection}`
       if (this.$route.name != name)
         this.$router.push({name: `toolbox-${collection}`})
+      else
+        this.$router.push({name: 'toolbox'})
     },
     selectRegion(region) {
       if (this.$route.params.region != region)
