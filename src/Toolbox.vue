@@ -96,8 +96,7 @@
       </div>
 
       <transition-group name="tools-list" tag="div" class="tools">
-        <tool-tile v-for="tool in filteredTools" :key="tool.slug"
-          :tool="tool" :text="typeTextBySlug"/>
+        <tool-tile v-for="tool in filteredTools" :key="tool.slug" :tool="tool" :text="typeTextBySlug"/>
         <a v-if="!['set', 'saved'].includes(routeCollection)"
           class="tool-tile add-tool" :href="config.submissionForm" target="_blank" :key="-1">
           <div class="add">+</div>
@@ -417,6 +416,13 @@ export default {
   flex-direction: row;
   position: relative; // For transition animation
   //margin: .25rem -.25rem;
+
+  // These styles should override the ones defined in ToolTile.vue
+  .tool-tile {
+    flex: 0 0 20%;
+    height: 20vw;
+    //border: .25rem solid white;
+  }
   .add-tool {
     background: $bggray;
     position: relative;

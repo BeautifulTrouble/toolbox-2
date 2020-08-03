@@ -2,7 +2,8 @@
   <div class="tool-tile" v-if="tool"
     @click="$router.push({name: 'tool', params: {slug: tool.slug}})">
     <!-- Use VueLazyLoad for loading images on scroll -->
-    <div :class="['tool-tile-image', `hover-${tool.type}`]" v-lazy:background-image="`${config.imagePrefix}/tile-${tool.image}`">
+    <div :class="{'tool-tile-image': true, [`hover-${tool.type}`]: true, 'snapshot-lock': snapshotLock}"
+      v-lazy:background-image="`${config.imagePrefix}/tile-${tool.image}`">
       <div :class="['upper', `bg-${tool.type}`]">
         <div>
           <img svg-inline v-if="tool.type == 'tactic'" class="icon" src="./assets/tactic-inverse.svg">
@@ -14,7 +15,8 @@
         </div>
         <div>
           <img svg-inline v-if="tool.video" class="icon video" src="./assets/video.svg">
-          <div @click.stop="$store.dispatch('TOOL_SAVE_TOGGLE', tool.slug)">
+          <!-- .stop avoids calling other click handlers and .prevent avoids the same within a link -->
+          <div @click.stop.prevent="$store.dispatch('TOOL_SAVE_TOGGLE', tool.slug)">
             <img svg-inline v-if="$store.state.savedTools.has(tool.slug)" class="icon favorite active" src="./assets/favorite-active.svg">
             <img svg-inline v-else class="icon favorite" src="./assets/favorite.svg">
           </div>
@@ -39,6 +41,7 @@ export default {
   props: {
     tool: {type: Object, default: null},
     text: {type: Object, default: null},
+    snapshotLock: {type: Boolean, default: false},
   },
 };
 </script>
@@ -46,12 +49,12 @@ export default {
 <style lang="scss">
 @import 'common.scss';
 
+// TODO: Move these styles to Toolbox.vue, it should not be
 .tool-tile {
   cursor: pointer;
-  flex: 0 0 20%;
-  height: 20vw;
   overflow: hidden;
-  //border: .25rem solid white;
+  flex: 0 0 18rem;
+  height: 18rem;
 
   .upper {
     height: 10%;
@@ -69,6 +72,9 @@ export default {
     position: relative;
     z-index: 1;
     color: white;
+    h3, h2 {
+      color: white !important;
+    }
   }
   .snapshot {
     opacity: 0;
@@ -87,7 +93,7 @@ export default {
   }
   .icon {
     fill: white;
-    margin: 0 .5rem;
+    margin: 0 .5rem !important;
     &.active {
       animation-name: add-favorite;
       animation-duration: .5s;
@@ -109,10 +115,10 @@ export default {
     opacity: 0;
     transition: opacity .2s linear;
   }
-  &:hover::after {
-    opacity: 1;
+  &:hover::after, &.snapshot-lock::after {
+    opacity: .85;
   }
-  &:hover {
+  &:hover, &.snapshot-lock {
     .snapshot {
       opacity: 1;
     }
@@ -126,9 +132,9 @@ export default {
 
 .tool-tile-image {
   background-repeat: no-repeat;
-  background-position: top center;
-  background-size: cover;
-  transition: opacity .2s linear;
+  background-position: top left;
+  background-size: 100% 100%;
+  transition: opacity .2s linear, background-position 3s ease-in-out;
   height: 100%;
   position: relative;
   &::before { // Dark gradient
@@ -137,6 +143,9 @@ export default {
     top: 0; left: 0;
     bottom: 0; right: 0;
     background: linear-gradient(0deg, rgba(0,0,0,0) 35%, rgba(0,0,0,1) 100%);
+  }
+  &:hover {
+    background-position: bottom center;
   }
   &[lazy="loading"] {
     opacity: .5;

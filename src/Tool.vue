@@ -153,6 +153,9 @@
                     <router-link :to="{name: 'tool', params: {slug: s}}"
                       :class="{'key-related': keySlugs.has(s)}">
                       {{ $store.state.toolsBySlug[s].title }}
+                      <div class="tool-tile-popup">
+                        <tool-tile :tool="$store.state.toolsBySlug[s]" :text="typeTextBySlug" snapshotLock/>
+                      </div>
                       <div class="snapshot-popup">
                         <h3>{{ $store.state.toolsBySlug[s].title }}</h3>
                         <div v-html="markdown($store.state.toolsBySlug[s].snapshot)"/>
@@ -195,6 +198,7 @@
 
 <script>
 import Expander from './Expander'
+import ToolTile from './ToolTile'
 import typeTextByLang from './types'
 import keyTextByLang from './keys'
 import config from './config'
@@ -212,7 +216,9 @@ export default {
   }),
   components: {
     Expander,
-    Youtube: () => import(/* webpackPrefetch: true */ './Youtube.vue'),
+    ToolTile,
+    Youtube: () => import('./Youtube.vue'),
+    //Youtube: () => import(/* webpackPrefetch: true */ './Youtube.vue'),
   },
   computed: {
     tool() {
@@ -668,6 +674,10 @@ $sidebar: 18rem;
               }
             }
             .snapshot-popup {
+              //TODO: moved to .debugOldPopups
+              //display: initial;
+            }
+            .tool-tile-popup {
               display: initial;
             }
           }
@@ -692,6 +702,21 @@ $sidebar: 18rem;
       .story { @include type-related($story); }
       .principle { @include type-related($principle); }
       .methodology { @include type-related($methodology); }
+      .tool-tile-popup {
+        display: flex;
+        box-shadow: 5px 0 8px $shadow;
+        position: absolute;
+        top: -16px - 24px;
+        right: 100%;
+        width: 18rem;
+        margin: 0 1rem 0 0;
+        display: none;
+        .rtl & {
+          right: unset;
+          left: 100%;
+          margin: 0 0 0 1rem;
+        }
+      }
       .snapshot-popup {
         pointer-events: none;
         background: white;
