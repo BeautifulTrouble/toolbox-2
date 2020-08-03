@@ -35,7 +35,7 @@
       </div>
     </nav>
     <transition name="fade" mode="out-in">
-      <router-view :class="{debugToolMargin: debugPanel.toolMargin, debugLowercase: debugPanel.lowercase, debugOldPopups: debugPanel.oldPopups}"/>
+      <router-view :class="{debugToolMargin: debugPanel.toolMargin, debugLowercase: debugPanel.lowercase, debugOldPopups: debugPanel.oldPopups, debugOpaque: debugPanel.opaque}"/>
     </transition>
     <!-- TODO: Use CSS-based rectangles -->
     <div v-if="$store.state.langRequested">Loading...</div>
@@ -43,11 +43,13 @@
 
     <!-- TODO: -->
     <div class="debugPanel">
-      <p class="debug">{{ $store.state.debug }}<br>{{ debugPanel }}</p>
+      <p class="debug">{{ $store.state.debug }}</p>
       <div @click="debugPanel.reset">Reset Settings</div>
       <div @click="debugPanel.toolMargin = !debugPanel.toolMargin">Toggle toolbox margins</div>
+      <div @click="debugPanel.opaque = !debugPanel.opaque">Toggle toolbox snapshot opacity</div>
       <div @click="debugPanel.lowercase = !debugPanel.lowercase">Toggle UPPERCASE TITLES</div>
       <div @click="debugPanel.oldPopups = !debugPanel.oldPopups">Toggle new/old related tool popups</div>
+      <p>{{ debugPanel }}</p>
     </div>
 
 
@@ -118,8 +120,9 @@ export default {
     config: config,
     showSearch: false,
     debugPanel: {
-      lowercase: true,
       toolMargin: false,
+      opaque: false,
+      lowercase: true,
       oldPopups: false,
       reset: () => [localStorage.clear(), window.location.reload()] ,
     }
@@ -165,6 +168,13 @@ export default {
     }
   }
 }
+.debugOpaque {
+  .tool-tile-image {
+    &:hover::after, &.snapshot-lock::after {
+      opacity: 1;
+    }
+  }
+}
 .debugLowercase {
   h1, h2, h3, .link, {
     text-transform: unset !important;
@@ -184,16 +194,16 @@ export default {
   font-size: .75rem;
   font-family: sans-serif;
   letter-spacing: .05rem;
-  .debug {
-    margin: 0;
-  }
   &:hover {
-    .expand, .debug {
+    .debug {
       display: none;
     }
     >div {
       display: block;
     }
+  }
+  p {
+    margin: 0;
   }
   >div {
     display: none;
@@ -203,6 +213,9 @@ export default {
     &:hover {
       color: white;
       background: black;
+    }
+    &:last-of-type {
+      margin-bottom: .5rem;
     }
   }
 }
