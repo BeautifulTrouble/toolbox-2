@@ -131,6 +131,16 @@
           <div v-html="markdown(tool['potential-risks'])" />
           <hr>
         </section>
+        <section v-if="tool['why-it-worked']" class="worked">
+          <h4>WHY IT WORKED</h4>
+          <div v-html="markdown(tool['why-it-worked'])" />
+          <hr>
+        </section>
+        <section v-if="tool['why-it-failed']" class="failed">
+          <h4>WHY IT FAILED</h4>
+          <div v-html="markdown(tool['why-it-failed'])" />
+          <hr>
+        </section>
         <section class="related">
           <h4>RELATED TOOLS</h4>
           <div v-for="T in Object.keys(randomRelated)" :key="T" :class="T">
@@ -166,16 +176,6 @@
               </div>
             </div>
           </div>
-          <hr>
-        </section>
-        <section v-if="tool['why-it-worked']" class="worked">
-          <h4>WHY IT WORKED</h4>
-          <div v-html="markdown(tool['why-it-worked'])" />
-          <hr>
-        </section>
-        <section v-if="tool['why-it-failed']" class="failed">
-          <h4>WHY IT FAILED</h4>
-          <div v-html="markdown(tool['why-it-failed'])" />
           <hr>
         </section>
         <section v-if="authors && authors.length" class="authors">
