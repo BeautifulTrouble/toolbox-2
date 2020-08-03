@@ -10,8 +10,8 @@
           <span>
             <span :class="{tab: true, active: ['collection', 'set'].includes(activeTab)}"
               @click="activeTab = routeCollection == 'set' ? 'set' : 'collection'">
-              {{ $route.name == 'toolbox' ? 'everything' : (typeTextBySlug[routeCollection] || [, routeCollection])[1].toLowerCase() }}
-              <!-- TODO: ^ toLowerCase because of debug -->
+              {{ $route.name == 'toolbox' ? 'everything' : (typeTextBySlug[routeCollection] || [, routeCollection])[1] }}
+              <!-- TODO: this tab should not be reused for sets (it should have its own) -->
             </span>
           </span>
           <span v-if="routeCollection == 'story'">
@@ -24,8 +24,7 @@
             <span :class="{tab: true, active: activeTab == 'tag'}" @click="activeTab = 'tag'">
               {{ tagTextBySlug[$route.params.tag] || 'everything' }}</span>
           </span>
-          <img v-if="routeCollection != ALL || routeTag != ALL" svg-inline class="icon reset" src="./assets/reset.svg" alt="Reset"
-            @click="activeTab = 'collection'; $router.push({name: 'toolbox'})">
+          <img v-if="routeCollection != ALL || routeTag != ALL" svg-inline class="icon reset" src="./assets/reset.svg" alt="Reset" @click="resetFilter">
         </div>
 
         <!-- FILTER WIDGET -->
@@ -196,6 +195,10 @@ export default {
     },
   },
   methods: {
+    resetFilter() {
+      this.activeTab = 'collection'
+      this.$router.push({name: 'toolbox'})
+    },
     selectCollection(collection) {
       let name = `toolbox-${collection}`
       if (this.$route.name != name)
@@ -218,24 +221,29 @@ export default {
     },
     guardRoute(route, next) {
       let { query, region, set, tag } = route.params
+
       // Reject invalid regions, tags, or sets. Fall back to top-level toolbox.
       if ((region && !REGION_SLUGS.includes(region)) ||
           (tag && !(tag in this.tagTextBySlug)) ||
           (set && !SETS.includes(set)))
         return next({name: 'toolbox', replace: true})
+
+      let tabinfo = (s) => this.$store.commit('setDebug', `Toolbox tab condition: ${s}`)
       // Set an appropriate activeTab (one of: collection, region, set, tag)
-      if (query || region) {
+      if (query || region || tag) {
+        tabinfo('query/region/tag')
         this.activeTab = 'tag'
       } else if (this.routeCollection == 'set') {
+        tabinfo('set')
         this.activeTab = 'set'
       } else if (this.routeCollection == 'story') {
+        tabinfo('story')
         this.activeTab = 'region'
-      } else if (this.routeCollection == ALL && this.activeTab == 'tag') {
-        // Don't go back to collection tab when unselecting the last tag
-        this.activeTab = 'tag'
       } else if ([ALL, 'saved'].includes(this.routeCollection)) {
+        tabinfo('all/saved')
         this.activeTab = 'collection'
       } else {
+        tabinfo('default')
         this.activeTab = 'tag'
       }
       next()
