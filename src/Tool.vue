@@ -708,13 +708,16 @@ $sidebar: 18rem;
         position: absolute;
         top: -16px - 24px;
         right: 100%;
-        width: 18rem;
         margin: 0 1rem 0 0;
         display: none;
         .rtl & {
           right: unset;
           left: 100%;
           margin: 0 0 0 1rem;
+        }
+        .tool-tile {
+          width: 18rem;
+          height: 18rem;
         }
       }
       .snapshot-popup {
