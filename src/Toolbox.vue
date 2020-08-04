@@ -98,7 +98,7 @@
         </div>
       </div>
 
-      <h2 v-if="$route.name == 'toolbox-search'">TODO: This search query (showing up here as a pseudo-tag) will show filtered toolbox tiles</h2>
+      <h2 v-if="$route.name == 'toolbox-search'">TODO: This search query (showing up here as a pseudo-tag) will show only search results</h2>
       <transition-group name="tools-list" tag="div" class="tools">
         <tool-tile v-for="tool in filteredTools" :key="tool.slug" :tool="tool" :text="typeTextBySlug"/>
         <a v-if="!['set', 'saved'].includes(routeCollection)"
