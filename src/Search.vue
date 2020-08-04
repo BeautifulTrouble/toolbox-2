@@ -8,8 +8,10 @@
       <input type="checkbox" v-model="toolboxOnly">
       <span class="slider"/>
     </label>
-    <input type="text" placeholder="SEARCH" v-model="query" ref="input">
-    <p style="position: fixed; top: 0; left: 0; background: black;">{{ query }}</p>
+    <input type="text" placeholder="SEARCH" v-model="query" ref="input" @blur="blur" @focus="showResults = query && results.length">
+    <transition name="fade">
+      <popup v-if="showResults" :tools="results.map(r => r.ref)" />
+    </transition>
   </div>
 </template>
 
@@ -21,8 +23,13 @@ export default {
   data: () => ({
     indices: {},
     query: '',
+    results: [],
+    showResults: false,
     toolboxOnly: false,
   }),
+  components: {
+    Popup: () => import(/* webpackPrefetch: true */ './Popup.vue'),
+  },
   methods: {
     buildIndex() {
       if (!this.indices[this.$store.state.lang]) {
@@ -30,13 +37,19 @@ export default {
         let self = this
         this.indices[this.$store.state.lang] = lunr(function() {
           this.ref('slug')
-          this.field('title')
+          this.field('title', {boost: 10})
+          this.field('byline', {boost: 5})
           this.field('snapshot')
           this.field('short-write-up')
           this.field('full-write-up')
           self.$store.state.tools.forEach(t => this.add(t))
         })
       }
+    },
+    blur() {
+      // Allow the click handler to fire before hiding the results
+      //setTimeout(() => this.$nextTick(() => { this.showResults = false }), 100)
+      this.$nextTick(() => { this.showResults = false })
     },
     focus() {
       this.$nextTick(() => this.$refs.input.focus())
@@ -48,11 +61,12 @@ export default {
     },
     query() {
       this.buildIndex()
-      let res = this.indices[this.$store.state.lang].search(this.query)
-      console.log(res)
+      this.results = this.indices[this.$store.state.lang].search(this.query).slice(0, 5)
+      this.showResults = !!(this.query && this.results.length)
     },
     $route(to) {
       this.toolboxOnly = /^tool/.test(to.name)
+      //this.showResults = false
     }
   },
   created() {
@@ -75,7 +89,7 @@ export default {
   display: inline-block;
   width: 3rem;
   height: 1.5rem;
-  margin: 0 .5rem;
+  margin: 0 1rem;
   input[type="checkbox"] {
     opacity: 0;
     width: 0;
@@ -112,13 +126,18 @@ export default {
   }
 }
 .search {
-  width: 24rem;
+  width: $searchWidth;
   cursor: pointer;
   display: flex;
   flex-direction: row;
   justify-content: flex-end;
+  position: relative;
+  margin: 0 .5rem 0 0;
+  .rtl & {
+    margin: 0 0 0 .5rem;
+  }
   input[type="text"] {
-    margin: 0 .5rem;
+    margin: 0;
   }
   .options {
     display: flex;
