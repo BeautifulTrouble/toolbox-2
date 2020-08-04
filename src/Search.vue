@@ -8,7 +8,12 @@
       <input type="checkbox" v-model="toolboxOnly">
       <span class="slider"/>
     </label>
-    <input type="text" placeholder="SEARCH" v-model="query" ref="input" @blur="blur" @focus="showResults = query && results.length">
+    <input type="text" placeholder="SEARCH" v-model="query" ref="input"
+      @blur="blur"
+      @focus="showResults = (!artificialFocus && query && results.length)"
+      @click="showResults = (query && results.length)"
+      @keyup.enter="search"
+      >
     <transition name="fade">
       <popup v-if="showResults" :tools="results.map(r => r.ref)" />
     </transition>
@@ -24,6 +29,7 @@ export default {
     indices: {},
     query: '',
     results: [],
+    artificialFocus: false,
     showResults: false,
     toolboxOnly: false,
   }),
@@ -31,6 +37,13 @@ export default {
     Popup: () => import(/* webpackPrefetch: true */ './Popup.vue'),
   },
   methods: {
+    search() {
+      if (this.toolboxOnly) {
+        this.$router.push({name: 'toolbox-search', params: {query: this.query}})
+          .then(() => { this.showResults = false })
+          .catch(() => { this.showResults = false })
+      }
+    },
     buildIndex() {
       if (!this.indices[this.$store.state.lang]) {
         this.$store.commit('setDebug', `Building search index for ${this.$store.state.lang}`)
@@ -48,10 +61,13 @@ export default {
     },
     blur() {
       // Allow the click handler to fire before hiding the results
-      //setTimeout(() => this.$nextTick(() => { this.showResults = false }), 100)
-      this.$nextTick(() => { this.showResults = false })
+      this.$nextTick(() => {
+        this.artificialFocus = false
+        this.showResults = false
+      })
     },
     focus() {
+      this.artificialFocus = true
       this.$nextTick(() => this.$refs.input.focus())
     },
   },
@@ -60,6 +76,7 @@ export default {
       this.focus()
     },
     query() {
+      console.log('query changed')
       this.buildIndex()
       this.results = this.indices[this.$store.state.lang].search(this.query).slice(0, 5)
       this.showResults = !!(this.query && this.results.length)
