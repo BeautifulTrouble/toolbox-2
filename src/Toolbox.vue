@@ -10,7 +10,7 @@
           <span>
             <span :class="{tab: true, active: ['collection', 'set'].includes(activeTab)}"
               @click="activeTab = routeCollection == 'set' ? 'set' : 'collection'">
-              {{ $route.name == 'toolbox' ? 'everything' : (typeTextBySlug[routeCollection] || [, routeCollection])[1] }}
+              {{ $route.name == 'toolbox' ? 'everything' : (typeTextBySlug[routeCollection] || [, tabText(routeCollection)])[1] }}
               <!-- TODO: this tab should not be reused for sets (it should have its own) -->
             </span>
           </span>
@@ -22,7 +22,7 @@
           <span v-if="!['saved', 'set'].includes(routeCollection)">
             <span>about</span>
             <span :class="{tab: true, active: activeTab == 'tag'}" @click="activeTab = 'tag'">
-              {{ tagTextBySlug[$route.params.tag] || 'everything' }}</span>
+              {{ tagTextBySlug[$route.params.tag] || $route.params.query || 'everything' }}</span>
           </span>
           <img v-if="routeCollection != ALL || routeTag != ALL" svg-inline class="icon reset" src="./assets/reset.svg" alt="Reset" @click="resetFilter">
         </div>
@@ -89,12 +89,16 @@
                   @click="selectTag(tag)">
                   {{ capitalize(tagTextBySlug[tag]) }}
                 </span>
+                <span v-if="$route.params.query && $route.name == 'toolbox-search'" class="active search-tag">
+                  {{ $route.params.query }}
+                </span>
               </div>
             </transition>
           </div>
         </div>
       </div>
 
+      <h2 v-if="$route.name == 'toolbox-search'">TODO: This search query (showing up here as a pseudo-tag) will show filtered toolbox tiles</h2>
       <transition-group name="tools-list" tag="div" class="tools">
         <tool-tile v-for="tool in filteredTools" :key="tool.slug" :tool="tool" :text="typeTextBySlug"/>
         <a v-if="!['set', 'saved'].includes(routeCollection)"
@@ -214,7 +218,7 @@ export default {
     selectTag(tag) {
       tag = this.$route.params.tag != tag ? tag : undefined
       this.$router.push({
-        name: this.routeCollection == ALL ? 'toolbox' : this.$route.name,
+        name: [ALL, 'search'].includes(this.routeCollection) ? 'toolbox' : this.$route.name,
         params: {...this.$route.params, tag}
       })
     },
@@ -246,6 +250,10 @@ export default {
         this.activeTab = 'tag'
       }
       next()
+    },
+    tabText(s) {
+      console.log(s)
+      return this.typeTextBySlug[s] || {saved: 'my tools', search: 'search results', set: 'sets'}[s] || s
     },
   },
   beforeRouteUpdate(to, from, next) {
