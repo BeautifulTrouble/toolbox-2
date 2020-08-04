@@ -157,7 +157,7 @@ export default {
   }
 }
 .debugOldPopups {
-  .tool-tile-popup {
+  .tool-popup {
     display: none !important;
   }
   aside .related .related-link:hover .snapshot-popup {
