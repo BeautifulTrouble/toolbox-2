@@ -201,7 +201,6 @@ import Expander from './Expander'
 import ToolTile from './ToolTile'
 import typeTextByLang from './types'
 import keyTextByLang from './keys'
-import config from './config'
 
 const crlf = '%0d%0a'
 
@@ -209,7 +208,6 @@ export default {
   name: 'Tool',
   data: () => ({
     authors: null,
-    config,
     showDocumentLinks: window.btData.showDocumentLinks,
     types: {story: 'stories', tactic: 'tactics', theory: 'theories', principle: 'principles', methodology: 'methodologies'},
     expandRelated: {},
@@ -292,7 +290,7 @@ export default {
       while (target && target.tagName != 'A') target = target.parentNode
       // Only match local links
       if (target && target.href && target.rel != 'external' &&
-          (target.matches(`.tool a[href*="://${config.siteDomain}"]`)
+          (target.matches(`.tool a[href*="://${this.config.siteDomain}"]`)
            || target.matches('.tool a:not([href*="://"])'))) {
         const { altKey, ctrlKey, metaKey, shiftKey, button, defaultPrevented } = $event
         if (altKey || ctrlKey || metaKey || shiftKey) return

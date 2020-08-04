@@ -112,7 +112,6 @@
 
 <script>
 import ToolTile from './ToolTile'
-import config from './config'
 import descriptionTextByLang from './descriptions'
 import tagTextByLang from './tags'
 import typeTextByLang from './types'
@@ -128,7 +127,6 @@ export default {
   data: () => ({
     ALL,
     REGIONS,
-    config,
     activeTab: 'collection',
   }),
   components: {
@@ -143,7 +141,7 @@ export default {
       //} else if (this.routeCollection == 'set' && this.routeSet != ALL) {
         // TODO: implement real set filter (collectionLists isn't real)
         tools = tools.filter(t => (this.$store.state.collectionLists || ['action-logic']).includes(t.slug))
-      } else if (config.toolTypes.includes(this.routeCollection)) {
+      } else if (this.config.toolTypes.includes(this.routeCollection)) {
         tools = tools.filter(t => t.type == this.routeCollection)
       }
       if (this.routeCollection == 'story' && this.routeRegion != ALL) {

@@ -129,6 +129,9 @@ Vue.use(VueLazyImageLoading, {
 Vue.use(VueScollTo)
 
 Vue.mixin({
+  data: () => ({
+    config,
+  }),
   methods: {
     capitalize([first, ...rest], locale = navigator.language) {
       return [first.toLocaleUpperCase(locale), ...rest].join('')

@@ -31,13 +31,9 @@
 </template>
 
 <script>
-import config from './config'
 
 export default {
   name: 'ToolTile',
-  data: () => ({
-    config,
-  }),
   props: {
     tool: {type: Object, default: null},
     text: {type: Object, default: null},

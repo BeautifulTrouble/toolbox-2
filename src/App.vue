@@ -109,7 +109,6 @@
 
 <script>
 import Headroom from 'headroom.js'
-import config from './config'
 
 export default {
   components: {
@@ -117,7 +116,6 @@ export default {
   },
   data: () => ({
     btData: window.btData,
-    config: config,
     showSearch: false,
     debugPanel: {
       toolMargin: false,

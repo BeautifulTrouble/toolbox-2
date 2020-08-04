@@ -7,14 +7,9 @@
 </template>
 
 <script>
-import config from './config'
 
 export default {
   name: 'WordPress',
-  props: {
-    // FIGURE OUT: loading things other than wordpress pages
-    //path: {type: String, default: config.fallbackPage},
-  },
   methods: {
     handleLink($event) {
       let { target } = $event
@@ -22,7 +17,7 @@ export default {
       while (target && target.tagName != 'A') target = target.parentNode
       // Only match local links
       if (target && target.href && target.rel != 'external' &&
-          (target.matches(`.wordpress a[href*="://${config.siteDomain}"]`)
+          (target.matches(`.wordpress a[href*="://${this.config.siteDomain}"]`)
            || target.matches('.wordpress a:not([href*="://"])'))) {
         const { altKey, ctrlKey, metaKey, shiftKey, button, defaultPrevented } = $event
         if (altKey || ctrlKey || metaKey || shiftKey) return
