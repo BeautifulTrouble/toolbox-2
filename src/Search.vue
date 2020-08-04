@@ -76,7 +76,7 @@ export default {
     //       Proposal: set a recurring timer that looks at the most recent route changes and
     //       generates the index when a) someone appears to be reading a tool or b) they're idle
     //       for 5 seconds
-    setTimeout(this.buildIndex, 3000)
+    //setTimeout(this.buildIndex, 5000)
   },
 }
 </script>
