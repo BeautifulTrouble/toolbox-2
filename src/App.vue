@@ -28,7 +28,7 @@
             <span v-if="$store.state.savedTools.size" class="count">{{ $store.state.savedTools.size }}</span>
           </router-link>
           <transition name="fade">
-            <search v-show="showSearch" ref="search" />
+            <search v-show="showSearch" ref="search" :class="{debugLowercase: debugPanel.lowercase}" />
           </transition>
           <img svg-inline @click="toggleSearch" class="icon" src="./assets/search.svg">
         </div>
@@ -271,7 +271,7 @@ nav {
     position: relative;
     align-items: center;
     justify-content: space-between;
-    overflow: hidden;
+    //overflow: hidden;
     &::after {
       z-index: 0; // Place a transparent white rectangle below the menu items
       top: 0; bottom: 0;
@@ -326,6 +326,13 @@ nav {
         right: 5rem;
         &.moved {
           right: 28rem; // TODO: couple this with the search widget size
+        }
+        .rtl & {
+          right: unset;
+          left: 5rem;
+          &.moved {
+            left: 28rem;
+          }
         }
       }
       .icon {
