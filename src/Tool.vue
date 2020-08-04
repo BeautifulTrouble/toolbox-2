@@ -660,7 +660,7 @@ $sidebar: 18rem;
                 top: -1px; bottom: -3px;
                 left: -3rem; right: -1rem;
                 background: white;
-                //box-shadow: 5px 0 8px $shadow;
+                box-shadow: 5px 0 8px $shadow;
                 //border-radius: 2rem;
                 position: absolute;
                 z-index: -1;
