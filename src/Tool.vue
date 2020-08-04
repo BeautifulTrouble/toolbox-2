@@ -306,8 +306,9 @@ export default {
     initPage() {
       this.expandRelated = {story: false, tactic: false, theory: false, principle: false, methodology: false}
       this.authors = []
-      this.tool.authors.map(a => this.$http.get(`${this.config.api}/person/${a}?lang=${this.$store.state.lang}`)
-                                  .then(r => this.authors.push(r.data)))
+      if (this.tool)
+        this.tool.authors.map(a => this.$http.get(`${this.config.api}/person/${a}?lang=${this.$store.state.lang}`)
+                                     .then(r => this.authors.push(r.data)))
     },
   },
   watch: {
