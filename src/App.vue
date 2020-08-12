@@ -28,14 +28,14 @@
             <span v-if="$store.state.savedTools.size" class="count">{{ $store.state.savedTools.size }}</span>
           </router-link>
           <transition name="fade">
-            <search v-show="showSearch" ref="search" :class="{debugLowercase: debugPanel.lowercase}" />
+            <search v-show="showSearch" ref="search" />
           </transition>
           <img svg-inline @click="toggleSearch" class="icon" src="./assets/search.svg">
         </div>
       </div>
     </nav>
     <transition name="fade" mode="out-in">
-      <router-view :class="{debugToolMargin: debugPanel.toolMargin, debugLowercase: debugPanel.lowercase, debugOldPopups: debugPanel.oldPopups, debugOpaque: debugPanel.opaque}"/>
+      <router-view :class="{debugOldPopups: debugPanel.oldPopups}"/>
     </transition>
     <!-- TODO: Use CSS-based rectangles -->
     <div v-if="$store.state.langRequested">Loading...</div>
@@ -45,15 +45,12 @@
     <div class="debugPanel">
       <p class="debug">{{ $store.state.debug }}</p>
       <div @click="debugPanel.reset">Reset Settings</div>
-      <div @click="debugPanel.toolMargin = !debugPanel.toolMargin">Toggle toolbox margins</div>
-      <div @click="debugPanel.opaque = !debugPanel.opaque">Toggle toolbox snapshot opacity</div>
-      <div @click="debugPanel.lowercase = !debugPanel.lowercase">Toggle UPPERCASE TITLES</div>
       <div @click="debugPanel.oldPopups = !debugPanel.oldPopups">Toggle new/old related tool popups</div>
       <p>{{ debugPanel }}</p>
     </div>
 
 
-    <footer :class="{debugLowercase: debugPanel.lowercase}">
+    <footer>
       <div class="upper">
         <div class="contain">
           <div v-if="btData.menuData" class="links">
@@ -118,9 +115,6 @@ export default {
     btData: window.btData,
     showSearch: false,
     debugPanel: {
-      toolMargin: false,
-      opaque: false,
-      lowercase: true,
       oldPopups: false,
       reset: () => [localStorage.clear(), window.location.reload()] ,
     }
@@ -148,14 +142,6 @@ export default {
 @import 'common.scss';
 
 // DEBUG
-.debugToolMargin {
-  .tools {
-    margin: .25rem -.25rem;
-  }
-  .tool-tile {
-    border: .25rem solid white;
-  }
-}
 .debugOldPopups {
   .tool-popup {
     display: none !important;
@@ -164,18 +150,6 @@ export default {
     @include breakpoint($upper) {
       display: initial;
     }
-  }
-}
-.debugOpaque {
-  .tool-tile-image {
-    &:hover::after, &.snapshot-lock::after {
-      opacity: 1;
-    }
-  }
-}
-.debugLowercase {
-  h1, h2, h3, .link, {
-    text-transform: unset !important;
   }
 }
 .debugPanel {

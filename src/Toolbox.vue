@@ -157,6 +157,8 @@ export default {
       return tools
     },
     filteredTools() {
+      // TODO: why does the toolbox in other languages show snapshots?
+      //       is it because some Array isn't triggering the re-compute of these propreties?
       let tools = this.filteredToolsAllTags
       if (this.routeTag != ALL)
         tools = tools.filter(t => (t.tags || []).includes(this.routeTag))
@@ -423,13 +425,13 @@ export default {
   flex-wrap: wrap;
   flex-direction: row;
   position: relative; // For transition animation
-  //margin: .25rem -.25rem;
+  margin: .25rem -.25rem;
 
   // These styles should override the ones defined in ToolTile.vue
   .tool-tile {
     flex: 0 0 20%;
     height: 20vw;
-    //border: .25rem solid white;
+    border: .25rem solid white;
   }
   .add-tool {
     background: $bggray;
