@@ -159,9 +159,9 @@ export default {
   left: 0;
   z-index: 100;
   padding: .5rem;
-  background: aquamarine;
-  border: 1px dotted darkturquoise;
-  color: teal;
+  background: lighten($story, 20%);
+  border: 1px dotted darken($story, 20%);
+  color: darken($story, 20%);
   font-size: .75rem;
   font-family: sans-serif;
   letter-spacing: .05rem;
@@ -180,7 +180,7 @@ export default {
     display: none;
     cursor: pointer;
     padding: .5rem 1rem;
-    border: 1px dashed darkturquoise;
+    border: 1px dashed darken($story, 10%);
     &:hover {
       color: white;
       background: black;
@@ -189,6 +189,23 @@ export default {
       margin-bottom: .5rem;
     }
   }
+  @mixin responsive($color, $text) {
+    &::after {
+      content: $text;
+      position: absolute;
+      left: 100%;
+      background-color: $color;
+      padding: .5rem;
+      color: white;
+      font-size: 1.5rem;
+      top: -1px;
+      border: 1px dotted darken($color, 10%);
+      margin-left: 1px;
+    }
+  }
+  @include breakpoint($sm) { @include responsive($methodology, 'sm'); }
+  @include breakpoint($md) { @include responsive($theory, 'md'); }
+  @include breakpoint($lg) { @include responsive($principle, 'lg'); }
 }
 
 nav {
@@ -382,9 +399,6 @@ footer {
       padding: 0 .75rem;
       text-decoration: none;
       color: white;
-      &:hover {
-        text-decoration: underline;
-      }
     }
     span {
       margin: 1rem;
@@ -434,6 +448,11 @@ footer {
     }
     .c {
       flex: 4 0 0;
+    }
+  }
+  @include breakpoint($upper) {
+    .upper a:hover {
+      text-decoration: underline;
     }
   }
 }
