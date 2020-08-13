@@ -425,13 +425,13 @@ export default {
   flex-wrap: wrap;
   flex-direction: row;
   position: relative; // For transition animation
-  margin: .25rem -.25rem;
+  margin: 4px -4px; // For toolbox margins
 
   // These styles should override the ones defined in ToolTile.vue
   .tool-tile {
     flex: 0 0 20%;
     height: 20vw;
-    border: .25rem solid white;
+    border: 2px solid transparent; // For toolbox margins
   }
   .add-tool {
     background: $bggray;
