@@ -208,7 +208,7 @@ nav {
     justify-content: space-between;
     padding: .7rem .5rem;
     > div {
-      transition: opacity .2s linear;
+      transition: opacity .1s linear;
     }
     a {
       padding: 0 .75rem;
@@ -294,7 +294,7 @@ nav {
         position: relative;
         display: flex;
         align-items: center;
-        transition: .2s;
+        transition: .1s;
         position: absolute;
         right: 5rem;
         &.moved {
@@ -325,13 +325,15 @@ nav {
   }
   &.headroom--unpinned:not(:hover) { // TODO: test that this selector actually works
     .upper {
-      height: .5rem;
+      height: 0; // Actual height will be based on padding
+      margin: -.2rem 0;
     }
     .upper > div {
       opacity: 0;
     }
     .lower {
       height: $uppermenu * 1.5;
+      margin-bottom: 3rem; // Trigger the hover state as a person moves their mouse upward
     }
     img.logo-large {
       opacity: 0;
@@ -341,14 +343,6 @@ nav {
     }
 
   }
-  /*
-  .search-bar {
-    background-image: url('assets/gradient.jpg');
-    background-size: contain;
-    width: 100%;
-    background-color: red;
-  }
-  */
 }
 nav, footer {
   .links a.link {
