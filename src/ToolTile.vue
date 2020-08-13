@@ -132,9 +132,6 @@ export default {
   .alt {
     position: relative;
     background: $bgdark2;
-    h2 {
-      //color: $text !important;
-    }
     .upper {
       background: $bgdark3;
     }

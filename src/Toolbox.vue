@@ -101,8 +101,15 @@
       <h2 v-if="$route.name == 'toolbox-search'">TODO: This search query (showing up here as a pseudo-tag) will show only search results</h2>
       <transition-group name="tools-list" tag="div" class="tools">
         <tool-tile v-for="tool in filteredTools" :key="tool.slug" :tool="tool" :text="typeTextBySlug" />
-        <tool-tile v-if="!['set', 'saved'].includes(routeCollection)" :key="-1" :alt="'suggest'" />
-        <tool-tile v-if="routeCollection == 'saved' && !$store.state.savedTools.size" :key="-2" :alt="'nosave'" />
+        <tool-tile v-if="!['set', 'saved'].includes(routeCollection)" :key="1" :alt="'suggest'" />
+        <tool-tile v-if="routeCollection == 'saved' && !$store.state.savedTools.size" :key="2" :alt="'nosave'" />
+        <div class="filler-squares" :key="3">
+          <div class="filler-square" />
+          <div class="filler-square" />
+          <div class="filler-square" />
+          <div class="filler-square" />
+          <div class="filler-square" />
+        </div>
       </transition-group>
     </div>
   </div>
@@ -429,6 +436,20 @@ export default {
     height: 20vw;
     border: 2px solid transparent; // For toolbox margins
   }
+}
+.filler-squares {
+  z-index: -1;
+  position: absolute;
+  bottom: 0;
+  display: flex;
+  width: 100%;
+  .filler-square {
+    border: 2px solid white;
+    flex: 0 0 20%;
+    height: 20vw;
+    box-shadow: 0 0 0 1px $bggray inset;
+  }
+
 }
 
 // Transition-group animation
