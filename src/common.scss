@@ -209,8 +209,8 @@ input{
   background-color: $bggray;
   h1, h2, h3, h4, h5, h6, p { color: $text; }
   @mixin type-box($color) {
-    border: 1px solid shade($color, 10%);
-    background-color: tint($color, 90%);
+    border: 1px solid $color;
+    background-color: tint($color, 95%);
     a:link, a:visited, a:hover, h1, h2, h3, h4, h5, h6 { color: $color; }
     h4::after { // Specific to expanders
       border-bottom-color: shade($color, 10%);
