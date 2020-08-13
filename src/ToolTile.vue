@@ -120,11 +120,13 @@ export default {
     }
   }
 }
-.hover-tactic { @include hover-particulars($tactic); }
-.hover-theory { @include hover-particulars($theory); }
-.hover-story { @include hover-particulars($story); }
-.hover-principle { @include hover-particulars($principle); }
-.hover-methodology { @include hover-particulars($methodology); }
+@include breakpoint($upper) {
+  .hover-tactic { @include hover-particulars($tactic); }
+  .hover-theory { @include hover-particulars($theory); }
+  .hover-story { @include hover-particulars($story); }
+  .hover-principle { @include hover-particulars($principle); }
+  .hover-methodology { @include hover-particulars($methodology); }
+}
 
 .tool-tile-image {
   background-repeat: no-repeat;
@@ -139,9 +141,6 @@ export default {
     top: 0; left: 0;
     bottom: 0; right: 0;
     background: linear-gradient(0deg, rgba(0,0,0,0) 35%, rgba(0,0,0,1) 100%);
-  }
-  &:hover {
-    background-position: bottom center;
   }
   &[lazy="loading"] {
     opacity: .5;

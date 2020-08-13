@@ -216,7 +216,6 @@ nav {
   z-index: $ztop;
   .upper {
     transition: all .1s linear;
-
     height: $uppermenu;
     background: black;
     display: flex;
@@ -231,28 +230,25 @@ nav {
       padding: 0 .75rem;
       text-decoration: none;
       color: white;
-      //white-space: nowrap;
-      &:hover {
-        text-decoration: underline;
-      }
     }
     .langs {
       cursor: pointer;
       span {
         padding: 0 .5rem;
         color: white;
-        &:hover {
-          text-decoration: underline;
-        }
         &.router-link-active {
           text-decoration: underline;
         }
       }
     }
+    @include breakpoint($upper) {
+      a:hover, span:hover {
+        text-decoration: underline;
+      }
+    }
   }
   .lower {
     transition: all .1s linear;
-
     height: $lowermenu;
     background-image: url('assets/gradient.jpg');
     background-size: contain;
@@ -294,7 +290,7 @@ nav {
         font-size: 1.75rem;
         font-weight: 300;
         color: white;
-        &:hover, &.router-link-active {
+        &.router-link-active {
           color: black;
         }
       }
@@ -304,14 +300,11 @@ nav {
       display: flex;
       align-items: center;
       color: white;
-      a:hover {
-        text-decoration: underline;
-      }
       .saved {
         position: relative;
         display: flex;
         align-items: center;
-        transition: .1s;
+        transition: .2s;
         position: absolute;
         right: 5rem;
         &.moved {
@@ -337,6 +330,14 @@ nav {
         background: black;
         padding: .1rem .25rem;
         font-weight: normal;
+      }
+    }
+    @include breakpoint($upper) {
+      .links a.link:hover {
+        color: black;
+      }
+      .lookup a:hover {
+        text-decoration: underline;
       }
     }
   }
@@ -399,6 +400,11 @@ footer {
       padding: 0 .75rem;
       text-decoration: none;
       color: white;
+      @include breakpoint($upper) {
+        &:hover {
+          text-decoration: underline;
+        }
+      }
     }
     span {
       margin: 1rem;
@@ -448,11 +454,6 @@ footer {
     }
     .c {
       flex: 4 0 0;
-    }
-  }
-  @include breakpoint($upper) {
-    .upper a:hover {
-      text-decoration: underline;
     }
   }
 }

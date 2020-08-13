@@ -109,7 +109,7 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
-a:link, a:visited, a:hover {
+a:link, a:visited {
   // TODO: What is this color globally?
   color: $theory;
 }
@@ -185,7 +185,7 @@ input{
 
 // Classes
 @mixin type-particulars($color) {
-  a:link, a:visited, a:hover, h1, h2, h3, h4, h5, h6 { color: $color; }
+  a:link, a:visited, h1, h2, h3, h4, h5, h6 { color: $color; }
   blockquote.pull-quote, .caption { border-color: $color; }
 }
 .tactic { @include type-particulars($tactic); }
@@ -211,7 +211,7 @@ input{
   @mixin type-box($color) {
     border: 1px solid $color;
     background-color: tint($color, 95%);
-    a:link, a:visited, a:hover, h1, h2, h3, h4, h5, h6 { color: $color; }
+    a:link, a:visited, h1, h2, h3, h4, h5, h6 { color: $color; }
     h4::after { // Specific to expanders
       border-bottom-color: shade($color, 10%);
     }
@@ -231,8 +231,10 @@ input{
   max-width: 18rem;
   font-size: 1rem;
   margin-bottom: 1rem;
-  &:hover {
-    background-color: $principle;
+  @include breakpoint($upper) {
+    &:hover {
+      background-color: $principle;
+    }
   }
 }
 .clear { // Disgusting, but only used after floated blockquotes

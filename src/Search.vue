@@ -164,8 +164,10 @@ export default {
       &.bold {
         font-weight: bold;
       }
-      &:hover {
-        text-decoration: underline;
+      @include breakpoint($upper) {
+        &:hover {
+          text-decoration: underline;
+        }
       }
     }
   }

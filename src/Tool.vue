@@ -408,14 +408,16 @@ $sidebar: 18rem;
       border-style: solid;
       border-width: 0 0 0 .3rem;
       transition: all .1s ease-in-out;
-      &:hover {
-        border-width: 0 0 0 .6rem;
-      }
       .rtl & {
         border-width: 0 .3rem 0 0;
       }
       p {
         margin: 0;
+      }
+      @include breakpoint($upper) {
+        &:hover {
+          border-width: 0 0 0 .6rem;
+        }
       }
     }
     .video {
@@ -468,7 +470,6 @@ $sidebar: 18rem;
       display: block;
       position: relative;
       float: left;
-      //text-transform: uppercase;
       color: $text;
       font-size: 1.25rem;
       user-select: none;
@@ -479,9 +480,6 @@ $sidebar: 18rem;
       width: 25rem;
       max-width: 50%;
       transition: all .1s ease-in-out;
-      &:hover {
-        border-width: .6rem;
-      }
       .rtl & {
         margin: 3rem -5rem 3rem 1rem;
         float: right;
@@ -490,6 +488,11 @@ $sidebar: 18rem;
       }
       p {
         margin: 0;
+      }
+      @include breakpoint($upper) {
+        &:hover {
+          border-width: .6rem;
+        }
       }
     }
     h6 {

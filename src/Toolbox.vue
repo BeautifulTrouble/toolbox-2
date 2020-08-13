@@ -310,8 +310,10 @@ export default {
     cursor: pointer;
     fill: $text;
     transition: fill .2s linear;
-    &:hover {
-      fill: black;
+    @include breakpoint($upper) {
+      &:hover {
+        fill: black;
+      }
     }
   }
 }
@@ -443,8 +445,10 @@ export default {
     text-decoration: none;
     color: $bgdark2;
     transition: color .2s linear;
-    &:hover {
-      color: $bgdark3;
+    @include breakpoint($upper) {
+      &:hover {
+        color: $bgdark3;
+      }
     }
     &::after {
       content: "";
