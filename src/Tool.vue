@@ -685,7 +685,10 @@ $sidebar: 18rem;
       @mixin type-related($color) {
         a, h2, h3 { color: $color; }
         span::after { border-top-color: $color; }
-        .tool-popup { border: 1px solid $color; }
+        .tool-popup {
+          border: 1px solid $color;
+          background: tint($color, 95%);
+        }
       }
       .tactic { @include type-related($tactic); }
       .theory { @include type-related($theory); }

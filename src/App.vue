@@ -144,8 +144,8 @@ export default {
 // DEBUG
 .debugDarkPopups {
   .tool-popup.light {
-    box-shadow: none !important;
     background: black !important;
+    border: 1px solid black !important;
     .result {
       color: white !important;
     }
