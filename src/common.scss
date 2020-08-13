@@ -15,7 +15,7 @@ $principle: #48abcc;
 $methodology: #874493;
 
 $text: #6b6b6b;
-$shadow: #d3d3d3;
+$shadow: transparentize(#d3d3d3, .7);
 //$bggray: #f4f4f4;
 $bggray: darken(#f4f4f4, 1%);
 $bglight: lighten($bggray, 20%);

@@ -459,7 +459,7 @@ $sidebar: 18rem;
     display: flex;
     flex-direction: row;
     justify-content: flex-end;
-    box-shadow: 5px 0 8px $shadow;
+    box-shadow: .3rem 0 .5rem .25rem $shadow;
     padding: 2rem;
     blockquote p {
       margin: 0;
@@ -651,17 +651,19 @@ $sidebar: 18rem;
         @include breakpoint($upper) {
           &:hover {
             a {
+              text-decoration: underline;
               &::before {
-                content: "";
+                // Disabled until a better design emerges
+                //content: "";
                 top: -1px; bottom: -3px;
-                left: -3rem; right: -1rem;
+                left: -2rem; right: -1rem;
                 background: white;
-                box-shadow: 5px 0 8px $shadow;
-                //border-radius: 2rem;
+                box-shadow: .3rem 0 .5rem white;
+                outline: 1px solid white;
                 position: absolute;
                 z-index: -1;
                 .rtl & {
-                  left: -1rem; right: -3rem;
+                  left: -1rem; right: -2rem;
                 }
               }
             }
@@ -693,10 +695,12 @@ $sidebar: 18rem;
       .tool-popup {
         display: flex;
         position: absolute;
-        top: -8px;
+        top: -.5rem;
         right: 100%;
         margin: 0 1rem 0 0;
         display: none;
+        box-shadow: .1rem 0 .2rem .2rem $shadow;
+        border: 4px soild $methodology;
         .icon {
           max-width: 3rem;
           margin: 0;
