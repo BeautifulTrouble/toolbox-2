@@ -35,7 +35,7 @@
       </div>
     </nav>
     <transition name="fade" mode="out-in">
-      <router-view :class="{debugOldPopups: debugPanel.oldPopups}"/>
+      <router-view :class="{debugDarkPopups: debugPanel.darkPopups}"/>
     </transition>
     <!-- TODO: Use CSS-based rectangles -->
     <div v-if="$store.state.langRequested">Loading...</div>
@@ -45,7 +45,7 @@
     <div class="debugPanel">
       <p class="debug">{{ $store.state.debug }}</p>
       <div @click="debugPanel.reset">Reset Settings</div>
-      <div @click="debugPanel.oldPopups = !debugPanel.oldPopups">Toggle new/old related tool popups</div>
+      <div @click="debugPanel.darkPopups = !debugPanel.darkPopups">Toggle light/dark related tool popups</div>
       <p>{{ debugPanel }}</p>
     </div>
 
@@ -115,7 +115,7 @@ export default {
     btData: window.btData,
     showSearch: false,
     debugPanel: {
-      oldPopups: false,
+      darkPopups: false,
       reset: () => [localStorage.clear(), window.location.reload()] ,
     }
   }),
@@ -142,13 +142,11 @@ export default {
 @import 'common.scss';
 
 // DEBUG
-.debugOldPopups {
-  .tool-popup {
-    display: none !important;
-  }
-  aside .related .related-link:hover .snapshot-popup {
-    @include breakpoint($upper) {
-      display: initial;
+.debugDarkPopups {
+  .tool-popup.light {
+    background: black !important;
+    .result {
+      color: white !important;
     }
   }
 }

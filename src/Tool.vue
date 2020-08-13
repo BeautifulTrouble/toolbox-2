@@ -163,11 +163,7 @@
                     <router-link :to="{name: 'tool', params: {slug: s}}"
                       :class="{'key-related': keySlugs.has(s)}">
                       {{ $store.state.toolsBySlug[s].title }}
-                      <popup :tools="[s]" class="tool-popup" />
-                      <div class="snapshot-popup">
-                        <h3>{{ $store.state.toolsBySlug[s].title }}</h3>
-                        <div v-html="markdown($store.state.toolsBySlug[s].snapshot)"/>
-                      </div>
+                      <popup :tools="[s]" light class="tool-popup" />
                     </router-link>
                   </div>
                 </transition>
@@ -669,10 +665,6 @@ $sidebar: 18rem;
                 }
               }
             }
-            .snapshot-popup {
-              //TODO: moved to .debugOldPopups
-              //display: initial;
-            }
             .tool-popup {
               display: initial;
             }
@@ -700,7 +692,6 @@ $sidebar: 18rem;
       .methodology { @include type-related($methodology); }
       .tool-popup {
         display: flex;
-        //box-shadow: 5px 0 8px $shadow;
         position: absolute;
         top: -8px;
         right: 100%;
@@ -714,55 +705,6 @@ $sidebar: 18rem;
           right: unset;
           left: 100%;
           margin: 0 0 0 1rem;
-        }
-      }
-      .snapshot-popup {
-        pointer-events: none;
-        background: white;
-        box-shadow: 5px 0 8px $shadow;
-        position: absolute;
-        //top: -16px - 1px;
-        top: -16px - 24px;
-        //bottom: -16px - 3px;
-        //bottom: -29px - 3px;
-        right: 100%;
-        width: 24rem;
-        display: none;
-        padding: 1rem 2rem;
-        margin: 1rem;
-        border-width: .3rem;
-        border-left-style: solid;
-        &::after { // Small white square which covers shadow
-          //content: "";
-          position: absolute;
-          //top: 0;
-          top: 24px;
-          //bottom: 29px - 16px;
-          height: 16px + 4px + 3px;
-          background: white;
-          width: 2rem;
-          right: -1rem;
-          .rtl & {
-            right: unset;
-            left: -1rem;
-          }
-        }
-        .rtl & {
-          right: unset;
-          left: 100%;
-          border-left-style: none;
-          border-right-style: solid;
-        }
-        p {
-          margin: 0;
-          color: $text;
-          //text-transform: uppercase;
-          //font-style: italic;
-          //font-size: 1.25rem;
-        }
-        h3 {
-          margin: .25rem 0;
-          text-transform: none;
         }
       }
     }

@@ -12,8 +12,7 @@
       @blur="blur"
       @focus="showResults = (!artificialFocus && query && results.length)"
       @click="showResults = (query && results.length)"
-      @keyup.enter="search"
-      >
+      @keyup.enter="search">
     <transition name="fade">
       <popup v-if="showResults" :tools="results.map(r => r.ref)" />
     </transition>

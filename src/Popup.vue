@@ -1,5 +1,5 @@
 <template>
-  <div class="popup-tools">
+  <div :class="{'popup-tools': true, light}">
     <div v-for="t in tools" :key="t" class="result" @click="$router.push({name: 'tool', params: {slug: t}}, () => {}, () => {})">
       <div :class="['type', 'bg-' + $store.state.toolsBySlug[t].type]">
         <img svg-inline v-if="$store.state.toolsBySlug[t].type == 'tactic'" class="icon" src="./assets/tactic-inverse.svg">
@@ -21,6 +21,7 @@
 export default {
   name: 'Popup',
   props: {
+    light: {type: Boolean, default: false},
     tools: {type: Array, default: () => []},
   },
 };
@@ -34,7 +35,6 @@ export default {
   position: absolute;
   display: flex;
   flex-direction: column;
-  //top: 16px * 3 + 6px; // 3rem + 2px outline
   top: 3rem;
   margin-top: 5px;
   outline: 2px solid black;
@@ -45,6 +45,12 @@ export default {
   scrollbar-width: none;
   &::-webkit-scrollbar {
     display: none;
+  }
+  &.light {
+    background: white;
+    .result {
+      color: black;
+    }
   }
 
   .result {
