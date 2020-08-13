@@ -35,9 +35,8 @@ export default {
   position: absolute;
   display: flex;
   flex-direction: column;
-  top: 3rem;
-  margin-top: 5px;
-  outline: 2px solid black;
+  //outline: 2px solid black;
+
   width: $searchWidth;
   background: black;
 
