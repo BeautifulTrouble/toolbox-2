@@ -674,10 +674,9 @@ $sidebar: 18rem;
         }
       }
       .key-related::after {
-        content: "*";
+        content: "•";
         position: absolute;
         left: -10px;
-        top: 3px;
         .rtl & {
           left: unset;
           right: -10px;
@@ -686,6 +685,7 @@ $sidebar: 18rem;
       @mixin type-related($color) {
         a, h2, h3 { color: $color; }
         span::after { border-top-color: $color; }
+        .tool-popup { border: 1px solid $color; }
       }
       .tactic { @include type-related($tactic); }
       .theory { @include type-related($theory); }
@@ -695,12 +695,14 @@ $sidebar: 18rem;
       .tool-popup {
         display: flex;
         position: absolute;
-        top: -.5rem;
+        top: -1rem;
         right: 100%;
         margin: 0 1rem 0 0;
         display: none;
-        box-shadow: .1rem 0 .2rem .2rem $shadow;
-        border: 4px soild $methodology;
+        //box-shadow: .1rem 0 .2rem .2rem $shadow;
+        .content {
+          padding: 1rem;
+        }
         .icon {
           max-width: 3rem;
           margin: 0;

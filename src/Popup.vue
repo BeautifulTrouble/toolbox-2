@@ -1,6 +1,6 @@
 <template>
   <div :class="{'popup-tools': true, light}">
-    <div v-for="t in tools" :key="t" class="result" @click="$router.push({name: 'tool', params: {slug: t}}, () => {}, () => {})">
+    <div v-for="t in tools" :key="t" :class="['result', t.type]" @click="$router.push({name: 'tool', params: {slug: t}}, () => {}, () => {})">
       <div :class="['type', 'bg-' + $store.state.toolsBySlug[t].type]">
         <img svg-inline v-if="$store.state.toolsBySlug[t].type == 'tactic'" class="icon" src="./assets/tactic-inverse.svg">
         <img svg-inline v-else-if="$store.state.toolsBySlug[t].type == 'theory'" class="icon" src="./assets/theory-inverse.svg">
@@ -35,7 +35,6 @@ export default {
   position: absolute;
   display: flex;
   flex-direction: column;
-  //outline: 2px solid black;
 
   width: $searchWidth;
   background: black;
@@ -48,7 +47,7 @@ export default {
   &.light {
     background: white;
     .result {
-      color: black;
+      color: $text;
     }
   }
 

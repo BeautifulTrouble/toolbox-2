@@ -172,6 +172,7 @@ export default {
   .popup-tools {
     top: 3.5rem;
     margin-top: 1px; //account for the 1px outline of the input box
+    border: 1px solid black;
   }
 }
 
