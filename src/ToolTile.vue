@@ -1,8 +1,9 @@
 <template>
-  <div class="tool-tile" v-if="tool"
-    @click="$router.push({name: 'tool', params: {slug: tool.slug}})">
+  <div class="tool-tile">
     <!-- Use VueLazyLoad for loading images on scroll -->
-    <div :class="{'tool-tile-image': true, [`hover-${tool.type}`]: true, 'snapshot-lock': snapshotLock}"
+    <div v-if="tool"
+      @click="$router.push({name: 'tool', params: {slug: tool.slug}})"
+      :class="{'tool-tile-image': true, [`hover-${tool.type}`]: true}"
       v-lazy:background-image="`${config.imagePrefix}/tile-${tool.image}`">
       <div :class="['upper', `bg-${tool.type}`]">
         <div>
@@ -27,6 +28,32 @@
         <div class="snapshot" v-html="markdown(tool.snapshot)" />
       </div>
     </div>
+
+    <div v-else-if="alt == 'suggest'" @click="openTab(config.submissionForm)" class="suggest alt">
+      <div class="upper">
+        <div>
+          <div class="add">+</div>
+          <h3>New</h3>
+        </div>
+      </div>
+      <div class="lower">
+        <h2 class="title">Suggest a tool</h2>
+        <div class="snapshot" v-html="markdown('Have an idea for a tool you don\'t see here?')"/>
+      </div>
+    </div>
+
+    <div v-else-if="alt == 'nosave'" @click="$router.push({name: 'toolbox'})" class="nosave alt">
+      <div class="upper">
+        <div>
+          <img svg-inline class="icon favorite" src="./assets/favorite.svg">
+          <h3>Favorites</h3>
+        </div>
+      </div>
+      <div class="lower">
+        <h2 class="title">It looks like you haven't favorited any tools yet</h2>
+        <div class="snapshot" v-html="markdown('Use the heart icons to add favorites and keep track of the tools that matter to you')"/>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -37,7 +64,7 @@ export default {
   props: {
     tool: {type: Object, default: null},
     text: {type: Object, default: null},
-    snapshotLock: {type: Boolean, default: false},
+    alt: {type: String, default: ''},
   },
 };
 </script>
@@ -45,12 +72,14 @@ export default {
 <style lang="scss">
 @import 'common.scss';
 
-// TODO: Move these styles to Toolbox.vue, it should not be
 .tool-tile {
   cursor: pointer;
   overflow: hidden;
   flex: 0 0 18rem;
   height: 18rem;
+  >div {
+    height: 100%;
+  }
 
   .upper {
     height: 10%;
@@ -99,40 +128,71 @@ export default {
       margin: 0 !important;
     }
   }
-}
-
-@mixin hover-particulars($color) {
-  &::after { // Colored background
-    background: $color;
-    content: "";
-    position: absolute;
-    top: 0; left: 0;
-    bottom: 0; right: 0;
-    opacity: 0;
-    transition: opacity .2s linear;
-  }
-  &:hover::after, &.snapshot-lock::after {
-    opacity: .85;
-  }
-  &:hover, &.snapshot-lock {
-    .snapshot {
-      opacity: 1;
+  // Alt
+  .alt {
+    position: relative;
+    background: $bgdark2;
+    h2 {
+      //color: $text !important;
+    }
+    .upper {
+      background: $bgdark3;
+    }
+    height: 100%;
+    &::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 0;
+      bottom: 0; right: 0;
+      border: .5rem dashed $bgdark3;
+      z-index: 2;
     }
   }
-}
-@include breakpoint($upper) {
-  .hover-tactic { @include hover-particulars($tactic); }
-  .hover-theory { @include hover-particulars($theory); }
-  .hover-story { @include hover-particulars($story); }
-  .hover-principle { @include hover-particulars($principle); }
-  .hover-methodology { @include hover-particulars($methodology); }
+  .suggest {
+    .add {
+      margin: 0 .6rem;
+      font-size: 3rem;
+      position: relative;
+      bottom: .25rem;
+    }
+  }
+  // Hover
+  @mixin hover-particulars($color) {
+    &::after { // Colored background
+      background: $color;
+      content: "";
+      position: absolute;
+      top: 0; left: 0;
+      bottom: 0; right: 0;
+      opacity: 0;
+      transition: opacity .2s linear;
+    }
+    &:hover::after {
+      opacity: .85;
+    }
+    &:hover {
+      .snapshot {
+        opacity: 1;
+      }
+    }
+  }
+  @include breakpoint($upper) {
+    .hover-tactic { @include hover-particulars($tactic); }
+    .hover-theory { @include hover-particulars($theory); }
+    .hover-story { @include hover-particulars($story); }
+    .hover-principle { @include hover-particulars($principle); }
+    .hover-methodology { @include hover-particulars($methodology); }
+    .alt { @include hover-particulars($bgdark3); }
+  }
 }
 
+
 .tool-tile-image {
+  background-color: $bgdark3;
   background-repeat: no-repeat;
   background-position: top left;
-  background-size: 100% 100%;
-  transition: opacity .2s linear, background-position 3s ease-in-out;
+  background-size: cover;
+  transition: opacity .2s linear, filter .4s;
   height: 100%;
   position: relative;
   &::before { // Dark gradient
@@ -140,10 +200,11 @@ export default {
     position: absolute;
     top: 0; left: 0;
     bottom: 0; right: 0;
-    background: linear-gradient(0deg, rgba(0,0,0,0) 35%, rgba(0,0,0,1) 100%);
+    background: linear-gradient(0deg, rgba(0,0,0,0) 0%, rgba(0,0,0,.7) 90%, rgba(0,0,0,1) 100%);
   }
   &[lazy="loading"] {
-    opacity: .5;
+    opacity: 0;
+    filter: saturate(0);
   }
   &[lazy="loaded"] {
     opacity: 1;

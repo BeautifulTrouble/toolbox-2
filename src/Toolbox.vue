@@ -100,15 +100,9 @@
 
       <h2 v-if="$route.name == 'toolbox-search'">TODO: This search query (showing up here as a pseudo-tag) will show only search results</h2>
       <transition-group name="tools-list" tag="div" class="tools">
-        <tool-tile v-for="tool in filteredTools" :key="tool.slug" :tool="tool" :text="typeTextBySlug"/>
-        <a v-if="!['set', 'saved'].includes(routeCollection)"
-          class="tool-tile add-tool" :href="config.submissionForm" target="_blank" :key="-1">
-          <div class="add">+</div>
-          <h3>SUGGEST A TOOL</h3>
-        </a>
-        <div v-if="routeCollection == 'saved' && !$store.state.savedTools.size" class="tool-tile tool-add" :key="-2">
-          LOOKS LIKE YOU HAVENT SAVED ANY TOOLS...
-        </div>
+        <tool-tile v-for="tool in filteredTools" :key="tool.slug" :tool="tool" :text="typeTextBySlug" />
+        <tool-tile v-if="!['set', 'saved'].includes(routeCollection)" :key="-1" :alt="'suggest'" />
+        <tool-tile v-if="routeCollection == 'saved' && !$store.state.savedTools.size" :key="-2" :alt="'nosave'" />
       </transition-group>
     </div>
   </div>
@@ -427,42 +421,13 @@ export default {
   flex-wrap: wrap;
   flex-direction: row;
   position: relative; // For transition animation
-  margin: 4px -4px; // For toolbox margins
+  margin: 2px -2px; // For toolbox margins
 
   // These styles should override the ones defined in ToolTile.vue
   .tool-tile {
     flex: 0 0 20%;
     height: 20vw;
     border: 2px solid transparent; // For toolbox margins
-  }
-  .add-tool {
-    background: $bggray;
-    position: relative;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-    text-decoration: none;
-    color: $bgdark2;
-    transition: color .2s linear;
-    @include breakpoint($upper) {
-      &:hover {
-        color: $bgdark3;
-      }
-    }
-    &::after {
-      content: "";
-      position: absolute;
-      top: 0; bottom: 0;
-      left: 0; right: 0;
-      border: .25rem dashed $bgdark2;
-    }
-    .add {
-      font-size: 14rem;
-      line-height: 10rem;
-      margin-top: -3rem;
-      font-weight: bold;
-    }
   }
 }
 
