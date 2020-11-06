@@ -6,11 +6,7 @@
     "postinstall": "yarn git-submodule && yarn wp-link && yarn wp-cli-install",
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint",
-    "wp": "cd wordpress && php wp-cli.phar",
-    "wp-cli-install": "cd wordpress && curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar",
-    "wp-link": "cd wordpress && ln -sf ../wp-config.php && rm -rf wp-content/{plugins,themes/bt,themes/twenty*,uploads} && ln -s ../../plugins ../../uploads wp-content && ln -s ../../../bt wp-content/themes",
-    "git-submodule": "git submodule init && git submodule update"
+    "lint": "vue-cli-service lint"
   },
   "dependencies": {
     "axios": "^0.19.2",
