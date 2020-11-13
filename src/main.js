@@ -12,7 +12,6 @@ import VueScollTo from 'vue-scrollto'
 import App from './App'
 import Tool from './Tool'
 import Toolbox from './Toolbox'
-import WordPress from './WordPress'
 
 import { store } from './store'
 import config from './config'
@@ -25,7 +24,6 @@ const router = new Router({
   mode: 'history',
   base: '/',
   routes: [
-    {path: '/',                   name: 'home', component: WordPress},
     // Legacy redirects
     {path: '/story/:slug',        redirect: {name: 'tool'}},
     {path: '/tactic/:slug',       redirect: {name: 'tool'}},
@@ -46,8 +44,8 @@ const router = new Router({
     {path: '/toolbox/set/:set?',            name: 'toolbox-set', component: Toolbox},
     {path: '/toolbox/:tag?',                name: 'toolbox', component: Toolbox},
     {path: '/toolbox/*',                    redirect: {name: 'toolbox'}},
-    // Fallback
-    {path: '/*',                  name: 'wordpress', component: WordPress},
+    // Catch-all
+    {path: '/*',                  redirect: {name: 'toolbox'}},
   ],
   scrollBehavior(to, from, savedPosition) {
     if (to.hash) {

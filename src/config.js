@@ -16,5 +16,4 @@ export default {
   submissionForm: 'https://docs.google.com/forms/d/e/1FAIpQLSeC_EdxoO7owVnL8fjSERZlychwMhDOR-7rI1SDtpL4ijZgkg/viewform',
   toolTypes: ['story', 'tactic', 'principle', 'theory', 'methodology'],
   trainingForm: 'https://docs.google.com/forms/d/e/1FAIpQLSeOtOoVxUeVWzwGw4z-w0xXS8Z2OaDcr7GaShWl4WkDtaXOiQ/viewform',
-  wpapi: 'http://bt.org/wp-json/wp/v2',
 }

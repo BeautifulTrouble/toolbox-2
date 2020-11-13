@@ -59,8 +59,6 @@ export const store = new Vuex.Store({
     savedTools: storageGetSavedTools(),
     tools: [],
     toolsBySlug: {},
-    wordPress: '',
-    wordPressRequested: false,
   },
   actions: {
     // API TOOLS
@@ -87,39 +85,6 @@ export const store = new Vuex.Store({
               console.error("Couldn't get API tools!", e)
             })
         }
-      }
-    },
-    // WORDPRESS CONTENT
-    WP_GET(context, {path, query}) {
-      // TODO: Reload WordPress content
-      // Look for permalink structure to determine if we should use posts or pages endpoint
-      let endpoint = /^\/\d{4}\/\d{2}\/\d{2}\//.test(path) ? 'posts' : 'pages'
-      // This is a request for a draft preview (query._wpnonce requires support in functions.php)
-      if (query.preview_id && query._wpnonce) {
-        context.commit('setWordPressRequested')
-        Axios.get(`${config.wpapi}/${endpoint}/${query.preview_id}/revisions?per_page=1&_wpnonce=${query._wpnonce}`)
-          .then(r => context.commit('setWordPress', r.data[0].content.rendered))
-        return
-      }
-      // Ensure a trailing slash so paths can be manipulated consistently
-      path = path.replace(/([^/])$/, '$1/')
-
-      let lastComponent = path.match('/([^/]+)/$')[1]
-      if (lastComponent) {
-        context.commit('setWordPressRequested')
-        Axios.get(`${config.wpapi}/${endpoint}?slug=${lastComponent}/`)
-          .then(r => {
-            let foundItem = false
-            r.data.forEach(i => {
-              if (i.link && i.link.endsWith(path)) {
-                context.commit('setWordPress', i.content.rendered)
-                foundItem = true
-              }
-            })
-            if (!foundItem && path != config.errorPage) {
-              context.dispatch('WP_GET', {path: config.errorPage, query: {}})
-            }
-          })
       }
     },
     // SAVED TOOLS
@@ -159,15 +124,6 @@ export const store = new Vuex.Store({
     },
     setLangRequested(state, lang) {
       state.langRequested = lang
-    },
-    // WORDPRESS CONTENT
-    setWordPressRequested(state) {
-      state.wordPress = ''
-      state.wordPressRequested = true
-    },
-    setWordPress(state, html) {
-      state.wordPressRequested = false
-      state.wordPress = html
     },
     // SAVED TOOLS
     setSavedTools(state, tools) {
