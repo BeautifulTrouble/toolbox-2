@@ -20,7 +20,3 @@ yarn-error.log*
 *.njsproj
 *.sln
 *.sw?
-
-# Wordpress stuff (the bt directory is ignored by its own local .gitignore)
-uploads
-wp-config.php
