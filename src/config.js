@@ -7,6 +7,7 @@ export default {
   errorPage: '/error',
   imagePrefix: 'https://beautifulrising.org',
   langs: ['en', 'es', 'ar', 'pt', 'fr'],
+  mountPoint: '#page',
   pdf: 'https://api.beautifulrising.org/pdf',
   siteDomain: 'bt.org',
   siteUrl: 'https://beautifultrouble.org',

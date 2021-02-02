@@ -160,13 +160,4 @@ new Vue({
   router,
   store,
   render: h => h(App),
-}).$mount('#page')
-/*
-document.addEventListener("DOMContentLoaded", () => {
-  new Vue({
-    router,
-    store,
-    render: h => h(App),
-  }).$mount('#page')
-})
-*/
+}).$mount(config.mountPoint)
