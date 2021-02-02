@@ -77,9 +77,13 @@
 
               <!-- BY SET -->
               <div class="by by-set" v-if="activeTab == 'set'">
-                <div class="h1">--SETS--</div>
-                <div @click="selectSet('best-of')">BEST OF</div>
-                <div @click="selectSet('andrews-list')">ANDREW'S LIST</div>
+                <div v-for="(set, setSlug) in setsBySlug" :key="setSlug"
+                   :class="{set: true, block: true, [setSlug]: true, active: routeSet == setSlug}"
+                   @click="selectSet(setSlug)">
+                  <img svg-inline class="bt-icon set" src="./assets/set.svg">
+                  <div class="h3">{{ setTextBySlug[setSlug] }}</div>
+                  <p>DESCRIPTION (Don't make use of all the space, it's not actually available at all screen sizes)</p>
+                </div>
               </div>
 
               <!-- BY TAG -->
@@ -120,10 +124,10 @@ import ToolTile from './ToolTile'
 import descriptionTextByLang from './descriptions'
 import tagTextByLang from './tags'
 import typeTextByLang from './types'
+import sets from './sets'
 
 // Let's have some dignity
 const ALL = 'all'
-const SETS = ['andrews-list', 'best-of']
 const REGIONS = ['Africa', 'Asia', 'Europe', 'Latin America and the Caribbean', 'Middle East', 'North America', 'Oceania']
 const REGION_SLUGS = ['all', ...REGIONS.map(s => s.toLowerCase().replace(/ /g, '-'))]
 
@@ -143,9 +147,7 @@ export default {
       if (this.routeCollection == 'saved') {
         tools = tools.filter(t => this.$store.state.savedTools.has(t.slug))
       } else if (this.routeCollection == 'set') {
-      //} else if (this.routeCollection == 'set' && this.routeSet != ALL) {
-        // TODO: implement real set filter (collectionLists isn't real)
-        tools = tools.filter(t => (this.$store.state.collectionLists || ['action-logic']).includes(t.slug))
+        tools = tools.filter(t => (this.setsBySlug[this.routeSet] || []).includes(t.slug))
       } else if (this.config.toolTypes.includes(this.routeCollection)) {
         tools = tools.filter(t => t.type == this.routeCollection)
       }
@@ -174,9 +176,19 @@ export default {
         .map(t => t.tags)
         .reduce((a, c) => c !== undefined ? new Set([...a, ...c]) : a, new Set([]))
     },
+    // Sets (see also: setTextBySlug)
+    setsBySlug() {
+      return Object.fromEntries(Object.entries(sets).map(
+        ([k, v]) => [this.slugify(k), v]))
+    },
     // Translated text
     descriptionTextByLang() {
       return descriptionTextByLang[this.$store.state.lang]
+    },
+    setTextBySlug() {
+      // TODO: use translated text
+      return Object.fromEntries(Object.entries(sets).map(
+        ([k, v]) => [this.slugify(k), k]))
     },
     tagTextBySlug() {
       return tagTextByLang[this.$store.state.lang]
@@ -216,7 +228,7 @@ export default {
     },
     selectSet(set) {
       if (this.$route.params.set != set)
-        this.$route.push({name: this.$route.name, params: {set}})
+        this.$router.push({name: this.$route.name, params: {set}})
     },
     selectTag(tag) {
       tag = this.$route.params.tag != tag ? tag : undefined
@@ -231,7 +243,7 @@ export default {
       // Reject invalid regions, tags, or sets. Fall back to top-level toolbox.
       if ((region && !REGION_SLUGS.includes(region)) ||
           (tag && !(tag in this.tagTextBySlug)) ||
-          (set && !SETS.includes(set)))
+          (set && !(set in this.setsBySlug)))
         return next({name: 'toolbox', replace: true})
 
       let tabinfo = (s) => this.$store.commit('setDebug', `Toolbox tab condition: ${s}`)
