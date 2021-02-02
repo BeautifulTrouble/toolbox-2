@@ -204,7 +204,7 @@ export default {
       return this.$route.params.region || ALL
     },
     routeSet() {
-      return this.$route.params.set || ALL
+      return this.$route.params.set || Object.keys(this.setsBySlug)[0]
     },
     routeTag() {
       return this.$route.params.tag || ALL
