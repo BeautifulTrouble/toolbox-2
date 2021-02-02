@@ -10,12 +10,12 @@ module.exports = {
     optimization: {
       splitChunks: false,
     },
-    /*
     output: {
       // Add querystring so webpackChunkName will get reloaded
-      chunkFilename: '[name].js?id=[chunkhash]'
+      chunkFilename: '[name].js?id=[chunkhash]',
+      // Force output filename
+      filename: 'toolbox.js?id=[chunkhash]',
     }
-    */
   },
   css: {
     extract: false,

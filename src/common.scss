@@ -25,8 +25,6 @@ $bgdark3: darken($bggray, 30%);
 $set: #005577;
 
 $ztop: 10;
-$uppermenu: 2.75rem;
-$lowermenu: 7rem;
 
 
 // Breakpoints
@@ -78,7 +76,7 @@ $searchWidth: 24rem;
 
 
 // Fonts
-@import url('https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@300;400;700&family=Roboto+Condensed:wght@700&display=swap');
+//@import url('https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@300;400;700&family=Roboto+Condensed:wght@700&display=swap');
 
 
 // Elements
@@ -102,10 +100,9 @@ body {
   background-attachment: fixed;
   background-repeat: no-repeat; //Which browser needs this?
 
-  padding-top: $uppermenu + $lowermenu;
   margin: 0;
   color: $text;
-  font-family: 'Barlow Semi Condensed', sans-serif;
+  font-family: aktiv-grotesk, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -125,7 +122,7 @@ hr {
   margin: 1.5rem 0;
 }
 h1, h2, h3 {
-  font-family: 'Roboto', sans-serif; 
+  font-family: ff-good-headline-web-pro-condensed, sans-serif; 
   line-height: 1.1;
 }
 h1 {
@@ -158,7 +155,7 @@ input{
   font-size: 1rem;
   outline: 0px solid white;
   transition: outline .2s;
-  font-family: 'Barlow Semi Condensed', sans-serif;
+  font-family: aktiv-grotesk, sans-serif;
   &[type="email"] {
     min-width: 80%;
   }

@@ -24,7 +24,7 @@
             <span :class="{tab: true, active: activeTab == 'tag'}" @click="activeTab = 'tag'">
               {{ tagTextBySlug[$route.params.tag] || $route.params.query || 'everything' }}</span>
           </span>
-          <img v-if="routeCollection != ALL || routeTag != ALL" svg-inline class="icon reset" src="./assets/reset.svg" alt="Reset" @click="resetFilter">
+          <img v-if="routeCollection != ALL || routeTag != ALL" svg-inline class="bt-icon reset" src="./assets/reset.svg" alt="Reset" @click="resetFilter">
         </div>
 
         <!-- FILTER WIDGET -->
@@ -36,21 +36,21 @@
               <div class="by by-collection" v-if="activeTab == 'collection'">
                 <div v-for="(value, key) in typeTextBySlug" :key="key"
                    :class="{block: true, [key]: true, active: routeCollection == key}" @click="selectCollection(key)">
-                  <img svg-inline v-if="key == 'tactic'" class="icon" src="./assets/tactic.svg">
-                  <img svg-inline v-if="key == 'theory'" class="icon" src="./assets/theory.svg">
-                  <img svg-inline v-if="key == 'story'" class="icon" src="./assets/story.svg">
-                  <img svg-inline v-if="key == 'principle'" class="icon" src="./assets/principle.svg">
-                  <img svg-inline v-if="key == 'methodology'" class="icon" src="./assets/methodology.svg">
+                  <img svg-inline v-if="key == 'tactic'" class="bt-icon" src="./assets/tactic.svg">
+                  <img svg-inline v-if="key == 'theory'" class="bt-icon" src="./assets/theory.svg">
+                  <img svg-inline v-if="key == 'story'" class="bt-icon" src="./assets/story.svg">
+                  <img svg-inline v-if="key == 'principle'" class="bt-icon" src="./assets/principle.svg">
+                  <img svg-inline v-if="key == 'methodology'" class="bt-icon" src="./assets/methodology.svg">
                   <h3>{{ value[1] }}</h3>
                   <p>{{ descriptionTextByLang[key] }}</p>
                 </div>
                 <div :class="{block: true, saved: true, active: routeCollection == 'saved'}" @click="selectCollection('saved')">
-                  <img svg-inline class="icon smaller" src="./assets/favorite-active.svg">
+                  <img svg-inline class="bt-icon smaller" src="./assets/favorite-active.svg">
                   <h3>My tools</h3>
                   <p>Your favorite tools</p>
                 </div>
                 <div :class="{block: true, set: true, active: routeCollection == 'set'}" @click="selectCollection('set')">
-                  <img svg-inline class="icon" src="./assets/set.svg">
+                  <img svg-inline class="bt-icon" src="./assets/set.svg">
                   <h3>Sets</h3>
                   <p>Custom sets of tools</p>
                 </div>
@@ -59,18 +59,18 @@
               <!-- BY REGION -->
               <div class="by by-region" v-if="activeTab == 'region'">
                 <div :class="{block: true, active: routeRegion == 'all'}" @click="selectRegion('all')">
-                  <img svg-inline class="icon" src="./assets/regions/world.svg">
+                  <img svg-inline class="bt-icon" src="./assets/regions/world.svg">
                   <p>THE WHOLE WORLD</p>
                 </div>
                 <div v-for="region in REGIONS" :key="region"
                   :class="{block: true, active: $route.params.region == slugify(region)}" @click="selectRegion(slugify(region))">
-                  <img svg-inline v-if="region == 'Africa'" class="icon" src="./assets/regions/africa.svg">
-                  <img svg-inline v-if="region == 'Asia'" class="icon" src="./assets/regions/asia.svg">
-                  <img svg-inline v-if="region == 'Europe'" class="icon" src="./assets/regions/europe.svg">
-                  <img svg-inline v-if="region == 'Latin America and the Caribbean'" class="icon" src="./assets/regions/latin-america-and-the-caribbean.svg">
-                  <img svg-inline v-if="region == 'Middle East'" class="icon" src="./assets/regions/middle-east.svg">
-                  <img svg-inline v-if="region == 'North America'" class="icon" src="./assets/regions/north-america.svg">
-                  <img svg-inline v-if="region == 'Oceania'" class="icon" src="./assets/regions/oceania.svg">
+                  <img svg-inline v-if="region == 'Africa'" class="bt-icon" src="./assets/regions/africa.svg">
+                  <img svg-inline v-if="region == 'Asia'" class="bt-icon" src="./assets/regions/asia.svg">
+                  <img svg-inline v-if="region == 'Europe'" class="bt-icon" src="./assets/regions/europe.svg">
+                  <img svg-inline v-if="region == 'Latin America and the Caribbean'" class="bt-icon" src="./assets/regions/latin-america-and-the-caribbean.svg">
+                  <img svg-inline v-if="region == 'Middle East'" class="bt-icon" src="./assets/regions/middle-east.svg">
+                  <img svg-inline v-if="region == 'North America'" class="bt-icon" src="./assets/regions/north-america.svg">
+                  <img svg-inline v-if="region == 'Oceania'" class="bt-icon" src="./assets/regions/oceania.svg">
                   <p>{{ region }}</p>
                 </div>
               </div>
@@ -304,7 +304,7 @@ export default {
       border-radius: 5px 5px 0 0;
     }
   }
-  .icon {
+  .bt-icon {
     margin: 0 .5rem;
     width: 2rem;
     height: 2rem;
@@ -344,7 +344,7 @@ export default {
     }
   }
   .by-region {
-    .icon {
+    .bt-icon {
       height: 8rem;
       width: 7rem;
       margin: 0;
@@ -411,7 +411,7 @@ export default {
       min-height: 35%;
     }
   }
-  .icon {
+  .bt-icon {
     margin: .5rem;
     width: 8rem;
     height: 4rem;

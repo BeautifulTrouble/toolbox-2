@@ -3,13 +3,13 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "postinstall": "yarn git-submodule && yarn wp-link && yarn wp-cli-install",
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
     "axios": "^0.19.2",
+    "caniuse-lite": "^1.0.30001181",
     "core-js": "^2.6.5",
     "headroom.js": "^0.11.0",
     "local-storage-fallback": "^4.1.1",

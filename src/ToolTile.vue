@@ -7,19 +7,19 @@
       v-lazy:background-image="`${config.imagePrefix}/tile-${tool.image}`">
       <div :class="['upper', `bg-${tool.type}`]">
         <div>
-          <img svg-inline v-if="tool.type == 'tactic'" class="icon" src="./assets/tactic-inverse.svg">
-          <img svg-inline v-else-if="tool.type == 'theory'" class="icon" src="./assets/theory-inverse.svg">
-          <img svg-inline v-else-if="tool.type == 'story'" class="icon" src="./assets/story-inverse.svg">
-          <img svg-inline v-else-if="tool.type == 'principle'" class="icon" src="./assets/principle-inverse.svg">
-          <img svg-inline v-else-if="tool.type == 'methodology'" class="icon" src="./assets/methodology-inverse.svg">
+          <img svg-inline v-if="tool.type == 'tactic'" class="bt-icon" src="./assets/tactic-inverse.svg">
+          <img svg-inline v-else-if="tool.type == 'theory'" class="bt-icon" src="./assets/theory-inverse.svg">
+          <img svg-inline v-else-if="tool.type == 'story'" class="bt-icon" src="./assets/story-inverse.svg">
+          <img svg-inline v-else-if="tool.type == 'principle'" class="bt-icon" src="./assets/principle-inverse.svg">
+          <img svg-inline v-else-if="tool.type == 'methodology'" class="bt-icon" src="./assets/methodology-inverse.svg">
           <h3>{{ text[tool.type][0] }}</h3>
         </div>
         <div>
-          <img svg-inline v-if="tool.video" class="icon video" src="./assets/video.svg">
+          <img svg-inline v-if="tool.video" class="bt-icon video" src="./assets/video.svg">
           <!-- .stop avoids calling other click handlers and .prevent avoids the same within a link -->
           <div @click.stop.prevent="$store.dispatch('TOOL_SAVE_TOGGLE', tool.slug)">
-            <img svg-inline v-if="$store.state.savedTools.has(tool.slug)" class="icon favorite active" src="./assets/favorite-active.svg">
-            <img svg-inline v-else class="icon favorite" src="./assets/favorite.svg">
+            <img svg-inline v-if="$store.state.savedTools.has(tool.slug)" class="bt-icon favorite active" src="./assets/favorite-active.svg">
+            <img svg-inline v-else class="bt-icon favorite" src="./assets/favorite.svg">
           </div>
         </div>
       </div>
@@ -45,13 +45,13 @@
     <div v-else-if="alt == 'nosave'" @click="$router.push({name: 'toolbox'})" class="nosave alt">
       <div class="upper">
         <div>
-          <img svg-inline class="icon favorite" src="./assets/favorite.svg">
+          <img svg-inline class="bt-icon favorite" src="./assets/favorite.svg">
           <h3>Favorites</h3>
         </div>
       </div>
       <div class="lower">
         <h2 class="title">It looks like you haven't favorited any tools yet</h2>
-        <div class="snapshot" v-html="markdown('Use the heart icons to add favorites and keep track of the tools that matter to you')"/>
+        <div class="snapshot" v-html="markdown('Use the heart bt-icons to add favorites and keep track of the tools that matter to you')"/>
       </div>
     </div>
   </div>
@@ -116,7 +116,7 @@ export default {
     max-width: 1.5rem;
     max-height: 2.5rem;
   }
-  .icon {
+  .bt-icon {
     fill: white;
     margin: 0 .5rem !important;
     &.active {

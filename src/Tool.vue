@@ -9,22 +9,24 @@
     <header slot="content">
       <div class="upper">
         <router-link :to="{name: `toolbox-${tool.type}`}">
-          <img svg-inline v-if="tool.type == 'tactic'" class="icon" src="./assets/tactic.svg">
-          <img svg-inline v-else-if="tool.type == 'theory'" class="icon" src="./assets/theory.svg">
-          <img svg-inline v-else-if="tool.type == 'story'" class="icon" src="./assets/story.svg">
-          <img svg-inline v-else-if="tool.type == 'principle'" class="icon" src="./assets/principle.svg">
-          <img svg-inline v-else-if="tool.type == 'methodology'" class="icon" src="./assets/methodology.svg">
+          <img svg-inline v-if="tool.type == 'tactic'" class="bt-icon" src="./assets/tactic.svg">
+          <img svg-inline v-else-if="tool.type == 'theory'" class="bt-icon" src="./assets/theory.svg">
+          <img svg-inline v-else-if="tool.type == 'story'" class="bt-icon" src="./assets/story.svg">
+          <img svg-inline v-else-if="tool.type == 'principle'" class="bt-icon" src="./assets/principle.svg">
+          <img svg-inline v-else-if="tool.type == 'methodology'" class="bt-icon" src="./assets/methodology.svg">
           <h3>{{ typeTextBySlug[tool.type][0] }}</h3>
         </router-link>
         <h1>{{ tool.title }}</h1>
+        <!--
         <img svg-inline v-if="showDocumentLinks" @click="openTab(tool.document_link)" class="edit" alt="Edit this Google Doc" src="./assets/edit.svg">
+        -->
       </div>
       <div class="lower">
         <div><!-- Always render two divs to ensure proper placement -->
           <div v-if="tool['image-caption']" :class="['caption', tool.type]" v-html="markdown(tool['image-caption'])" />
         </div>
         <a href="#" v-scroll-to="{el: '#video', offset: -16 * 6.5, duration: 200}">
-          <img svg-inline v-if="tool.video" class="icon video" src="./assets/video.svg">
+          <img svg-inline v-if="tool.video" class="bt-icon video" src="./assets/video.svg">
         </a>
       </div>
     </header>
@@ -63,11 +65,11 @@
           <div v-if="tool['key-modules']" class="key-tools">
             <expander v-for="(v, k) of tool['key-modules']" :key="k" :open="true" :name="k" :class="keyTextByEntry[k][2]">
               <template v-slot:title>
-                <img svg-inline v-if="keyTextByEntry[k][2] == 'tactic'" class="icon" src="./assets/tactic.svg">
-                <img svg-inline v-else-if="keyTextByEntry[k][2] == 'theory'" class="icon" src="./assets/theory.svg">
-                <img svg-inline v-else-if="keyTextByEntry[k][2] == 'story'" class="icon" src="./assets/story.svg">
-                <img svg-inline v-else-if="keyTextByEntry[k][2] == 'principle'" class="icon" src="./assets/principle.svg">
-                <img svg-inline v-else-if="keyTextByEntry[k][2] == 'methodology'" class="icon" src="./assets/methodology.svg">
+                <img svg-inline v-if="keyTextByEntry[k][2] == 'tactic'" class="bt-icon" src="./assets/tactic.svg">
+                <img svg-inline v-else-if="keyTextByEntry[k][2] == 'theory'" class="bt-icon" src="./assets/theory.svg">
+                <img svg-inline v-else-if="keyTextByEntry[k][2] == 'story'" class="bt-icon" src="./assets/story.svg">
+                <img svg-inline v-else-if="keyTextByEntry[k][2] == 'principle'" class="bt-icon" src="./assets/principle.svg">
+                <img svg-inline v-else-if="keyTextByEntry[k][2] == 'methodology'" class="bt-icon" src="./assets/methodology.svg">
                 {{ keyTextByEntry[k][+(v.length > 1)] }}
               </template>
               <div v-for="(each, i) in v" :key="i">
@@ -110,20 +112,20 @@
         <section class="actions">
           <span @click="$store.dispatch('TOOL_SAVE_TOGGLE', tool.slug)">
             <img v-if="$store.state.savedTools.has(tool.slug)"
-              svg-inline :class="['icon', 'active', tool.type]" src="./assets/favorite-active.svg">
-            <img v-else svg-inline class="icon" src="./assets/favorite.svg">
+              svg-inline :class="['bt-icon', 'active', tool.type]" src="./assets/favorite-active.svg">
+            <img v-else svg-inline class="bt-icon" src="./assets/favorite.svg">
           </span>
           <a :href="`${config.pdf}/download?tools=${tool.slug}`" target="_blank">
-            <img svg-inline class="icon" src="./assets/download.svg">
+            <img svg-inline class="bt-icon" src="./assets/download.svg">
           </a>
           <a :href="shareUrlFacebook" target="_blank" rel="external">
-            <img svg-inline class="icon" src="./assets/facebook.svg">
+            <img svg-inline class="bt-icon" src="./assets/facebook.svg">
           </a>
           <a :href="shareUrlTwitter" target="_blank" rel="external">
-            <img svg-inline class="icon" src="./assets/twitter.svg">
+            <img svg-inline class="bt-icon" src="./assets/twitter.svg">
           </a>
           <a :href="shareUrlEmail" target="_blank" rel="external">
-            <img svg-inline class="icon" src="./assets/email.svg">
+            <img svg-inline class="bt-icon" src="./assets/email.svg">
           </a>
         </section>
         <section v-if="tool['potential-risks']" class="risks">
@@ -146,11 +148,11 @@
           <div v-for="T in Object.keys(randomRelated)" :key="T" :class="T">
             <div class="type">
               <router-link :to="{name: `toolbox-${T}`}">
-                <img svg-inline v-if="T == 'tactic'" class="icon" src="./assets/tactic.svg">
-                <img svg-inline v-else-if="T == 'theory'" class="icon" src="./assets/theory.svg">
-                <img svg-inline v-else-if="T == 'story'" class="icon" src="./assets/story.svg">
-                <img svg-inline v-else-if="T == 'principle'" class="icon" src="./assets/principle.svg">
-                <img svg-inline v-else-if="T == 'methodology'" class="icon" src="./assets/methodology.svg">
+                <img svg-inline v-if="T == 'tactic'" class="bt-icon" src="./assets/tactic.svg">
+                <img svg-inline v-else-if="T == 'theory'" class="bt-icon" src="./assets/theory.svg">
+                <img svg-inline v-else-if="T == 'story'" class="bt-icon" src="./assets/story.svg">
+                <img svg-inline v-else-if="T == 'principle'" class="bt-icon" src="./assets/principle.svg">
+                <img svg-inline v-else-if="T == 'methodology'" class="bt-icon" src="./assets/methodology.svg">
                 <h2>{{ typeTextBySlug[T][1] }}</h2>
               </router-link>
               <span :class="{T: true, open: expandRelated[T]}" v-if="randomRelated[T].length > 5"
@@ -192,6 +194,8 @@
 
 <script>
 import Expander from './Expander'
+import Popup from './Popup'
+import Youtube from './Youtube'
 import typeTextByLang from './types'
 import keyTextByLang from './keys'
 
@@ -201,15 +205,13 @@ export default {
   name: 'Tool',
   data: () => ({
     authors: null,
-    showDocumentLinks: window.btData.showDocumentLinks,
     types: {story: 'stories', tactic: 'tactics', theory: 'theories', principle: 'principles', methodology: 'methodologies'},
     expandRelated: {},
   }),
   components: {
     Expander,
-    Popup: () => import(/* webpackPrefetch: true */ './Popup.vue'),
-    Youtube: () => import('./Youtube.vue'),
-    //Youtube: () => import(/* webpackPrefetch: true */ './Youtube.vue'),
+    Popup,
+    Youtube,
   },
   computed: {
     tool() {
@@ -322,7 +324,7 @@ export default {
 @import 'common.scss';
 
 //$image-height: 45rem;
-$image-height: calc(100vh - #{$uppermenu + $lowermenu});
+$image-height: calc(75vh);
 $image-height-max: 60rem;
 $sidebar: 18rem;
 
@@ -379,7 +381,7 @@ $sidebar: 18rem;
         fill: white;
       }
     }
-    .icon {
+    .bt-icon {
       margin-bottom: .5rem;
       filter: drop-shadow(0px 0px 20px rgba(black, .2));
     }
@@ -557,7 +559,7 @@ $sidebar: 18rem;
       p:first-of-type {
         margin-top: .25rem;
       }
-      .icon {
+      .bt-icon {
         display: inline;
         max-height: 1.5rem;
         max-width: 1.5rem;
@@ -584,7 +586,7 @@ $sidebar: 18rem;
       flex-wrap: wrap;
       flex-direction: row;
       align-items: center;
-      .icon {
+      .bt-icon {
         max-width: 3rem;
         cursor: pointer;
         margin: 0 .5rem 0 0;
@@ -636,7 +638,7 @@ $sidebar: 18rem;
       .titles {
         margin-bottom: 1rem;
       }
-      .icon {
+      .bt-icon {
         max-height: 1.5rem;
         max-width: 1.5rem;
         margin: 0 .25rem 0 0;
@@ -709,7 +711,7 @@ $sidebar: 18rem;
         .content {
           padding: 1rem;
         }
-        .icon {
+        .bt-icon {
           max-width: 3rem;
           margin: 0;
         }

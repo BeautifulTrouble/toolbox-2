@@ -20,6 +20,7 @@
 </template>
 
 <script>
+import Popup from './Popup'
 import lunr from 'lunr'
 
 export default {
@@ -33,7 +34,7 @@ export default {
     toolboxOnly: false,
   }),
   components: {
-    Popup: () => import(/* webpackPrefetch: true */ './Popup.vue'),
+    Popup,
   },
   methods: {
     search() {
