@@ -390,7 +390,8 @@ $sidebar: 18rem;
     .upper {
       //height: 70%; // Adjusted because of calc-based $image-height
       height: 80%;
-      margin-top: 10rem;
+      //margin-top: 10rem;
+      margin-top: 10vh;
       display: flex;
       flex-direction: column;
       justify-content: center;

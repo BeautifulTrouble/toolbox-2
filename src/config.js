@@ -13,7 +13,7 @@ export default {
   socialFacebook: 'https://www.facebook.com/BeautifulTroubleBook',
   socialInstagram: 'https://www.instagram.com/beautifultroublehq/',
   socialTwitter: 'https://twitter.com/BTroublemakers',
-  submissionForm: 'https://docs.google.com/forms/d/e/1FAIpQLSeC_EdxoO7owVnL8fjSERZlychwMhDOR-7rI1SDtpL4ijZgkg/viewform',
+  submissionForm: '/toolbox-suggestion',
   toolTypes: ['story', 'tactic', 'principle', 'theory', 'methodology'],
   trainingForm: 'https://docs.google.com/forms/d/e/1FAIpQLSeOtOoVxUeVWzwGw4z-w0xXS8Z2OaDcr7GaShWl4WkDtaXOiQ/viewform',
 }

@@ -95,7 +95,7 @@ export default {
   }
   .upper, .lower {
     position: relative;
-    z-index: 1;
+    z-index: 2;
     color: white;
     .h3, .h2 {
       color: white !important;
@@ -105,12 +105,13 @@ export default {
     opacity: 0;
     padding: 0 1rem;
     transition: opacity .2s;
+    p {
+      margin: 0;
+      //line-height: 1.1;
+    }
   }
   .title {
     margin: .5rem 1rem;
-  }
-  .h3 {
-    font-size: 1rem;
   }
   svg {
     max-width: 1.5rem;
@@ -150,21 +151,27 @@ export default {
       margin: 0 .6rem;
       font-size: 3rem;
       position: relative;
-      bottom: .25rem;
     }
   }
   // Hover
   @mixin hover-particulars($color) {
-    &::after { // Colored background
+    &::before { // Colored background
       background: $color;
       content: "";
       position: absolute;
-      top: 0; left: 0;
-      bottom: 0; right: 0;
+      left: 0; right: 0;
+      top: 0; bottom: 0;
       opacity: 0;
-      transition: opacity .2s linear;
+      transition: opacity .1s linear;
     }
-    &:hover::after {
+    // TODO: reorder layering so that the hover keeps the dark gradient
+    &:hover::after { // Text fade gradient
+      background: linear-gradient(transparent, transparent 85%, $color 95%);
+      z-index: 2;
+      opacity: 0;
+    }
+    &:hover::after,
+    &:hover::before {
       opacity: .85;
     }
     &:hover {
@@ -189,15 +196,17 @@ export default {
   background-repeat: no-repeat;
   background-position: top left;
   background-size: cover;
-  transition: opacity .2s linear, filter .4s;
+  transition: opacity .1s linear, filter .2s;
   height: 100%;
   position: relative;
-  &::before { // Dark gradient
+  &::after { // Dark gradient
     content: "";
     position: absolute;
     top: 0; left: 0;
     bottom: 0; right: 0;
     background: linear-gradient(0deg, rgba(0,0,0,0) 0%, rgba(0,0,0,.7) 90%, rgba(0,0,0,1) 100%);
+    transition: background .2 linear;
+    pointer-events: none; // Allow the heart icon to work
   }
   &[lazy="loading"] {
     opacity: 0;
