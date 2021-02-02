@@ -12,7 +12,7 @@
           <img svg-inline v-else-if="tool.type == 'story'" class="bt-icon" src="./assets/story-inverse.svg">
           <img svg-inline v-else-if="tool.type == 'principle'" class="bt-icon" src="./assets/principle-inverse.svg">
           <img svg-inline v-else-if="tool.type == 'methodology'" class="bt-icon" src="./assets/methodology-inverse.svg">
-          <h3>{{ text[tool.type][0] }}</h3>
+          <div class="h3">{{ text[tool.type][0] }}</div>
         </div>
         <div>
           <img svg-inline v-if="tool.video" class="bt-icon video" src="./assets/video.svg">
@@ -24,7 +24,7 @@
         </div>
       </div>
       <div class="lower">
-        <h2 class="title">{{ tool.title }}</h2>
+        <div class="h2 title">{{ tool.title }}</div>
         <div class="snapshot" v-html="markdown(tool.snapshot)" />
       </div>
     </div>
@@ -33,11 +33,11 @@
       <div class="upper">
         <div>
           <div class="add">+</div>
-          <h3>New</h3>
+          <div class="h3">New</div>
         </div>
       </div>
       <div class="lower">
-        <h2 class="title">Suggest a tool</h2>
+        <div class="h2 title">Suggest a tool</div>
         <div class="snapshot" v-html="markdown('Have an idea for a tool you don\'t see here?')"/>
       </div>
     </div>
@@ -46,11 +46,11 @@
       <div class="upper">
         <div>
           <img svg-inline class="bt-icon favorite" src="./assets/favorite.svg">
-          <h3>Favorites</h3>
+          <div class="h3">Favorites</div>
         </div>
       </div>
       <div class="lower">
-        <h2 class="title">It looks like you haven't favorited any tools yet</h2>
+        <div class="h2 title">It looks like you haven't favorited any tools yet</div>
         <div class="snapshot" v-html="markdown('Use the heart bt-icons to add favorites and keep track of the tools that matter to you')"/>
       </div>
     </div>
@@ -97,7 +97,7 @@ export default {
     position: relative;
     z-index: 1;
     color: white;
-    h3, h2 {
+    .h3, .h2 {
       color: white !important;
     }
   }
@@ -109,7 +109,7 @@ export default {
   .title {
     margin: .5rem 1rem;
   }
-  h3 {
+  .h3 {
     font-size: 1rem;
   }
   svg {

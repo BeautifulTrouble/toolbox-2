@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h1 v-if="$store.state.langRequested">Loading Toolbox...</h1>
+    <div class="h1" v-if="$store.state.langRequested">Loading Toolbox...</div>
     <div class="toolbox">
       <div class="filter">
 
@@ -41,17 +41,17 @@
                   <img svg-inline v-if="key == 'story'" class="bt-icon" src="./assets/story.svg">
                   <img svg-inline v-if="key == 'principle'" class="bt-icon" src="./assets/principle.svg">
                   <img svg-inline v-if="key == 'methodology'" class="bt-icon" src="./assets/methodology.svg">
-                  <h3>{{ value[1] }}</h3>
+                  <div class="h3">{{ value[1] }}</div>
                   <p>{{ descriptionTextByLang[key] }}</p>
                 </div>
                 <div :class="{block: true, saved: true, active: routeCollection == 'saved'}" @click="selectCollection('saved')">
                   <img svg-inline class="bt-icon smaller" src="./assets/favorite-active.svg">
-                  <h3>My tools</h3>
+                  <div class="h3">My tools</div>
                   <p>Your favorite tools</p>
                 </div>
                 <div :class="{block: true, set: true, active: routeCollection == 'set'}" @click="selectCollection('set')">
                   <img svg-inline class="bt-icon" src="./assets/set.svg">
-                  <h3>Sets</h3>
+                  <div class="h3">Sets</div>
                   <p>Custom sets of tools</p>
                 </div>
               </div>
@@ -77,7 +77,7 @@
 
               <!-- BY SET -->
               <div class="by by-set" v-if="activeTab == 'set'">
-                <h1>Backend connection required</h1>
+                <div class="h1">--SETS--</div>
                 <div @click="selectSet('best-of')">BEST OF</div>
                 <div @click="selectSet('andrews-list')">ANDREW'S LIST</div>
               </div>
@@ -286,10 +286,10 @@ export default {
   display: flex;
   justify-content: center;
   align-items: flex-end;
-  font-size: 1.5rem;
+  font-size: 1.25rem;
   height: 2rem;
   margin-top: 2rem;
-  margin-bottom: .5rem;
+  margin-bottom: .25rem;
   .tab {
     text-transform: uppercase;
     font-weight: bold;
@@ -331,7 +331,7 @@ export default {
   border-radius: 5px;
   border-right: 1px solid $bgdark2;
 
-  h3 {
+  .h3 {
     margin: 0;
     text-align: center;
   }

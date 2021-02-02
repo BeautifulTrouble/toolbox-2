@@ -14,7 +14,7 @@ module.exports = {
       // Add querystring so webpackChunkName will get reloaded
       chunkFilename: '[name].js?id=[chunkhash]',
       // Force output filename
-      filename: 'toolbox.js?id=[chunkhash]',
+      filename: 'toolbox.js',
     }
   },
   css: {

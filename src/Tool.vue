@@ -14,9 +14,9 @@
           <img svg-inline v-else-if="tool.type == 'story'" class="bt-icon" src="./assets/story.svg">
           <img svg-inline v-else-if="tool.type == 'principle'" class="bt-icon" src="./assets/principle.svg">
           <img svg-inline v-else-if="tool.type == 'methodology'" class="bt-icon" src="./assets/methodology.svg">
-          <h3>{{ typeTextBySlug[tool.type][0] }}</h3>
+          <div class="h3">{{ typeTextBySlug[tool.type][0] }}</div>
         </router-link>
-        <h1>{{ tool.title }}</h1>
+        <div class="h1">{{ tool.title }}</div>
         <!--
         <img svg-inline v-if="showDocumentLinks" @click="openTab(tool.document_link)" class="edit" alt="Edit this Google Doc" src="./assets/edit.svg">
         -->
@@ -86,7 +86,7 @@
             <template v-slot:title>REAL WORLD EXAMPLES</template>
             <div v-for="(rwe, i) in tool['real-world-examples']" :key="i" class="rwe">
               <a :href="rwe.link" target="_blank">
-                <h5>{{ rwe.title }}</h5>
+                <div class="h5">{{ rwe.title }}</div>
                 <div v-html="markdown(rwe.description)" />
                 <img v-if="rwe.image" :src="`${config.imagePrefix}/${rwe.image}`">
               </a>
@@ -97,13 +97,15 @@
             <template v-slot:title>LEARN MORE</template>
             <div v-for="(lm, i) in tool['learn-more']" :key="i">
               <a :href="lm.link" target="_blank" class="lm">
-                <h5>{{ lm.title }}</h5><span v-if="lm.source">&nbsp; | &nbsp;{{ lm.source }}</span><span v-if="lm.year">, {{ lm.year }}</span>
+                <div class="h5">{{ lm.title }}</div><span v-if="lm.source">&nbsp; | &nbsp;{{ lm.source }}</span><span v-if="lm.year">, {{ lm.year }}</span>
               </a>
             </div>
           </expander>
+          <!-- TODO: Add this "have you seen" section
           <expander :open="false" :name="'contribute'">
             <template v-slot:title>HAVE YOU SEEN OR USED THIS {{ typeTextBySlug[tool.type][0] }}?</template>
           </expander>
+          -->
         </div>
       </article>
 
@@ -129,22 +131,22 @@
           </a>
         </section>
         <section v-if="tool['potential-risks']" class="risks">
-          <h4>POTENTIAL RISKS</h4>
+          <div class="h4">POTENTIAL RISKS</div>
           <div v-html="markdown(tool['potential-risks'])" />
           <hr>
         </section>
         <section v-if="tool['why-it-worked']" class="worked">
-          <h4>WHY IT WORKED</h4>
+          <div class="h4">WHY IT WORKED</div>
           <div v-html="markdown(tool['why-it-worked'])" />
           <hr>
         </section>
         <section v-if="tool['why-it-failed']" class="failed">
-          <h4>WHY IT FAILED</h4>
+          <div class="h4">WHY IT FAILED</div>
           <div v-html="markdown(tool['why-it-failed'])" />
           <hr>
         </section>
         <section class="related">
-          <h4>RELATED TOOLS</h4>
+          <div class="h4">RELATED TOOLS</div>
           <div v-for="T in Object.keys(randomRelated)" :key="T" :class="T">
             <div class="type">
               <router-link :to="{name: `toolbox-${T}`}">
@@ -153,7 +155,7 @@
                 <img svg-inline v-else-if="T == 'story'" class="bt-icon" src="./assets/story.svg">
                 <img svg-inline v-else-if="T == 'principle'" class="bt-icon" src="./assets/principle.svg">
                 <img svg-inline v-else-if="T == 'methodology'" class="bt-icon" src="./assets/methodology.svg">
-                <h2>{{ typeTextBySlug[T][1] }}</h2>
+                <div class="h2">{{ typeTextBySlug[T][1] }}</div>
               </router-link>
               <span :class="{T: true, open: expandRelated[T]}" v-if="randomRelated[T].length > 5"
                 @click="$set(expandRelated, T, !expandRelated[T])" />
@@ -175,12 +177,12 @@
           <hr>
         </section>
         <section v-if="authors && authors.length" class="authors">
-          <h4>{{ ['CONTRIBUTOR', 'CONTRIBUTORS'][+(authors.length > 1)] }}</h4>
+          <div class="h4">{{ ['CONTRIBUTOR', 'CONTRIBUTORS'][+(authors.length > 1)] }}</div>
           <div v-for="a in authors" :key="a.slug">
             <div class="upper">
               <img :src="`${config.imagePrefix}/icon-${a.image}`">
               <div>
-                <h3>{{ a.title }}</h3>
+                <div class="h3">{{ a.title }}</div>
                 <div>{{ a['team-title'] }}</div>
               </div>
             </div>
@@ -359,15 +361,15 @@ $sidebar: 18rem;
     a {
       text-decoration: none;
     }
-    h1, h3 {
+    .h1, .h3 {
       text-align: center;
       text-shadow: 1px 0px 6px rgba(black, .5);
     }
-    h1 {
+    .h1 {
       color: white;
       margin: 0 3rem;
     }
-    h3 {
+    .h3 {
       margin: 0;
     }
     .edit {
@@ -447,12 +449,12 @@ $sidebar: 18rem;
     a {
       text-decoration: none;
     }
-    h4 {
+    .h4 {
       color: $text;
       margin: .5rem 0;
     }
     .expander {
-      h4 {
+      .h4 {
         text-transform: uppercase;
       }
     }
@@ -496,10 +498,6 @@ $sidebar: 18rem;
           border-width: .6rem;
         }
       }
-    }
-    h6 {
-      font-size: 1rem;
-      margin: .25rem;
     }
     .inner {
       flex: 0 0 66%;
@@ -574,7 +572,7 @@ $sidebar: 18rem;
     height: 100%;
     flex: 2 0 33%;
     padding: 0 2rem;
-    h2 {
+    .h2 {
       margin: 0;
       font-size: 1.5rem;
     }
@@ -613,7 +611,7 @@ $sidebar: 18rem;
         display: flex;
         position: relative;
         flex-direction: row;
-        svg, h2 {
+        svg, .h2 {
           display: inline-block;
         }
         span {
@@ -688,7 +686,7 @@ $sidebar: 18rem;
         }
       }
       @mixin type-related($color) {
-        a, h2, h3 { color: $color; }
+        a, .h2, .h3 { color: $color; }
         span::after { border-top-color: $color; }
         .tool-popup {
           border: 1px solid $color;
@@ -735,7 +733,7 @@ $sidebar: 18rem;
         margin-top: 1rem;
         display: flex;
         align-items: center;
-        h3 {
+        .h3 {
           font-weight: normal;
           color: $text;
           margin: 0 0 .1rem 0;

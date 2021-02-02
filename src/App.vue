@@ -27,12 +27,6 @@
 
     <!-- TODO: -->
     <div class="debugPanel">
-      <p class="debug">{{ $store.state.debug }}</p>
-      <div @click="debugPanel.reset">Reset Settings</div>
-      <!--
-      <div @click="debugPanel.darkPopups = !debugPanel.darkPopups">Toggle light/dark related tool popups</div>
-      -->
-      <p>{{ debugPanel }}</p>
     </div>
 
   </div>
@@ -47,10 +41,6 @@ export default {
   },
   data: () => ({
     showSearch: false,
-    debugPanel: {
-      darkPopups: false,
-      reset: () => [localStorage.clear(), window.location.reload()] ,
-    }
   }),
   methods: {
     toggleSearch() {
@@ -66,43 +56,6 @@ export default {
 
 // DEBUG
 .debugPanel {
-  display: flex;
-  flex-direction: column;
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  z-index: 100;
-  padding: .5rem;
-  background: lighten($story, 20%);
-  border: 1px dotted darken($story, 20%);
-  color: darken($story, 20%);
-  font-size: .75rem;
-  font-family: sans-serif;
-  letter-spacing: .05rem;
-  &:hover {
-    .debug {
-      display: none;
-    }
-    >div {
-      display: block;
-    }
-  }
-  p {
-    margin: 0;
-  }
-  >div {
-    display: none;
-    cursor: pointer;
-    padding: .5rem 1rem;
-    border: 1px dashed darken($story, 10%);
-    &:hover {
-      color: white;
-      background: black;
-    }
-    &:last-of-type {
-      margin-bottom: .5rem;
-    }
-  }
   @mixin responsive($color, $text) {
     &::after {
       content: $text;

@@ -9,7 +9,7 @@
         <img svg-inline v-else-if="$store.state.toolsBySlug[t].type == 'methodology'" class="bt-icon" src="./assets/methodology-inverse.svg">
       </div>
       <div :class="['content', $store.state.toolsBySlug[t].type]">
-        <h3>{{ $store.state.toolsBySlug[t].title }}</h3>
+        <div class="h3">{{ $store.state.toolsBySlug[t].title }}</div>
         <div v-html="markdown($store.state.toolsBySlug[t].snapshot)" />
       </div>
     </div>
@@ -65,7 +65,7 @@ export default {
       max-height: 2.5rem;
       max-width: 2.5rem;
     }
-    h3, p {
+    .h3, p {
       margin: 0;
     }
     .content {

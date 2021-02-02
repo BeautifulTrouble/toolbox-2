@@ -1,8 +1,8 @@
 <template>
   <section :class="['box', 'expander', name]">
-    <h4 :class="{open: isOpen}" @click="isOpen = !isOpen">
+    <div :class="{open: isOpen, h4: true}" @click="isOpen = !isOpen">
       <slot name="title" />
-    </h4>
+    </div>
     <transition name="slide-fade">
       <div class="content" v-if="isOpen">
         <slot />
@@ -33,7 +33,7 @@ export default {
 
 .box.expander {
   padding: 3.5rem 2rem 1rem 2rem; // padding-top assumes a padded h4 title
-  h4 {
+  .h4 {
     cursor: pointer;
     position: absolute;
     top: 0; left: 0;
@@ -59,7 +59,7 @@ export default {
       right: unset; left: 2rem;
     }
   }
-  h4.open::after {
+  .h4.open::after {
     top: 1.5rem;
     transform: scaleY(1);
   }
