@@ -2,10 +2,10 @@
   <div>
     <div class="h1" v-if="$store.state.langRequested">Loading Toolbox...</div>
     <div class="toolbox">
-      <div class="filter">
+      <div class="filter-pane">
 
         <!-- SENTENCE -->
-        <div class="sentence contain">
+        <div class="sentence">
           <span>Show me</span>
           <span>
             <span :class="{tab: true, active: ['collection', 'set'].includes(activeTab)}"
@@ -29,7 +29,7 @@
 
         <!-- FILTER WIDGET -->
         <div class="widget-wrapper">
-          <div class="widget contain">
+          <div class="widget">
             <transition name="fade" mode="out-in">
 
               <!-- BY COLLECTION -->
@@ -45,7 +45,7 @@
                   <p>{{ descriptionTextByLang[key] }}</p>
                 </div>
                 <div :class="{block: true, saved: true, active: routeCollection == 'saved'}" @click="selectCollection('saved')">
-                  <img svg-inline class="bt-icon smaller" src="./assets/favorite-active.svg">
+                  <img svg-inline class="bt-icon" src="./assets/favorite-active.svg">
                   <div class="h3">My tools</div>
                   <p>Your favorite tools</p>
                 </div>
@@ -78,7 +78,7 @@
               <!-- BY SET -->
               <div class="by by-set" v-if="activeTab == 'set'">
                 <div v-for="(set, setSlug) in setsBySlug" :key="setSlug"
-                   :class="{set: true, block: true, [setSlug]: true, active: routeSet == setSlug}"
+                   :class="{block: true, [setSlug]: true, active: routeSet == setSlug}"
                    @click="selectSet(setSlug)">
                   <img svg-inline class="bt-icon set" src="./assets/set.svg">
                   <div class="h3">{{ setTextBySlug[setSlug] }}</div>
@@ -102,17 +102,16 @@
         </div>
       </div>
 
-      <h2 v-if="$route.name == 'toolbox-search'">TODO: This search query (showing up here as a pseudo-tag) will show only search results</h2>
       <transition-group name="tools-list" tag="div" class="tools">
         <tool-tile v-for="tool in filteredTools" :key="tool.slug" :tool="tool" :text="typeTextBySlug" />
         <tool-tile v-if="!['set', 'saved'].includes(routeCollection)" :key="1" :alt="'suggest'" />
         <tool-tile v-if="routeCollection == 'saved' && !$store.state.savedTools.size" :key="2" :alt="'nosave'" />
         <div class="filler-squares" :key="3">
-          <div class="filler-square" />
-          <div class="filler-square" />
-          <div class="filler-square" />
-          <div class="filler-square" />
-          <div class="filler-square" />
+          <div class="filler-square tool-tile" />
+          <div class="filler-square tool-tile" />
+          <div class="filler-square tool-tile" />
+          <div class="filler-square tool-tile" />
+          <div class="filler-square tool-tile" />
         </div>
       </transition-group>
     </div>
@@ -188,7 +187,7 @@ export default {
     setTextBySlug() {
       // TODO: use translated text
       return Object.fromEntries(Object.entries(sets).map(
-        ([k, v]) => [this.slugify(k), k]))
+        ([k, ]) => [this.slugify(k), k]))
     },
     tagTextBySlug() {
       return tagTextByLang[this.$store.state.lang]
@@ -288,7 +287,16 @@ export default {
 <style lang="scss">
 @import 'common.scss';
 
-.filter {
+.toolbox {
+  padding-top: 1rem;
+  @include breakpoint($ss-desktop) {
+    margin-top: 3rem;
+  }
+  @include breakpoint($ss-mobile) {
+    margin-top: 8rem;
+  }
+}
+.filter-pane {
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -302,6 +310,9 @@ export default {
   height: 2rem;
   margin-top: 2rem;
   margin-bottom: .25rem;
+  @include breakpoint($md) {
+    font-size: 1rem;
+  }
   .tab {
     text-transform: uppercase;
     font-weight: bold;
@@ -333,10 +344,11 @@ export default {
 .widget-wrapper {
   border: 1px solid $bgdark1;
   border-radius: 5px;
+  width: 100%;
+  max-width: 78rem;
 }
 .widget {
-  $filterHeight: 18rem;
-  min-height: $filterHeight;
+  //min-height: 18rem;
   background-color: $bggray;
   border-left: 1px solid white;
   border-top: 1px solid white;
@@ -349,20 +361,36 @@ export default {
   }
   .by {
     display: flex;
-    min-height: $filterHeight;
     .block {
       padding: 1rem;
       text-align: center;
+    }
+    @include breakpoint($md) {
+      flex-wrap: wrap;
+    }
+  }
+  .by-collection {
+    .block {
+      @include breakpoint($md) {
+        flex: 0 0 33%;
+        &.set, &.saved {
+          flex: 0 2 16.5%;
+        }
+      }
     }
   }
   .by-region {
     .bt-icon {
       height: 8rem;
+      max-height: 8rem;
       width: 7rem;
       margin: 0;
     }
     .block {
       flex: 1 2 12.5%;
+      @include breakpoint($md) {
+        flex: 1 0 25%;
+      }
       p {
         min-height: 15%;
       }
@@ -372,9 +400,14 @@ export default {
     padding: 1rem 3rem;
     flex-wrap: wrap;
     flex-direction: column;
-    max-height: $filterHeight;
+    height: 18rem;
     justify-content: flex-start;
     align-items: space-between;
+
+    @include breakpoint($md) {
+      height: 20rem;
+      font-size: .9rem;
+    }
     span {
       cursor: pointer;
       min-height: 1.5rem;
@@ -384,21 +417,6 @@ export default {
       &.active {
         font-weight: bold;
         position: relative;
-        /*
-        &::after {
-          content: "×";
-          font-size: 2.5rem;
-          line-height: 1rem;
-          color: $theory;
-          position: relative;
-          bottom: 2px;
-          left: 5px;
-          .rtl & {
-            left: 0;
-            right: 5px;
-          }
-        }
-        */
       }
       &.disabled {
         color: $bgdark2;
@@ -406,9 +424,17 @@ export default {
       }
     }
   }
+  .by-set {
+    fill: $set;
+    .block {
+      @include breakpoint($md) {
+        height: 20rem;
+      }
+    }
+  }
   .block {
-    height: $filterHeight;
     border-left: 1px solid white;
+    height: 18rem;
 
     cursor: pointer;
     flex: 1 2 14%;
@@ -416,23 +442,39 @@ export default {
     flex-direction: column;
     justify-content: center;
     align-items: center;
+
+    @include breakpoint($md) {
+      height: 10rem;
+      flex: 1 0 25%;
+    }
     &.active {
       background: $bgdark1;
     }
     p {
-      min-height: 35%;
+      margin-bottom: 0;
+      min-height: 45%;
+      @include breakpoint($upper) {
+      }
+      @include breakpoint($md) {
+        font-size: .8rem;
+        margin-top: .25rem;
+      }
+      @include breakpoint($lg) {
+        font-size: .9rem;
+      }
     }
   }
   .bt-icon {
+    width: 4rem;
+    max-height: 4rem;
     margin: .5rem;
-    width: 8rem;
-    height: 4rem;
-    &.smaller {
-      width: 3rem;
+    @include breakpoint($xl) {
+      width: 6rem;
     }
-  }
-  .set {
-    fill: $set;
+    @include breakpoint($md) {
+      margin: .25rem;
+      max-height: 2rem;
+    }
   }
 }
 .tools {
@@ -442,11 +484,21 @@ export default {
   position: relative; // For transition animation
   margin: 2px -2px; // For toolbox margins
 
-  // These styles should override the ones defined in ToolTile.vue
+  // These styles override the ones defined in ToolTile.vue
   .tool-tile {
-    flex: 0 0 20%;
-    height: 20vw;
+    // Flex-basis determines the number of tiles per row
+    flex: 0 0 25%;
+    height: 25vw;
     border: 2px solid transparent; // For toolbox margins
+
+    @include breakpoint($md) {
+      flex: 0 0 33%;
+      height: 33vw;
+    }
+    @include breakpoint($xl) {
+      flex: 0 0 20%;
+      height: 20vw;
+    }
   }
 }
 .filler-squares {
@@ -457,9 +509,15 @@ export default {
   width: 100%;
   .filler-square {
     border: 2px solid white;
-    flex: 0 0 20%;
-    height: 20vw;
     box-shadow: 0 0 0 1px $bggray inset;
+    // Hide excess filler squares
+    @include breakpoint($md) {
+      &:nth-of-type(4) { display: none; }
+      &:nth-of-type(5) { display: none; }
+    }
+    @include breakpoint($lg) {
+      &:nth-of-type(5) { display: none; }
+    }
   }
 
 }

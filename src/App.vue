@@ -1,5 +1,12 @@
 <template>
   <div id="app" :class="{rtl: this.$store.state.lang == 'ar'}">
+    <!-- TODO: loading animation
+    <div v-if="$store.state.langRequested">Loading...</div>
+    -->
+    <transition name="fade" mode="out-in">
+      <router-view/>
+    </transition>
+
     <div class="langs">
       <span v-for="lang in config.langs" :key="lang"
         :class="{'router-link-active': lang == $store.state.lang}"
@@ -18,14 +25,6 @@
       <img svg-inline @click="toggleSearch" class="bt-icon" src="./assets/search.svg">
     </div>
 
-    <transition name="fade" mode="out-in">
-      <router-view/>
-    </transition>
-
-    <!-- TODO: Use CSS-based rectangles -->
-    <div v-if="$store.state.langRequested">Loading...</div>
-
-    <!-- TODO: -->
     <div class="debugPanel">
     </div>
 
@@ -56,6 +55,9 @@ export default {
 
 // DEBUG
 .debugPanel {
+  position: fixed;
+  bottom: 0; left: 0;
+  z-index: 10000;
   @mixin responsive($color, $text) {
     &::after {
       content: $text;
@@ -65,17 +67,21 @@ export default {
       padding: .5rem;
       color: white;
       font-size: 1.5rem;
-      top: -1px;
+      bottom: 0px;
       border: 1px dotted darken($color, 10%);
-      margin-left: 1px;
     }
   }
   @include breakpoint($sm) { @include responsive($methodology, 'sm'); }
   @include breakpoint($md) { @include responsive($theory, 'md'); }
-  @include breakpoint($lg) { @include responsive($principle, 'lg'); }
+  @include breakpoint($lg) { @include responsive($tactic, 'lg'); }
+  @include breakpoint($xl) { @include responsive($principle, 'xl'); }
 }
 
 
+#app {
+  // Squarespace makes this complicated (additional spacing is added to the toolbox)
+  margin-top: 6vmax;
+}
 .langs {
   background: black;
   cursor: pointer;

@@ -16,7 +16,6 @@ $methodology: #874493;
 
 $text: #6b6b6b;
 $shadow: transparentize(#d3d3d3, .7);
-//$bggray: #f4f4f4;
 $bggray: darken(#f4f4f4, 1%);
 $bglight: lighten($bggray, 20%);
 $bgdark1: darken($bggray, 5%);
@@ -27,56 +26,60 @@ $set: #005577;
 $ztop: 10;
 
 
-// Breakpoints
+// Breakpoints (based on Squarespace 7.1 template)
 @import 'breakpoint-sass/stylesheets/_breakpoint.scss';
-$lg-width: 1280px;
-$md-width: 960px;
+$xl-width: 1280px;
+$ss-width-nav: 1024px; // This is where squarespace changes the nav
+$lg-width: 960px;
+$md-width: 768px;
 $sm-width: 0px;
-$lg: $lg-width;
-$md: $md-width $lg-width - 1px;
-$sm: $sm-width $md-width - 1px;
-$upper: $md-width;
-$lower: $sm-width $lg-width - 1px;
+
+// Named breakpoints
+$ss-desktop: $ss-width-nav;  // squarespace desktop nav [1025)
+$ss-mobile: 0 $ss-width-nav; // squarespace mobile nav [0, 1024]
+$xl: $xl-width;                 // large desktop [1280)
+$lg: $lg-width $xl-width - 1px; // desktop [960, 1279]
+$md: $md-width $lg-width - 1px; // tablets [768, 959]
+$sm: $sm-width $md-width - 1px; // phones [0, 767]
+$upper: $lg-width;
+$lower: 0 $lg-width - 1px;
 
 
 // Grid system
-$outer-margin: 0;
-$gutter-width: 8px;
-$breakpoints:
-    sm 0px $md-width - 1px,
-    md $md-width $lg-width - 1px,
-    lg $lg-width 10000px;
-$flexboxgrid-max-width: $lg-width - $gutter-width;
-@import 'flexboxgrid-sass/flexboxgrid.scss';
-
-// Augment the grid system with a couple missing features
-@each $breakpoint in $breakpoints {
-  $name: nth($breakpoint, 1);
-  $size: nth($breakpoint, 2);
-  $container: nth($breakpoint, 3);
-  @media only screen and (min-width: $size) {
-    .hide-#{$name}-up {
-      display: none !important;
-    }
-    .col-#{$name}-offset-0 {
-      @include flexboxgrid-sass-col-common;
-      margin-left: 0;
-    }
-  }
-}
-.hide-sm {
-  @media only screen and (max-width: $md-width - 1px) {
-    display: none !important;
-  }
-}
+//$outer-margin: 0;
+//$gutter-width: 8px;
+//$breakpoints:
+//    sm 0px $md-width - 1px,
+//    md $md-width $lg-width - 1px,
+//    lg $lg-width $xl-width - 1px,
+//    xl $xl-width 10000px;
+//$flexboxgrid-max-width: $xl-width - $gutter-width;
+//@import 'flexboxgrid-sass/flexboxgrid.scss';
+//
+//// Augment the grid system with a couple missing features
+//@each $breakpoint in $breakpoints {
+//  $name: nth($breakpoint, 1);
+//  $size: nth($breakpoint, 2);
+//  $container: nth($breakpoint, 3);
+//  @media only screen and (min-width: $size) {
+//    .hide-#{$name}-up {
+//      display: none !important;
+//    }
+//    .col-#{$name}-offset-0 {
+//      @include flexboxgrid-sass-col-common;
+//      margin-left: 0;
+//    }
+//  }
+//}
+//.hide-sm {
+//  @media only screen and (max-width: $md-width - 1px) {
+//    display: none !important;
+//  }
+//}
 
 
 // Global sizes
 $searchWidth: 24rem;
-
-
-// Fonts
-//@import url('https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@300;400;700&family=Roboto+Condensed:wght@700&display=swap');
 
 
 // Elements
@@ -100,8 +103,8 @@ body {
   background-attachment: fixed;
   background-repeat: no-repeat; //Which browser needs this?
 
-  //margin: 0;
-  //color: $text;
+  margin: 0;
+  color: $text;
   font-family: aktiv-grotesk, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -133,7 +136,7 @@ hr {
   font-size: 3.125rem;
 }
 .h2 {
-  font-size: 1.8rem;
+  font-size: 1.6rem;
 }
 .h3 {
   font-size: 1.375rem;
@@ -243,10 +246,6 @@ input{
 }
 .clear { // Disgusting, but only used after floated blockquotes
   clear: both;
-}
-.contain {
-  width: 80rem;
-  max-width: 80rem;
 }
 .router-link-active {
   font-weight: bold;
