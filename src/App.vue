@@ -75,6 +75,7 @@ export default {
   @include breakpoint($md) { @include responsive($theory, 'md'); }
   @include breakpoint($lg) { @include responsive($tactic, 'lg'); }
   @include breakpoint($xl) { @include responsive($principle, 'xl'); }
+  @include breakpoint($xxl) { @include responsive($story, 'xxl'); }
 }
 
 
@@ -82,14 +83,21 @@ export default {
   // Squarespace makes this complicated (additional spacing is added to the toolbox)
   margin-top: 6vmax;
 }
+.header-announcement-bar-wrapper::after {
+  display: none; // Hide fake Squarespace language button
+}
 .langs {
-  background: black;
+  font-family: 'ff-good-headline-web-pro-condensed';
+  font-size: 1.1rem;
+  font-weight: 300;
   cursor: pointer;
+  position: fixed;
+  top: 0; right: 0;
+  z-index: 10;
   span {
     padding: 0 .5rem;
     color: white;
     &.router-link-active {
-      text-decoration: underline;
     }
   }
 }
