@@ -14,7 +14,7 @@
           <img svg-inline v-else-if="tool.type == 'story'" class="bt-icon" src="./assets/story.svg">
           <img svg-inline v-else-if="tool.type == 'principle'" class="bt-icon" src="./assets/principle.svg">
           <img svg-inline v-else-if="tool.type == 'methodology'" class="bt-icon" src="./assets/methodology.svg">
-          <div class="h3">{{ typeTextBySlug[tool.type][0] }}</div>
+          <div class="h3">{{ text[`type.${tool.type}`] }}</div>
         </router-link>
         <div class="h1">{{ tool.title }}</div>
         <!--
@@ -36,8 +36,8 @@
       <article>
         <div class="inner">
           <div :class="['breadcrumbs', tool.type]">
-            <router-link to="/toolbox">Toolbox</router-link> /
-            <router-link :to="{name: `toolbox-${tool.type}`}">{{ typeTextBySlug[tool.type][0] }}</router-link> /
+            <router-link to="/toolbox">{{ text['site.toolbox'] }}</router-link> /
+            <router-link :to="{name: `toolbox-${tool.type}`}">{{ text[`type.${tool.type}`] }}</router-link> /
             <router-link :to="{name: 'tool', params: {slug: tool.slug}}">{{ tool.title }}</router-link>
           </div>
           <div class="epigraphs" v-if="tool.epigraphs">
@@ -47,7 +47,7 @@
             </div>
           </div>
           <div class="origins" v-if="tool.origins">
-            <strong>ORIGINS</strong>: <em v-html="markdown(tool.origins)" />
+            <strong>{{ text['meta.origins'] }}</strong>: <em v-html="markdown(tool.origins)" />
           </div>
           <div class="image" v-if="tool['image-2']">
             <p><img :src="`${config.imagePrefix}/medium-${tool['image-2']}`"></p>
@@ -63,14 +63,13 @@
 
 
           <div v-if="tool['key-modules']" class="key-tools">
-            <expander v-for="(v, k) of tool['key-modules']" :key="k" :open="true" :name="k" :class="keyTextByEntry[k][2]">
+            <expander v-for="(v, k) of tool['key-modules']" :key="k" :open="true" :name="k" :class="keyType[k]">
               <template v-slot:title>
-                <img svg-inline v-if="keyTextByEntry[k][2] == 'tactic'" class="bt-icon" src="./assets/tactic.svg">
-                <img svg-inline v-else-if="keyTextByEntry[k][2] == 'theory'" class="bt-icon" src="./assets/theory.svg">
-                <img svg-inline v-else-if="keyTextByEntry[k][2] == 'story'" class="bt-icon" src="./assets/story.svg">
-                <img svg-inline v-else-if="keyTextByEntry[k][2] == 'principle'" class="bt-icon" src="./assets/principle.svg">
-                <img svg-inline v-else-if="keyTextByEntry[k][2] == 'methodology'" class="bt-icon" src="./assets/methodology.svg">
-                {{ keyTextByEntry[k][+(v.length > 1)] }}
+                <img svg-inline v-if="k == 'key-tactics'" class="bt-icon" src="./assets/tactic.svg">
+                <img svg-inline v-else-if="k == 'key-theories'" class="bt-icon" src="./assets/theory.svg">
+                <img svg-inline v-else-if="k == 'key-principles'" class="bt-icon" src="./assets/principle.svg">
+                <img svg-inline v-else-if="k == 'key-methodologies'" class="bt-icon" src="./assets/methodology.svg">
+                {{ text[`type.${keyType[k]}.key${v.length > 1 ? 's' : ''}`] }}
               </template>
               <div v-for="(each, i) in v" :key="i">
                 <div v-html="markdown(`[**${each[0]}**](/tool/${each[2]}) – ${each[1]}`)"/>
@@ -78,12 +77,12 @@
             </expander>
           </div>
           <expander :key="`how-${tool.slug}`" :open="true" class="methodology" :name="'how-to-use'" v-if="tool['how-to-use']">
-            <template v-slot:title>HOW TO USE</template>
+          <template v-slot:title>{{ text['meta.howtouse'] }}</template>
             <div v-html="markdown(tool['how-to-use'])" />
           </expander>
           <expander :key="`rwe-${tool.slug}`" :open="true" :name="'real-world-examples'"
             v-if="tool['real-world-examples'] && tool['real-world-examples'].length">
-            <template v-slot:title>REAL WORLD EXAMPLES</template>
+            <template v-slot:title>{{ text['meta.rwe'] }}</template>
             <div v-for="(rwe, i) in tool['real-world-examples']" :key="i" class="rwe">
               <a :href="rwe.link" target="_blank">
                 <div class="h5">{{ rwe.title }}</div>
@@ -94,7 +93,7 @@
           </expander>
           <expander :key="`learn-${tool.slug}`" :open="true" :name="'learn-more'"
             v-if="tool['learn-more'] && tool['learn-more'].length">
-            <template v-slot:title>LEARN MORE</template>
+            <template v-slot:title>{{ text['meta.learnmore'] }}</template>
             <div v-for="(lm, i) in tool['learn-more']" :key="i">
               <a :href="lm.link" target="_blank" class="lm">
                 <div class="h5">{{ lm.title }}</div><span v-if="lm.source">&nbsp; | &nbsp;{{ lm.source }}</span><span v-if="lm.year">, {{ lm.year }}</span>
@@ -103,7 +102,7 @@
           </expander>
           <!-- TODO: Add this "have you seen" section
           <expander :open="false" :name="'contribute'">
-            <template v-slot:title>HAVE YOU SEEN OR USED THIS {{ typeTextBySlug[tool.type][0] }}?</template>
+            <template v-slot:title>{{ text['site.contribute'] }}</template>
           </expander>
           -->
         </div>
@@ -131,22 +130,22 @@
           </a>
         </section>
         <section v-if="tool['potential-risks']" class="risks">
-          <div class="h4">POTENTIAL RISKS</div>
+          <div class="h4">{{ text['meta.risks'] }}</div>
           <div v-html="markdown(tool['potential-risks'])" />
           <hr>
         </section>
         <section v-if="tool['why-it-worked']" class="worked">
-          <div class="h4">WHY IT WORKED</div>
+          <div class="h4">{{ text['meta.whyworked'] }}</div>
           <div v-html="markdown(tool['why-it-worked'])" />
           <hr>
         </section>
         <section v-if="tool['why-it-failed']" class="failed">
-          <div class="h4">WHY IT FAILED</div>
+          <div class="h4">{{ text['meta.whyfailed'] }}</div>
           <div v-html="markdown(tool['why-it-failed'])" />
           <hr>
         </section>
         <section class="related">
-          <div class="h4">RELATED TOOLS</div>
+          <div class="h4">{{ text['meta.related'] }}</div>
           <div v-for="T in Object.keys(randomRelated)" :key="T" :class="T">
             <div class="type">
               <router-link :to="{name: `toolbox-${T}`}">
@@ -155,7 +154,7 @@
                 <img svg-inline v-else-if="T == 'story'" class="bt-icon" src="./assets/story.svg">
                 <img svg-inline v-else-if="T == 'principle'" class="bt-icon" src="./assets/principle.svg">
                 <img svg-inline v-else-if="T == 'methodology'" class="bt-icon" src="./assets/methodology.svg">
-                <div class="h2">{{ typeTextBySlug[T][1] }}</div>
+                <div class="h2">{{ text[`type.${T}.plural`] }}</div>
               </router-link>
               <span :class="{T: true, open: expandRelated[T]}" v-if="randomRelated[T].length > 5"
                 @click="$set(expandRelated, T, !expandRelated[T])" />
@@ -177,7 +176,7 @@
           <hr>
         </section>
         <section v-if="authors && authors.length" class="authors">
-          <div class="h4">{{ ['CONTRIBUTOR', 'CONTRIBUTORS'][+(authors.length > 1)] }}</div>
+          <div class="h4">{{ text[`meta.contributor${authors.length > 1 ? '.plural' : ''}`] }}</div>
           <div v-for="a in authors" :key="a.slug">
             <div class="upper">
               <img :src="`${config.imagePrefix}/icon-${a.image}`">
@@ -198,16 +197,18 @@
 import Expander from './Expander'
 import Popup from './Popup'
 import Youtube from './Youtube'
-import typeTextByLang from './types'
-import keyTextByLang from './keys'
+import textByLang from './text'
+
 
 const crlf = '%0d%0a'
+
 
 export default {
   name: 'Tool',
   data: () => ({
     authors: null,
     types: {story: 'stories', tactic: 'tactics', theory: 'theories', principle: 'principles', methodology: 'methodologies'},
+    keyType: {'key-tactics': 'tactic', 'key-theories': 'theory', 'key-principles': 'principle', 'key-methodologies': 'methodology'},
     expandRelated: {},
   }),
   components: {
@@ -219,19 +220,13 @@ export default {
     tool() {
       return this.$store.state.toolsBySlug[this.$route.params.slug]
     },
+    text() {
+      return textByLang[this.$store.state.lang]
+    },
     keySlugs() {
       let slugs = new Set()
       Object.values(this.tool['key-modules'] || []).forEach(a => a.forEach(i => slugs.add(i[2])))
       return slugs
-    },
-    keyTextByEntry() { // 'key-type-plural' -> ['Key singular', 'Key plural', 'type-slug']
-      let text = keyTextByLang[this.$store.state.lang]
-      return Object.fromEntries(
-        Object.entries(this.types).map(([k, v]) => [`key-${v}`, [text[`key-${k}`], text[`key-${v}`], k]])
-      )
-    },
-    typeTextBySlug() {
-      return typeTextByLang[this.$store.state.lang]
     },
     writeUp() {
       return this.writeUpAsParagraphArray.join(' ')
@@ -265,13 +260,12 @@ export default {
             // this.types.forEach
             let slugs = this.tool[this.types[T]]
             let indices = new Set([...Array(slugs.length).keys()].sort(() => 0.5 - Math.random()).slice(0, 5))
-            //console.log('i', indices)
             return [T, slugs.map((s, i) => [s, indices.has(i)])]
           })
       )
     },
     shareUrlEmail() {
-      return `mailto:?subject=${this.capitalize(this.typeTextBySlug[this.tool.type][0])}: ${this.tool.title}&body=${this.tool.snapshot}${crlf}${crlf}${this.config.siteUrl}/${this.$store.state.lang}/${this.tool.slug}`
+      return `mailto:?subject=${this.text['type.' + this.tool.type]}: ${this.tool.title}&body=${this.tool.snapshot}${crlf}${crlf}${this.config.siteUrl}/${this.$store.state.lang}/${this.tool.slug}`
     },
     shareUrlFacebook() {
       return `https://facebook.com/sharer/sharer.php?u=${this.config.siteUrl}/${this.$store.state.lang}/${this.tool.slug}`
@@ -576,6 +570,9 @@ $sidebar: 18rem;
     .h2 {
       margin: 0;
       font-size: 1.5rem;
+    }
+    .h4 {
+      text-transform: uppercase;
     }
     hr {
       max-width: 10rem;
