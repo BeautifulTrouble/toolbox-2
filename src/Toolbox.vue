@@ -100,11 +100,11 @@
 
             <!-- BY TAG -->
             <div class="by by-tag" v-if="activeTab == 'tag'" :key="'tag'">
-              <span v-for="(tag, i) in sortedTags" :key="i"
+              <p v-for="(tag, i) in sortedTags" :key="i"
                 :class="{active: routeTag == tag, disabled: !tagsAvailable.has(tag)}"
                 @click="selectTag(tag)">
                 {{ text[`tag.${tag}`] }}
-              </span>
+              </p>
               <span v-if="$route.params.query && $route.name == 'toolbox-search'" class="active search-tag">
                 <div>{{ text['site.search'] }}:</div>
                 <input v-model="$route.params.query">
@@ -359,6 +359,14 @@ export default {
   border-radius: 5px;
   border-right: 1px solid $bgdark2;
 
+  @include breakpoint($md) {
+    font-size: .8rem;
+  }
+  @include breakpoint($lg) {
+    font-size: .9rem;
+    line-height: 1.1;
+  }
+
   .block {
     border-left: 1px solid white;
     height: 20rem;
@@ -374,11 +382,6 @@ export default {
     @include breakpoint($md) {
       height: 12rem;
       flex: 0 0 25%;
-      font-size: .8rem;
-    }
-    @include breakpoint($lg) {
-      font-size: .9rem;
-      line-height: 1.1;
     }
     &.active {
       background: $bgdark1;
@@ -396,7 +399,7 @@ export default {
         display: flex;
         flex-direction: row;
         align-items: center;
-        justify-content: center;
+        justify-content: flex-start;
         &.disabled {
           cursor: default;
           color: $bgdark2;
@@ -407,11 +410,12 @@ export default {
         .bt-icon {
           width: 1.5rem;
           height: 1.5rem;
+          margin: 0;
         }
         div {
           flex: 0 2 50%;
           text-align: left;
-          margin-right: .5rem;
+          margin-inline-start: .5rem;
         }
       }
     }
@@ -419,7 +423,7 @@ export default {
       word-break: break-all; // Sets have editor-made names #BlackLivesMatter
     }
     p {
-      margin-bottom: 0;
+      margin-inline-start: .5rem; // Subtly offset the left-aligned text
       min-height: 45%;
       @include breakpoint($md) {
         margin-top: .25rem;
@@ -434,7 +438,6 @@ export default {
     display: flex;
     .block {
       padding: 1rem;
-      text-align: center;
       @include breakpoint($lg) {
         padding: .75rem;
       }
@@ -464,6 +467,7 @@ export default {
       }
       p {
         min-height: 15%;
+        text-align: center;
       }
     }
   }
@@ -477,16 +481,13 @@ export default {
 
     @include breakpoint($md) {
       height: 24rem;
-      font-size: .9rem;
     }
-    span {
+    p {
       cursor: pointer;
-      min-height: 1.3rem;
+      min-height: 1.25rem;
       padding: 0 1rem;
+      margin: 0;
       //display: inline-flex; // For the x buttons maybe?
-      @include breakpoint($md) {
-        min-height: 1rem;
-      }
       &.active {
         font-weight: bold;
       }

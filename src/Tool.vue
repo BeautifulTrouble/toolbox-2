@@ -468,9 +468,16 @@ $sidebar: 18rem;
     justify-content: flex-end;
     box-shadow: .3rem 0 .5rem .25rem $shadow;
     padding: 2rem;
+    @include breakpoint($sm) {
+      flex: 0 0 100%;
+      padding: 1.5rem;
+    }
     @include breakpoint($md) {
       flex: 0 0 70%;
       padding: 1.5rem;
+    }
+    h6 { // image captions
+      margin-top: -.5rem;
     }
     blockquote p {
       margin: 0;
@@ -514,8 +521,6 @@ $sidebar: 18rem;
     }
     .inner {
       flex: 0 0 66%;
-      // TODO: Figure out how to achieve this while placing it correctly
-      //max-width: 800px;
       img {
         max-width: 100%;
       }
@@ -523,7 +528,10 @@ $sidebar: 18rem;
         flex: 0 0 75%;
       }
       @include breakpoint($xl) {
-        flex: 0 0 66%;
+        flex: 0 0 70%;
+      }
+      @include breakpoint($xxl) {
+        flex: 0 0 65%;
       }
       @include breakpoint($lower) {
         flex: 0 0 100%;
@@ -561,23 +569,32 @@ $sidebar: 18rem;
     .learn-more, .real-world-examples {
       img {
         max-height: 20rem;
-        margin: .5rem 0 .5rem 0;
-        border: 1px solid $bgdark1;
+        margin: 1rem 0 1.5rem 0;
+        border: 1px solid $bgdark3;
+        background-color: $bgdark1;
+        padding: .5rem;
       }
       p {
         margin: 0;
       }
+      font-size: .9rem;
+    }
+    .real-world-examples {
+      .h5 {
+        display: block;
+        margin-bottom: .25rem;
+      }
     }
     .rwe {
-      margin-bottom: .5rem;
+      //margin: 1rem 0;
     }
     .lm {
       display: block;
-      margin-bottom: .5rem;
+      margin-bottom: 1rem;
     }
     .key-tools {
       p:first-of-type {
-        margin-top: .25rem;
+        margin-top: .5rem;
       }
       .bt-icon {
         display: inline;
