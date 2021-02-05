@@ -50,12 +50,13 @@
             <p><img :src="`${config.imagePrefix}/medium-${tool['image-2']}`"></p>
           </div>
 
+          <!-- Write up -->
           <div v-if="tool.video && /youtube/.test(tool.video)">
-            <div class="write-up" v-html="writeUpSplit[0]" />
+            <div :class="['write-up', tool['module-type-effective']]" v-html="writeUpSplit[0]" />
             <youtube id="video" ref="video" :videoId="tool.video" />
-            <div class="write-up" v-html="writeUpSplit[1]" />
+            <div :class="['write-up', tool['module-type-effective']]" v-html="writeUpSplit[1]" />
           </div>
-          <div v-else class="write-up" v-html="writeUp" />
+          <div v-else :class="['write-up', tool['module-type-effective']]" v-html="writeUp" />
           <div class="clear" />
 
 
@@ -207,6 +208,7 @@ export default {
     types: {story: 'stories', tactic: 'tactics', theory: 'theories', principle: 'principles', methodology: 'methodologies'},
     keyType: {'key-tactics': 'tactic', 'key-theories': 'theory', 'key-principles': 'principle', 'key-methodologies': 'methodology'},
     expandRelated: {},
+    moduleType: 'full',
   }),
   components: {
     Expander,
@@ -229,7 +231,6 @@ export default {
       return this.writeUpAsParagraphArray.join(' ')
     },
     writeUpAsParagraphArray() {
-      // TODO: module-type-effective logic (see RED text document prepared for Troels)
       let text = this.tool['full-write-up'] || this.tool['short-write-up'] || this.tool['snapshot']
       text = this.markdown(text)
       // Remove outermost <p>...</p> tags, split to array on inner </p><p> junctions, and re-wrap
@@ -297,7 +298,7 @@ export default {
     initPage() {
       this.expandRelated = {story: false, tactic: false, theory: false, principle: false, methodology: false}
       this.authors = []
-      if (this.tool)
+      if (this.tool && this.tool.authors)
         this.tool.authors.map(a => this.$http.get(`${this.config.api}/person/${a}?lang=${this.$store.state.lang}`)
                                      .then(r => this.authors.push(r.data)))
     },
@@ -316,8 +317,7 @@ export default {
 <style lang="scss">
 @import 'common.scss';
 
-//$image-height: 45rem;
-$image-height: calc(75vh);
+$image-height: 75vh;
 $image-height-max: 60rem;
 $sidebar: 18rem;
 
@@ -355,10 +355,15 @@ $sidebar: 18rem;
     .h1, .h3 {
       text-align: center;
       text-shadow: 1px 0px 6px rgba(black, .5);
+      user-select: none;
     }
     .h1 {
       color: white;
       margin: 0 3rem;
+      line-height: 1.1;
+      @include breakpoint($sm) {
+        margin: 0;
+      }
     }
     .h3 {
       margin: 0;
@@ -379,9 +384,7 @@ $sidebar: 18rem;
       filter: drop-shadow(0px 0px 20px rgba(black, .2));
     }
     .upper {
-      //height: 70%; // Adjusted because of calc-based $image-height
       height: 80%;
-      //margin-top: 10rem;
       margin-top: 10vh;
       display: flex;
       flex-direction: column;
@@ -404,6 +407,9 @@ $sidebar: 18rem;
       border-style: solid;
       border-width: 0 0 0 .3rem;
       transition: all .1s ease-in-out;
+      @include breakpoint($sm) {
+        font-size: .8rem;
+      }
       .rtl & {
         border-width: 0 .3rem 0 0;
       }
@@ -472,6 +478,11 @@ $sidebar: 18rem;
     blockquote.pull-quote {
       @include breakpoint($lower) {
         margin: 2rem 1rem 2rem 0;
+      }
+      @include breakpoint($sm) {
+        width: unset;
+        max-width: unset;
+        float: none;
       }
       display: block;
       position: relative;
@@ -611,6 +622,7 @@ $sidebar: 18rem;
         margin: 0 .5rem 0 0;
         @include breakpoint($md) {
           max-width: 1.75rem;
+          max-height: 3rem;
         }
         .rtl & {
           margin: 0 0 0 .5rem;

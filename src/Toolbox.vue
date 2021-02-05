@@ -156,7 +156,7 @@ export default {
   },
   computed: {
     filteredToolsAllTags() {
-      let tools = this.$store.state.tools.filter(t => t['module-type-effective'] != 'snapshot')
+      let tools = this.$store.state.tools.filter(t => /(full|gallery|snapshot)/.test(t['module-type-effective']))
       if (this.routeCollection == 'saved') {
         tools = tools.filter(t => this.$store.state.savedTools.has(t.slug))
       } else if (this.routeCollection == 'set') {
@@ -361,7 +361,7 @@ export default {
 
   .block {
     border-left: 1px solid white;
-    height: 18rem;
+    height: 20rem;
 
     cursor: pointer;
     flex: 2 0 14%;
@@ -369,10 +369,16 @@ export default {
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    overflow-x: hidden;
 
     @include breakpoint($md) {
       height: 12rem;
-      flex: 0 2 25%;
+      flex: 0 0 25%;
+      font-size: .8rem;
+    }
+    @include breakpoint($lg) {
+      font-size: .9rem;
+      line-height: 1.1;
     }
     &.active {
       background: $bgdark1;
@@ -386,8 +392,7 @@ export default {
     &.saved {
       position: relative;
       .download {
-        position: absolute;
-        bottom: 1rem;
+        margin-top: 1rem;
         display: flex;
         flex-direction: row;
         align-items: center;
@@ -417,12 +422,7 @@ export default {
       margin-bottom: 0;
       min-height: 45%;
       @include breakpoint($md) {
-        font-size: .8rem;
         margin-top: .25rem;
-      }
-      @include breakpoint($lg) {
-        font-size: .9rem;
-        line-height: 1.1;
       }
     }
     .h3 {
@@ -447,12 +447,6 @@ export default {
     .block {
       @include breakpoint($md) {
         flex: 3 0 25%;
-        /*
-        &.set, &.saved { // small tiles
-          flex: 1 0 16.5%;
-          overflow: hidden; // TODO: some languages overflow!
-        }
-        */
       }
     }
   }
@@ -487,16 +481,14 @@ export default {
     }
     span {
       cursor: pointer;
-      min-height: 1.5rem;
+      min-height: 1.3rem;
       padding: 0 1rem;
-      display: inline-flex;
-      align-items: center;
+      //display: inline-flex; // For the x buttons maybe?
       @include breakpoint($md) {
         min-height: 1rem;
       }
       &.active {
         font-weight: bold;
-        position: relative;
       }
       &.disabled {
         color: $bgdark2;
