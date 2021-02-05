@@ -4,28 +4,32 @@
 
       <!-- SENTENCE -->
       <div class="sentence">
-        <span>Show me</span>
+        <span class="plain">{{ text['site.sentence.showme'] }}</span>
         <span>
           <span :class="{tab: true, active: activeTab == 'collection'}" @click="activeTab = 'collection'">
-            {{ $route.name == 'toolbox' ? 'everything' : (typeTextBySlug[routeCollection] || [, tabText(routeCollection)])[1] }}
+            {{ $route.name == 'toolbox'
+                ? text['site.sentence.everything']
+                : text[`type.${routeCollection}${['saved', 'set', 'search'].includes(routeCollection) ? '' : '.plural'}`] }}
           </span>
         </span>
         <!-- Extra tab for regions -->
         <span v-if="routeCollection == 'story'">
-          <span>from</span>
+          <span class="plain">{{ text['site.sentence.from'] }}</span>
           <span :class="{tab: true, active: activeTab == 'region'}" @click="activeTab = 'region'">
-            {{ routeRegion == 'all' ? 'the whole world' : routeRegion }}</span>
+            {{ text[`type.story.region.${routeRegion}`] }}
+          </span>
         </span>
         <!-- Tab visisble for all except saved -->
         <span v-if="routeCollection != 'saved'">
-          <span>about</span>
+          <span class="plain">{{ text['site.sentence.about'] }}</span>
           <span :class="{tab: true, active: ['tag', 'set'].includes(activeTab)}" @click="activeTab = routeCollection == 'set' ? 'set' : 'tag'">
-            {{ tagTextBySlug[$route.params.tag]
-              || (routeCollection == 'set' ? setTextBySlug[routeSet] : null)
+            {{ ($route.params.tag && text[`tag.${$route.params.tag}`])
+              || (routeCollection == 'set' && text[`set.${routeSet}`])
               || $route.params.query
-              || 'everything' }}</span>
+              || text['site.sentence.everything'] }}
+          </span>
         </span>
-        <img v-if="routeCollection != ALL || routeTag != ALL" svg-inline class="bt-icon reset" src="./assets/reset.svg" alt="Reset" @click="resetFilter">
+        <img v-if="routeCollection != ALL || routeTag != ALL" svg-inline class="bt-icon reset" src="./assets/reset.svg" :alt="text['site.sentence.reset']" @click="resetFilter">
       </div>
 
       <!-- FILTER WIDGET -->
@@ -35,25 +39,25 @@
 
             <!-- BY COLLECTION -->
             <div class="by by-collection" v-if="activeTab == 'collection'">
-              <div v-for="(value, key) in typeTextBySlug" :key="key"
-                 :class="{block: true, [key]: true, active: routeCollection == key}" @click="selectCollection(key)">
-                <img svg-inline v-if="key == 'tactic'" class="bt-icon" src="./assets/tactic.svg">
-                <img svg-inline v-if="key == 'theory'" class="bt-icon" src="./assets/theory.svg">
-                <img svg-inline v-if="key == 'story'" class="bt-icon" src="./assets/story.svg">
-                <img svg-inline v-if="key == 'principle'" class="bt-icon" src="./assets/principle.svg">
-                <img svg-inline v-if="key == 'methodology'" class="bt-icon" src="./assets/methodology.svg">
-                <div class="h3">{{ value[1] }}</div>
-                <p>{{ descriptionTextByLang[key] }}</p>
+              <div v-for="type in types" :key="type"
+                 :class="{block: true, [type]: true, active: routeCollection == type}" @click="selectCollection(type)">
+                <img svg-inline v-if="type == 'tactic'" class="bt-icon" src="./assets/tactic.svg">
+                <img svg-inline v-if="type == 'theory'" class="bt-icon" src="./assets/theory.svg">
+                <img svg-inline v-if="type == 'story'" class="bt-icon" src="./assets/story.svg">
+                <img svg-inline v-if="type == 'principle'" class="bt-icon" src="./assets/principle.svg">
+                <img svg-inline v-if="type == 'methodology'" class="bt-icon" src="./assets/methodology.svg">
+                <div class="h3">{{ text[`type.${type}.plural`] }}</div>
+                <p>{{ text[`type.${type}.description`] }}</p>
               </div>
               <div :class="{block: true, saved: true, active: routeCollection == 'saved'}" @click="selectCollection('saved')">
                 <img svg-inline class="bt-icon" src="./assets/favorite-active.svg">
-                <div class="h3">My tools</div>
-                <p>Your favorite tools</p>
+                <div class="h3">{{ text['type.saved'] }}</div>
+                <p>{{ text['type.saved.description'] }}</p>
               </div>
               <div :class="{block: true, set: true, active: routeCollection == 'set'}" @click="selectCollection('set')">
                 <img svg-inline class="bt-icon" src="./assets/set.svg">
-                <div class="h3">Sets</div>
-                <p>Custom sets of tools</p>
+                <div class="h3">{{ text['type.set.plural'] }}</div>
+                <p>{{ text['type.set.description'] }}</p>
               </div>
             </div>
 
@@ -61,41 +65,42 @@
             <div class="by by-region" v-if="activeTab == 'region'">
               <div :class="{block: true, active: routeRegion == 'all'}" @click="selectRegion('all')">
                 <img svg-inline class="bt-icon" src="./assets/regions/world.svg">
-                <p>THE WHOLE WORLD</p>
+                <p>{{ text['type.story.region.all'] }}</p>
               </div>
-              <div v-for="region in REGIONS" :key="region"
-                :class="{block: true, active: $route.params.region == slugify(region)}" @click="selectRegion(slugify(region))">
-                <img svg-inline v-if="region == 'Africa'" class="bt-icon" src="./assets/regions/africa.svg">
-                <img svg-inline v-if="region == 'Asia'" class="bt-icon" src="./assets/regions/asia.svg">
-                <img svg-inline v-if="region == 'Europe'" class="bt-icon" src="./assets/regions/europe.svg">
-                <img svg-inline v-if="region == 'Latin America and the Caribbean'" class="bt-icon" src="./assets/regions/latin-america-and-the-caribbean.svg">
-                <img svg-inline v-if="region == 'Middle East'" class="bt-icon" src="./assets/regions/middle-east.svg">
-                <img svg-inline v-if="region == 'North America'" class="bt-icon" src="./assets/regions/north-america.svg">
-                <img svg-inline v-if="region == 'Oceania'" class="bt-icon" src="./assets/regions/oceania.svg">
-                <p>{{ region }}</p>
+              <div v-for="region in regions" :key="region"
+                :class="{block: true, active: $route.params.region == region}" @click="selectRegion(region)">
+                <img svg-inline v-if="region == 'africa'" class="bt-icon" src="./assets/regions/africa.svg">
+                <img svg-inline v-if="region == 'asia'" class="bt-icon" src="./assets/regions/asia.svg">
+                <img svg-inline v-if="region == 'europe'" class="bt-icon" src="./assets/regions/europe.svg">
+                <img svg-inline v-if="region == 'latin-america-and-the-caribbean'" class="bt-icon" src="./assets/regions/latin-america-and-the-caribbean.svg">
+                <img svg-inline v-if="region == 'middle-east'" class="bt-icon" src="./assets/regions/middle-east.svg">
+                <img svg-inline v-if="region == 'north-america'" class="bt-icon" src="./assets/regions/north-america.svg">
+                <img svg-inline v-if="region == 'oceania'" class="bt-icon" src="./assets/regions/oceania.svg">
+                <p>{{ text[`type.story.region.${region}`] }}</p>
               </div>
             </div>
 
             <!-- BY SET -->
             <div class="by by-set" v-if="activeTab == 'set'">
-              <div v-for="(set, setSlug) in setsBySlug" :key="setSlug"
-                 :class="{block: true, [setSlug]: true, active: routeSet == setSlug}"
-                 @click="selectSet(setSlug)">
+              <div v-for="(set, slug) in sets" :key="slug"
+                 :class="{block: true, set: true, [slug]: true, active: routeSet == slug}"
+                 @click="selectSet(slug)">
                 <img svg-inline class="bt-icon set" src="./assets/set.svg">
-                <div class="h3">{{ setTextBySlug[setSlug] }}</div>
-                <p>DESCRIPTION (Don't make use of all the space, it's not actually available at all screen sizes)</p>
+                <div class="h3 set">{{ text[`set.${slug}`] }}</div>
+                <p>{{ text[`set.${slug}.description`] }}</p>
               </div>
             </div>
 
             <!-- BY TAG -->
             <div class="by by-tag" v-if="activeTab == 'tag'" :key="'tag'">
-              <span v-for="(tag, i) in tagSlugsSorted" :key="i"
-                :class="{active: routeTag == tag, disabled: !tagSlugsAvailable.has(tag)}"
+              <span v-for="(tag, i) in sortedTags" :key="i"
+                :class="{active: routeTag == tag, disabled: !tagsAvailable.has(tag)}"
                 @click="selectTag(tag)">
-                {{ capitalize(tagTextBySlug[tag]) }}
+                {{ text[`tag.${tag}`] }}
               </span>
               <span v-if="$route.params.query && $route.name == 'toolbox-search'" class="active search-tag">
-                {{ $route.params.query }}
+                <div>{{ text['site.search'] }}:</div>
+                <input v-model="$route.params.query">
               </span>
             </div>
           </transition>
@@ -104,9 +109,9 @@
     </div>
 
     <transition-group name="tools-list" tag="div" class="tools">
-      <tool-tile v-for="tool in filteredTools" :key="tool.slug" :tool="tool" :text="typeTextBySlug" />
-      <tool-tile v-if="!['set', 'saved'].includes(routeCollection)" :key="1" :alt="'suggest'" />
-      <tool-tile v-if="routeCollection == 'saved' && !$store.state.savedTools.size" :key="2" :alt="'nosave'" />
+      <tool-tile v-for="tool in filteredTools" :key="tool.slug" :tool="tool" :text="text" />
+      <tool-tile v-if="!['set', 'saved'].includes(routeCollection)" :key="1" :text="text" :alt="'suggest'" />
+      <tool-tile v-if="routeCollection == 'saved' && !$store.state.savedTools.size" :key="2" :text="text" :alt="'nosave'" />
       <div class="filler-squares" :key="3">
         <div class="filler-square tool-tile" />
         <div class="filler-square tool-tile" />
@@ -123,21 +128,21 @@
 
 <script>
 import ToolTile from './ToolTile'
-import descriptionTextByLang from './descriptions'
-import tagTextByLang from './tags'
-import typeTextByLang from './types'
 import sets from './sets'
+import textByLang from './text'
+
 
 const ALL = 'all'
-const REGIONS = ['Africa', 'Asia', 'Europe', 'Latin America and the Caribbean', 'Middle East', 'North America', 'Oceania']
-const REGION_SLUGS = ['all', ...REGIONS.map(s => s.toLowerCase().replace(/ /g, '-'))]
+
 
 export default {
   name: 'Toolbox',
   data: () => ({
     ALL,
-    REGIONS,
     activeTab: 'collection',
+    regions: ['africa', 'asia', 'europe', 'latin-america-and-the-caribbean', 'middle-east', 'north-america', 'oceania'],
+    sets,
+    types: ['story', 'tactic', 'principle', 'theory', 'methodology'],
   }),
   components: {
     ToolTile,
@@ -148,7 +153,7 @@ export default {
       if (this.routeCollection == 'saved') {
         tools = tools.filter(t => this.$store.state.savedTools.has(t.slug))
       } else if (this.routeCollection == 'set') {
-        tools = tools.filter(t => (this.setsBySlug[this.routeSet] || []).includes(t.slug))
+        tools = tools.filter(t => (this.sets[this.routeSet] || []).includes(t.slug))
       } else if (this.config.toolTypes.includes(this.routeCollection)) {
         tools = tools.filter(t => t.type == this.routeCollection)
       }
@@ -168,39 +173,8 @@ export default {
         tools = tools.filter(t => (t.tags || []).includes(this.routeTag))
       return tools
     },
-    tagSlugsSorted() { // Sorted in current language
-      return Object.keys(this.tagTextBySlug)
-              .sort((a, b) => this.tagTextBySlug[a].localeCompare(this.tagTextBySlug[b]))
-    },
-    tagSlugsAvailable() {
-      return this.filteredToolsAllTags
-        .map(t => t.tags)
-        .reduce((a, c) => c !== undefined ? new Set([...a, ...c]) : a, new Set([]))
-    },
-    // Sets (see also: setTextBySlug)
-    setsBySlug() {
-      return Object.fromEntries(Object.entries(sets).map(
-        ([k, v]) => [this.slugify(k), v]))
-    },
-    // Translated text
-    descriptionTextByLang() {
-      return descriptionTextByLang[this.$store.state.lang]
-    },
-    setTextBySlug() {
-      // TODO: use translated text
-      return Object.fromEntries(Object.entries(sets).map(
-        ([k, ]) => [this.slugify(k), k]))
-    },
-    tagTextBySlug() {
-      return tagTextByLang[this.$store.state.lang]
-    },
-    typeTextBySlug() {
-      return typeTextByLang[this.$store.state.lang]
-    },
-    // Refactor
-    routeSet() {
-      // This is dissimilar to other route* computed properties because it doesn't default to ALL
-      return this.$route.params.set || Object.keys(this.setsBySlug)[0]
+    routeSet() { // This is dissimilar to other route* computed properties because it doesn't default to ALL
+      return this.$route.params.set || Object.keys(this.sets)[0]
     },
     routeCollection() {
       return this.$route.name.replace(/^toolbox-?/, '') || ALL
@@ -211,12 +185,22 @@ export default {
     routeTag() {
       return this.$route.params.tag || ALL
     },
+    sortedTags() {
+      return Object.keys(this.text)
+              .filter(k => /^tag\./.test(k))
+              .sort((a, b) => this.text[a].localeCompare(this.text[b]))
+              .map(t => t.slice(4))
+    },
+    tagsAvailable() {
+      return this.filteredToolsAllTags
+        .map(t => t.tags)
+        .reduce((a, c) => c !== undefined ? new Set([...a, ...c]) : a, new Set([]))
+    },
+    text() {
+      return textByLang[this.$store.state.lang]
+    },
   },
   methods: {
-    foo(x) {
-      console.log(x)
-      this.activeTab = x
-    },
     resetFilter() {
       this.activeTab = 'collection'
       this.$router.push({name: 'toolbox'})
@@ -247,33 +231,24 @@ export default {
       let { query, region, set, tag } = route.params
 
       // Reject invalid regions, tags, or sets. Fall back to top-level toolbox.
-      if ((region && !REGION_SLUGS.includes(region)) ||
-          (tag && !(tag in this.tagTextBySlug)) ||
-          (set && !(set in this.setsBySlug)))
+      if ((region && !this.regions.includes(region)) ||
+          (tag && !(`tag.${tag}` in this.text)) ||
+          (set && !(set in this.sets)))
         return next({name: 'toolbox', replace: true})
 
-      let tabinfo = (s) => this.$store.commit('setDebug', `Toolbox tab condition: ${s}`)
       // Set an appropriate activeTab (one of: collection, region, set, tag)
       if (query || region || tag) {
-        tabinfo('query/region/tag')
         this.activeTab = 'tag'
       } else if (this.routeCollection == 'set') {
-        tabinfo('set')
         this.activeTab = 'set'
       } else if (this.routeCollection == 'story') {
-        tabinfo('story')
         this.activeTab = 'region'
       } else if ([ALL, 'saved'].includes(this.routeCollection)) {
-        tabinfo('all/saved')
         this.activeTab = 'collection'
       } else {
-        tabinfo('default')
         this.activeTab = 'tag'
       }
       next()
-    },
-    tabText(s) {
-      return this.typeTextBySlug[s] || {saved: 'my tools', search: 'search results', set: 'a set'}[s] || s
     },
   },
   beforeRouteUpdate(to, from, next) {
@@ -283,7 +258,6 @@ export default {
     next(vm => vm.guardRoute(to, next))
   },
   created() {
-    console.log('created toolbox', this.$route)
     // TODO: Determine whether this is needed in production (it's needed for the webpack dev server)
     this.guardRoute(this.$route, () => {})
   },
@@ -314,16 +288,23 @@ export default {
   font-size: 1.25rem;
   height: 2rem;
   margin-top: 2rem;
-  margin-bottom: .25rem;
+  margin-bottom: -2px;
   @include breakpoint($md) {
     font-size: 1rem;
+  }
+  .plain {
+    display: inline-block;
+    margin-bottom: .5rem;
   }
   .tab {
     font-size: 1.4rem;
     font-family: 'ff-good-headline-web-pro-condensed';
     text-transform: uppercase;
     font-weight: bold;
-    padding: .5rem 1rem .7rem 1rem;
+    display: inline-block;
+    vertical-align: bottom;
+    max-width: 25rem;
+    padding: .5rem 1rem .5rem 1rem;
     position: relative;
     z-index: 1;
     margin: 0 .5rem;
@@ -331,6 +312,7 @@ export default {
     @include breakpoint($md) {
       padding: .5rem .5rem .7rem .5rem;
       margin: 0 .25rem;
+      max-width: 25rem; // TODO
     }
     &.active {
       background-color: $bggray;
@@ -339,7 +321,7 @@ export default {
     }
   }
   .bt-icon {
-    margin: 0 .5rem;
+    margin: .5rem;
     width: 2rem;
     height: 2rem;
     cursor: pointer;
@@ -383,6 +365,15 @@ export default {
     &.active {
       background: $bgdark1;
     }
+    &.set {
+      fill: $set;
+      .h3 {
+        color: $set;
+      }
+    }
+    .blacklivesmatter {
+      word-break: break-all; // Sets have editor-made names #BlackLivesMatter
+    }
     p {
       margin-bottom: 0;
       min-height: 45%;
@@ -395,11 +386,10 @@ export default {
         line-height: 1.1;
       }
     }
-  }
-  .h3 {
-    margin: 0;
-    text-align: center;
-    word-break: break-all // #BlackLivesMatter
+    .h3 {
+      margin: 0;
+      text-align: center;
+    }
   }
   .by {
     display: flex;
@@ -418,7 +408,7 @@ export default {
     .block {
       @include breakpoint($md) {
         flex: 0 0 33.3%;
-        &.set, &.saved {
+        &.set, &.saved { // small tiles
           flex: 0 2 16.5%;
         }
       }
@@ -470,7 +460,6 @@ export default {
     }
   }
   .by-set {
-    fill: $set;
     .block {
       @include breakpoint($md) {
         height: 20rem;

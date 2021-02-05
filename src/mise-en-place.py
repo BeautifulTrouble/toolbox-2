@@ -1,81 +1,63 @@
 #!/usr/bin/env python
 '''
-Corners are being cut to keep the site fast.
+1. Output site text from a spreadsheet of the following form:
+
+    key     | en        | es
+    --------+-----------+-----------
+    spam    | SPAM      | El SPAM
+    --------+-----------+-----------
+    eggs    | Eggs      | Huevos
+
+2. Output tool set lists
 '''
 
-import json 
+import csv
+import json
+import re
+import sys
+
 import requests
 
-LANGS = 'en es pt ar fr'.split()
+
+# Replace /edit#gid=0 with /export?format=csv&gid=0
+SHEET = 'https://docs.google.com/spreadsheets/d/1nixfyP9qTVHKuaZY4uFDGDwUuCL8s3-O1KiypdkuJwM/export?format=csv'
 
 
-print("Generating tags translations: tags.json")
-TAGS = 'https://api.beautifulrising.org/api/v1/text/tags'
+JSON = 'text.json'
+with open(JSON, 'w') as j:
+    print(f'Writing {JSON}...')
 
-tags_by_lang = {lang: requests.get(f'{TAGS}?lang={lang}').json()['all'] for lang in LANGS}
+    text = requests.get(SHEET).content.decode('utf-8-sig')
+    text_by_lang = {}
 
-with open('tags.json', 'w') as f:
-    json.dump(tags_by_lang, f, indent=2)
+    for row in csv.DictReader(text.splitlines()):
+        key = row.pop('key')
+        if key:
+            for lang, text in row.items():
+                # Organize into top-level per-language dicts with English fallback
+                text_by_lang.setdefault(lang, {})[key] = text or row.get('en', '')
 
-
-
-print("Generating types translations: types.json")
-UI = 'https://api.beautifulrising.org/api/v1/text/ui'
-
-types_by_lang = {}
-for lang in LANGS:
-    text = requests.get(f'{UI}?lang={lang}').json()
-    types_by_lang[lang] = {}
-    for one, many in [
-        ('story', 'stories'),
-        ('tactic', 'tactics'),
-        ('principle', 'principles'),
-        ('theory', 'theories'),
-        ('methodology', 'methodologies'),
-        ]:
-        types_by_lang[lang][one] = [text['types'][one], text['types'][many]]
-
-with open('types.json', 'w') as f:
-    json.dump(types_by_lang, f, indent=2)
-    
+    json.dump(text_by_lang, j, indent=2)
 
 
-print("Generating type description translations and 'key-module' strings: descriptions.json, keys.json")
-UI = 'https://api.beautifulrising.org/api/v1/text/ui'
+JSON = 'sets.json'
+with open(JSON, 'w') as f:
+    print(f'Writing {JSON}...')
 
-descs = {}
-keys = {}
-for lang in LANGS:
-    text = requests.get(f'{UI}?lang={lang}').json()
-    descs[lang] = {}
-    for T in ['story', 'tactic', 'principle', 'theory', 'methodology']:
-        descs[lang][T] = text['definitions'][f'{T}-short']
+    sets = {
+        'new-pan-afrikanism': [
+            'citizens-arrest', 'cultural-disobedience', 'hunger-strike', 'lamentation', 'escalate-strategically', 'expose-inequality-with-a-viral-gesture', 'give-voice-to-those-that-cant-speak', 'solidarity-not-aid', 'the-threat-is-usually-more-terrifying-than-the-thing-itself', 'use-organizing-strategies-that-scale', 'gerontocracy', 'palace-coup', 'new-pan-afrikanism', 'kisangani-demands-electric-power', 'angola-15-2', 'bring-back-our-girls', 'fees-must-fall', 'gambia-has-decided', 'ghana-thinktank', 'manich-msamah', 'street-graduation', 'this-flag', 'baraza'
+        ],
+        'covid-19': [
+            'make-the-invisible-visible', 'simple-rules-can-have-grand-results', 'al-fazaa', 'guerilla-projection', 'divestment', 'take-risks-but-take-care', 'prefigurative-politics', 'peoples-shock-doctrine-', 'breakfast-is-persuasive'
+        ],
+        'blacklivesmatter': [
+            'direct-action', 'peoples-shock-doctrine-', 'the-real-action-is-your-targets-reaction', 'anger-works-best-when-you-have-the-moral-high-ground', 'use-the-power-of-ritual', 'hunger-strike', 'countering-homophobic-policing', 'take-risks-but-take-care', 'make-the-invisible-visible', 'do-the-medias-work-for-them', 'power-mapping', 'take-leadership-from-the-most-impacted'
+        ],
+        'election-protection': [
+            'recapture-the-flag', 'pillars-of-power', 'general-strike', 'put-your-target-in-a-decision-dilemma', 'use-the-power-of-ritual', 'training-for-the-win', 'gambia-has-decided'
+        ],
+    }
 
-    keys[lang] = {k: text['module'][k] for k in ['key-principle', 'key-principles', 'key-theory', 'key-theories', 'key-tactic', 'key-tactics', 'key-methodology', 'key-methodologies']}
-
-with open('descriptions.json', 'w') as f:
-    json.dump(descs, f, indent=2)
-
-with open('keys.json', 'w') as f:
-    json.dump(keys, f, indent=2)
-
-    
-
-print('Generating sets.json')
-sets = {
-    'New Pan-Afrikanism Toolkit': [
-        'citizens-arrest', 'cultural-disobedience', 'hunger-strike', 'lamentation', 'escalate-strategically', 'expose-inequality-with-a-viral-gesture', 'give-voice-to-those-that-cant-speak', 'solidarity-not-aid', 'the-threat-is-usually-more-terrifying-than-the-thing-itself', 'use-organizing-strategies-that-scale', 'gerontocracy', 'palace-coup', 'new-pan-afrikanism', 'kisangani-demands-electric-power', 'angola-15-2', 'bring-back-our-girls', 'fees-must-fall', 'gambia-has-decided', 'ghana-thinktank', 'manich-msamah', 'street-graduation', 'this-flag', 'baraza'
-    ],
-    'COVID-19': [
-        'make-the-invisible-visible', 'simple-rules-can-have-grand-results', 'al-fazaa', 'guerilla-projection', 'divestment', 'take-risks-but-take-care', 'prefigurative-politics', 'peoples-shock-doctrine-', 'breakfast-is-persuasive'
-    ],
-    '#BlackLivesMatter': [
-        'direct-action', 'peoples-shock-doctrine-', 'the-real-action-is-your-targets-reaction', 'anger-works-best-when-you-have-the-moral-high-ground', 'use-the-power-of-ritual', 'hunger-strike', 'countering-homophobic-policing', 'take-risks-but-take-care', 'make-the-invisible-visible', 'do-the-medias-work-for-them', 'power-mapping', 'take-leadership-from-the-most-impacted'
-    ],
-    'Election Protection': [
-        'recapture-the-flag', 'pillars-of-power', 'general-strike', 'put-your-target-in-a-decision-dilemma', 'use-the-power-of-ritual', 'training-for-the-win', 'gambia-has-decided'
-    ],
-}
-with open('sets.json', 'w') as f:
     json.dump(sets, f, indent=2)
 

@@ -12,7 +12,7 @@
           <img svg-inline v-else-if="tool.type == 'story'" class="bt-icon" src="./assets/story-inverse.svg">
           <img svg-inline v-else-if="tool.type == 'principle'" class="bt-icon" src="./assets/principle-inverse.svg">
           <img svg-inline v-else-if="tool.type == 'methodology'" class="bt-icon" src="./assets/methodology-inverse.svg">
-          <div class="h3">{{ text[tool.type][0] }}</div>
+          <div class="h3">{{ text[`type.${tool.type}`] }}</div>
         </div>
         <div>
           <img svg-inline v-if="tool.video" class="bt-icon video" src="./assets/video.svg">
@@ -33,12 +33,12 @@
       <div class="upper">
         <div>
           <div class="add">+</div>
-          <div class="h3">New</div>
+          <div class="h3">{{ text['site.suggest'] }}</div>
         </div>
       </div>
       <div class="lower">
-        <div class="h2 title">Suggest a tool</div>
-        <div class="snapshot" v-html="markdown('Have an idea for a tool you don\'t see here?')"/>
+        <div class="h2 title">{{ text['site.suggest.description'] }}</div>
+        <div class="snapshot">{{ text['site.suggest.help'] }}</div>
       </div>
     </div>
 
@@ -46,12 +46,12 @@
       <div class="upper">
         <div>
           <img svg-inline class="bt-icon favorite" src="./assets/favorite.svg">
-          <div class="h3">Favorites</div>
+          <div class="h3">{{ text['site.saved'] }}</div>
         </div>
       </div>
       <div class="lower">
-        <div class="h2 title">It looks like you haven't favorited any tools yet</div>
-        <div class="snapshot" v-html="markdown('Use the heart bt-icons to add favorites and keep track of the tools that matter to you')"/>
+        <div class="h2 title">{{ text['site.saved.description'] }}</div>
+        <div class="snapshot">{{ text['site.saved.help'] }}</div>
       </div>
     </div>
   </div>
