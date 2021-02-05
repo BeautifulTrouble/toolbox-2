@@ -113,9 +113,9 @@
               svg-inline :class="['bt-icon', 'active', tool.type]" src="./assets/favorite-active.svg">
             <img v-else svg-inline class="bt-icon" src="./assets/favorite.svg">
           </span>
-          <a :href="`${config.pdf}/download?tools=${tool.slug}`" target="_blank" :title="text['site.downloadpdf']">
+          <div @click="downloadPDF(tool.slug)" :title="text['site.downloadpdf']">
             <img svg-inline class="bt-icon" src="./assets/download.svg">
-          </a>
+          </div>
           <a :href="shareUrlFacebook" target="_blank" rel="external">
             <img svg-inline class="bt-icon" src="./assets/facebook.svg">
           </a>

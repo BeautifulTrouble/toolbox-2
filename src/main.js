@@ -138,6 +138,10 @@ Vue.mixin({
     capitalize([first, ...rest], locale = navigator.language) {
       return [first.toLocaleUpperCase(locale), ...rest].join('')
     },
+    downloadPDF(tools) {
+      tools = typeof(tools) == "string" ? [tools] : tools
+      this.openTab(`${config.pdf}/download?tools=${[...tools].join(',')}&lang=${this.$store.state.lang}`)
+    },
     markdown(string) {
       // TODO: Ensure newlines get transformed into line breaks
       // Regex from https://github.com/showdownjs/showdown/issues/206

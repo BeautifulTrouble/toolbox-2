@@ -52,7 +52,14 @@
               <div :class="{block: true, saved: true, active: routeCollection == 'saved'}" @click="selectCollection('saved')">
                 <img svg-inline class="bt-icon" src="./assets/favorite-active.svg">
                 <div class="h3">{{ text['type.saved'] }}</div>
-                <p>{{ text['type.saved.description'] }}</p>
+                <p>{{ text['type.saved.description'] }}
+                  <span @click.stop="$store.state.savedTools.size && downloadPDF($store.state.savedTools)"
+                    :class="{download: true, disabled: !$store.state.savedTools.size}"
+                    :title="text[$store.state.savedTools.size ? 'site.downloadpdf' : 'site.saved.description']">
+                    <img svg-inline class="bt-icon" src="./assets/download.svg">
+                    <div>{{ text['site.downloadpdf'] }}</div>
+                  </span>
+                </p>
               </div>
               <div :class="{block: true, set: true, active: routeCollection == 'set'}" @click="selectCollection('set')">
                 <img svg-inline class="bt-icon" src="./assets/set.svg">
@@ -374,6 +381,33 @@ export default {
       fill: $set;
       .h3 {
         color: $set;
+      }
+    }
+    &.saved {
+      position: relative;
+      .download {
+        position: absolute;
+        bottom: 1rem;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        &.disabled {
+          cursor: default;
+          color: $bgdark2;
+          .bt-icon {
+            fill: $bgdark2;
+          }
+        }
+        .bt-icon {
+          width: 1.5rem;
+          height: 1.5rem;
+        }
+        div {
+          flex: 0 2 50%;
+          text-align: left;
+          margin-right: .5rem;
+        }
       }
     }
     .blacklivesmatter {
