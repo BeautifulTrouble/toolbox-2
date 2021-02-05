@@ -13,6 +13,7 @@
         @click="$store.dispatch('LANG_SET', [lang, false])">{{ lang.toUpperCase() }}</span>
     </div>
 
+    <!--
     <div class="lookup">
       <router-link to="/toolbox/saved" :class="{saved: true, moved: showSearch}">
         <span>MY TOOLS</span>
@@ -24,6 +25,7 @@
       </transition>
       <img svg-inline @click="toggleSearch" class="bt-icon" src="./assets/search.svg">
     </div>
+    -->
 
     <div class="debugPanel">
     </div>

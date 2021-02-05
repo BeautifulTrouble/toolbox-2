@@ -111,12 +111,12 @@
       <!-- Sidebar -->
       <aside>
         <section class="actions">
-          <span @click="$store.dispatch('TOOL_SAVE_TOGGLE', tool.slug)">
+          <span @click="$store.dispatch('TOOL_SAVE_TOGGLE', tool.slug)" :title="text['site.saved']">
             <img v-if="$store.state.savedTools.has(tool.slug)"
               svg-inline :class="['bt-icon', 'active', tool.type]" src="./assets/favorite-active.svg">
             <img v-else svg-inline class="bt-icon" src="./assets/favorite.svg">
           </span>
-          <a :href="`${config.pdf}/download?tools=${tool.slug}`" target="_blank">
+          <a :href="`${config.pdf}/download?tools=${tool.slug}`" target="_blank" :title="text['site.downloadpdf']">
             <img svg-inline class="bt-icon" src="./assets/download.svg">
           </a>
           <a :href="shareUrlFacebook" target="_blank" rel="external">
@@ -173,9 +173,9 @@
               </div>
             </div>
           </div>
-          <hr>
         </section>
         <section v-if="authors && authors.length" class="authors">
+          <hr>
           <div class="h4">{{ text[`meta.contributor${authors.length > 1 ? '.plural' : ''}`] }}</div>
           <div v-for="a in authors" :key="a.slug">
             <div class="upper">
@@ -432,6 +432,9 @@ $sidebar: 18rem;
     flex-direction: row;
     background: $bggray;
     padding: 1rem 0;
+    @include breakpoint($sm) {
+      flex-wrap: wrap;
+    }
     &::before {
       content: "";
       height: 5rem;
@@ -462,10 +465,17 @@ $sidebar: 18rem;
     justify-content: flex-end;
     box-shadow: .3rem 0 .5rem .25rem $shadow;
     padding: 2rem;
+    @include breakpoint($md) {
+      flex: 0 0 70%;
+      padding: 1.5rem;
+    }
     blockquote p {
       margin: 0;
     }
     blockquote.pull-quote {
+      @include breakpoint($lower) {
+        margin: 2rem 1rem 2rem 0;
+      }
       display: block;
       position: relative;
       float: left;
@@ -500,6 +510,15 @@ $sidebar: 18rem;
       //max-width: 800px;
       img {
         max-width: 100%;
+      }
+      @include breakpoint($lg) {
+        flex: 0 0 75%;
+      }
+      @include breakpoint($xl) {
+        flex: 0 0 66%;
+      }
+      @include breakpoint($lower) {
+        flex: 0 0 100%;
       }
     }
     .breadcrumbs {
@@ -567,6 +586,10 @@ $sidebar: 18rem;
     height: 100%;
     flex: 2 0 33%;
     padding: 0 2rem;
+    @include breakpoint($md) {
+      flex: 0 0 30%;
+      padding: 0 1rem 0 1.5rem;
+    }
     .h2 {
       margin: 0;
       font-size: 1.5rem;
@@ -576,6 +599,9 @@ $sidebar: 18rem;
     }
     hr {
       max-width: 10rem;
+      @include breakpoint($sm) {
+        max-width: unset;
+      }
     }
     .actions {
       display: flex;
@@ -583,9 +609,12 @@ $sidebar: 18rem;
       flex-direction: row;
       align-items: center;
       .bt-icon {
-        max-width: 3rem;
+        max-width: 2.5rem;
         cursor: pointer;
         margin: 0 .5rem 0 0;
+        @include breakpoint($md) {
+          max-width: 1.75rem;
+        }
         .rtl & {
           margin: 0 0 0 .5rem;
         }
@@ -603,6 +632,9 @@ $sidebar: 18rem;
     }
     .risks, .worked, .failed {
       max-width: $sidebar;
+      @include breakpoint($sm) {
+        max-width: unset;
+      }
     }
     .related {
       .type {
@@ -654,7 +686,7 @@ $sidebar: 18rem;
             a {
               text-decoration: underline;
               &::before {
-                // Disabled until a better design emerges
+                // Module name highlighting disabled until a better design emerges
                 //content: "";
                 top: -1px; bottom: -3px;
                 left: -2rem; right: -1rem;
@@ -720,6 +752,9 @@ $sidebar: 18rem;
     }
     .authors {
       max-width: $sidebar;
+      @include breakpoint($sm) {
+        max-width: unset;
+      }
       img {
         border-radius: 50%;
         margin: 0 1rem 0 0;

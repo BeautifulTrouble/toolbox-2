@@ -294,12 +294,17 @@ export default {
   }
   .plain {
     display: inline-block;
-    margin-bottom: .5rem;
+    margin-bottom: .25rem;
+    @include breakpoint($md) {
+      margin-bottom: .5rem;
+    }
   }
   .tab {
     font-size: 1.4rem;
     font-family: 'ff-good-headline-web-pro-condensed';
     text-transform: uppercase;
+    line-height: 1;
+    text-align: center;
     font-weight: bold;
     display: inline-block;
     vertical-align: bottom;
@@ -310,9 +315,9 @@ export default {
     margin: 0 .5rem;
     cursor: pointer;
     @include breakpoint($md) {
-      padding: .5rem .5rem .7rem .5rem;
+      padding: .5rem .5rem .5rem .5rem;
       margin: 0 .25rem;
-      max-width: 25rem; // TODO
+      max-width: 13rem;
     }
     &.active {
       background-color: $bggray;
@@ -359,7 +364,7 @@ export default {
     align-items: center;
 
     @include breakpoint($md) {
-      height: 10rem;
+      height: 12rem;
       flex: 0 2 25%;
     }
     &.active {
@@ -407,10 +412,13 @@ export default {
   .by-collection {
     .block {
       @include breakpoint($md) {
-        flex: 0 0 33.3%;
+        flex: 3 0 25%;
+        /*
         &.set, &.saved { // small tiles
-          flex: 0 2 16.5%;
+          flex: 1 0 16.5%;
+          overflow: hidden; // TODO: some languages overflow!
         }
+        */
       }
     }
   }
@@ -435,12 +443,12 @@ export default {
     padding: 1rem 3rem;
     flex-wrap: wrap;
     flex-direction: column;
-    height: 18rem;
+    height: 20rem;
     justify-content: flex-start;
     align-items: space-between;
 
     @include breakpoint($md) {
-      height: 20rem;
+      height: 24rem;
       font-size: .9rem;
     }
     span {
@@ -449,6 +457,9 @@ export default {
       padding: 0 1rem;
       display: inline-flex;
       align-items: center;
+      @include breakpoint($md) {
+        min-height: 1rem;
+      }
       &.active {
         font-weight: bold;
         position: relative;
@@ -462,7 +473,7 @@ export default {
   .by-set {
     .block {
       @include breakpoint($md) {
-        height: 20rem;
+        height: 24rem;
       }
     }
   }
@@ -475,7 +486,7 @@ export default {
     }
     @include breakpoint($md) {
       margin: .25rem;
-      max-height: 2rem;
+      max-height: 3rem;
     }
   }
 }
