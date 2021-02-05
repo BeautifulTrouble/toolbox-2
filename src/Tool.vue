@@ -16,10 +16,7 @@
           <img svg-inline v-else-if="tool.type == 'methodology'" class="bt-icon" src="./assets/methodology.svg">
           <div class="h3">{{ text[`type.${tool.type}`] }}</div>
         </router-link>
-        <div class="h1">{{ tool.title }}</div>
-        <!--
-        <img svg-inline v-if="showDocumentLinks" @click="openTab(tool.document_link)" class="edit" alt="Edit this Google Doc" src="./assets/edit.svg">
-        -->
+        <div class="h1" @dblclick="openTab(tool.document_link)">{{ tool.title }}</div>
       </div>
       <div class="lower">
         <div><!-- Always render two divs to ensure proper placement -->
