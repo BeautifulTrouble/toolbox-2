@@ -277,7 +277,6 @@ export default {
 
 <style lang="scss">
 @import 'common.scss';
-@import 'fonts.css';
 
 .toolbox {
   padding-top: 4rem;
@@ -305,18 +304,17 @@ export default {
   align-items: flex-end;
   font-size: 1.25rem;
   margin: 0 1rem;
-  //margin-bottom: -2px;
+  width: 100%;
   @include breakpoint($md) {
     font-size: 1rem;
   }
-
   .plain {
-    margin-bottom: .5rem;
-    flex: 2 0 auto;
-    text-align: center;
+    @include breakpoint($md) {
+      margin-bottom: .25rem;
+    }
+    flex: 1 1 auto;
   }
   .tab {
-    flex: 0 1 0;
     cursor: pointer;
     font-size: 1.4rem;
     font-family: 'ff-good-headline-web-pro-condensed';
@@ -324,27 +322,33 @@ export default {
     line-height: 1;
     text-align: center;
     font-weight: bold;
-    padding: .5rem 1rem;
 
-    //max-width: 25rem;
-    margin: 0 .5rem;
+    flex: 1 1 auto;
+    padding: .5rem 1rem .5rem 1rem;
+    margin: 0 .5rem -2px .5rem;
+
+    border-radius: 5px 5px 0 0;
+    border-right: 1px solid $bgdark1;
+    color: $bgdark3;
+    background: linear-gradient(180deg, $bggray 75%, darken($bggray, 1%) 95%, darken($bggray, 8%) 100%);
+
+    transition: all .1s linear;
     @include breakpoint($md) {
       padding: .5rem .5rem;
-      margin: 0 .25rem;
-      //max-width: 13rem;
     }
     &.active {
-      background-color: $bggray;
+      color: $text;
+      background: $bggray;
       border-right: 1px solid $bgdark2;
-      border-radius: 5px 5px 0 0;
+      z-index: 1;
     }
   }
   .bt-icon {
     flex: 0 0 2.5rem; // width + margin
     margin: .5rem 0;
     margin-inline-start: .5rem;
-    width: 2rem;
-    height: 2rem;
+    width: 1.5rem;
+    height: 1.5rem;
     cursor: pointer;
     fill: $text;
     @include breakpoint($upper) {
