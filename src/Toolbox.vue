@@ -3,33 +3,37 @@
     <div class="filter-pane">
 
       <!-- SENTENCE -->
-      <div class="sentence">
-        <span class="plain">{{ text['site.sentence.showme'] }}</span>
-        <span>
-          <span :class="{tab: true, active: activeTab == 'collection'}" @click="activeTab = 'collection'">
+      <div class="sentence-wrapper">
+        <div class="sentence">
+          <div class="plain">
+            {{ text['site.sentence.showme'] }}
+          </div>
+          <div :class="{tab: true, active: activeTab == 'collection'}" @click="activeTab = 'collection'">
             {{ $route.name == 'toolbox'
                 ? text['site.sentence.everything']
                 : text[`type.${routeCollection}${['saved', 'set', 'search'].includes(routeCollection) ? '' : '.plural'}`] }}
-          </span>
-        </span>
-        <!-- Extra tab for regions -->
-        <span v-if="routeCollection == 'story'">
-          <span class="plain">{{ text['site.sentence.from'] }}</span>
-          <span :class="{tab: true, active: activeTab == 'region'}" @click="activeTab = 'region'">
+          </div>
+          <!-- Extra tab for regions -->
+          <div v-if="routeCollection == 'story'" class="plain">
+            {{ text['site.sentence.from'] }}
+          </div>
+          <div v-if="routeCollection == 'story'" :class="{tab: true, active: activeTab == 'region'}" @click="activeTab = 'region'">
             {{ text[`type.story.region.${routeRegion}`] }}
-          </span>
-        </span>
-        <!-- Tab visisble for all except saved -->
-        <span v-if="routeCollection != 'saved'">
-          <span class="plain">{{ text['site.sentence.about'] }}</span>
-          <span :class="{tab: true, active: ['tag', 'set'].includes(activeTab)}" @click="activeTab = routeCollection == 'set' ? 'set' : 'tag'">
+          </div>
+          <!-- Tab visisble for all except saved -->
+          <div v-if="routeCollection != 'saved'" class="plain">
+            {{ text['site.sentence.about'] }}
+          </div>
+          <div v-if="routeCollection != 'saved'"
+            :class="{tab: true, active: ['tag', 'set'].includes(activeTab)}"
+            @click="activeTab = routeCollection == 'set' ? 'set' : 'tag'">
             {{ ($route.params.tag && text[`tag.${$route.params.tag}`])
               || (routeCollection == 'set' && text[`set.${routeSet}`])
               || $route.params.query
               || text['site.sentence.everything'] }}
-          </span>
-        </span>
-        <img v-if="routeCollection != ALL || routeTag != ALL" svg-inline class="bt-icon reset" src="./assets/reset.svg" :alt="text['site.sentence.reset']" @click="resetFilter">
+          </div>
+          <img v-if="routeCollection != ALL || routeTag != ALL" svg-inline class="bt-icon reset" src="./assets/reset.svg" :alt="text['site.sentence.reset']" @click="resetFilter">
+        </div>
       </div>
 
       <!-- FILTER WIDGET -->
@@ -273,9 +277,11 @@ export default {
 
 <style lang="scss">
 @import 'common.scss';
+@import 'fonts.css';
 
 .toolbox {
   padding-top: 4rem;
+  width: 100%;
 
   // Mobile header adjustments for the Squarespace theme
   @media #{$ss-mobile-header} {
@@ -285,46 +291,47 @@ export default {
 .filter-pane {
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  align-items: center;
+  align-items: center; // horizontally center
+}
+.sentence-wrapper {
+  min-height: 6rem;
+  display: flex;
+  flex-direction: column;
+  //align-items: center;
+  justify-content: flex-end; // align to bottom of flex row
 }
 .sentence {
   display: flex;
-  justify-content: center;
   align-items: flex-end;
   font-size: 1.25rem;
-  height: 2rem;
-  margin-top: 2rem;
-  margin-bottom: -2px;
+  margin: 0 1rem;
+  //margin-bottom: -2px;
   @include breakpoint($md) {
     font-size: 1rem;
   }
+
   .plain {
-    display: inline-block;
-    margin-bottom: .25rem;
-    @include breakpoint($md) {
-      margin-bottom: .5rem;
-    }
+    margin-bottom: .5rem;
+    flex: 2 0 auto;
+    text-align: center;
   }
   .tab {
+    flex: 0 1 0;
+    cursor: pointer;
     font-size: 1.4rem;
     font-family: 'ff-good-headline-web-pro-condensed';
     text-transform: uppercase;
     line-height: 1;
     text-align: center;
     font-weight: bold;
-    display: inline-block;
-    vertical-align: bottom;
-    max-width: 25rem;
-    padding: .5rem 1rem .5rem 1rem;
-    position: relative;
-    z-index: 1;
+    padding: .5rem 1rem;
+
+    //max-width: 25rem;
     margin: 0 .5rem;
-    cursor: pointer;
     @include breakpoint($md) {
-      padding: .5rem .5rem .5rem .5rem;
+      padding: .5rem .5rem;
       margin: 0 .25rem;
-      max-width: 13rem;
+      //max-width: 13rem;
     }
     &.active {
       background-color: $bggray;
@@ -333,13 +340,15 @@ export default {
     }
   }
   .bt-icon {
-    margin: .5rem;
+    flex: 0 0 2.5rem; // width + margin
+    margin: .5rem 0;
+    margin-inline-start: .5rem;
     width: 2rem;
     height: 2rem;
     cursor: pointer;
     fill: $text;
-    transition: fill .2s linear;
     @include breakpoint($upper) {
+      transition: fill .2s linear;
       &:hover {
         fill: black;
       }
@@ -400,12 +409,10 @@ export default {
         flex-direction: row;
         align-items: center;
         justify-content: flex-start;
+        fill: $text;
         &.disabled {
           cursor: default;
-          color: $bgdark2;
-          .bt-icon {
-            fill: $bgdark2;
-          }
+          opacity: .2;
         }
         .bt-icon {
           width: 1.5rem;
@@ -413,7 +420,7 @@ export default {
           margin: 0;
         }
         div {
-          flex: 0 2 50%;
+          flex: 0 2 70%;
           text-align: left;
           margin-inline-start: .5rem;
         }

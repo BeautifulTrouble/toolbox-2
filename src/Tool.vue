@@ -615,6 +615,10 @@ $sidebar: 18rem;
       flex: 0 0 30%;
       padding: 0 1rem 0 1.5rem;
     }
+    blockquote {
+      margin-inline-start: 1rem;
+      margin-inline-end: 1rem;
+    }
     .h2 {
       margin: 0;
       font-size: 1.5rem;
