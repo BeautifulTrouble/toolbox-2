@@ -27,9 +27,6 @@
     </div>
     -->
 
-    <div class="debugPanel">
-    </div>
-
   </div>
 </template>
 
@@ -54,32 +51,6 @@ export default {
 
 <style lang="scss">
 @import 'common.scss';
-
-// DEBUG
-.debugPanel {
-  position: fixed;
-  bottom: 0; left: 0;
-  z-index: 10000;
-  @mixin responsive($color, $text) {
-    &::after {
-      content: $text;
-      position: absolute;
-      left: 100%;
-      background-color: $color;
-      padding: .5rem;
-      color: white;
-      font-size: 1.5rem;
-      bottom: 0px;
-      border: 1px dotted darken($color, 10%);
-    }
-  }
-  @include breakpoint($sm) { @include responsive($methodology, 'sm'); }
-  @include breakpoint($md) { @include responsive($theory, 'md'); }
-  @include breakpoint($lg) { @include responsive($tactic, 'lg'); }
-  @include breakpoint($xl) { @include responsive($principle, 'xl'); }
-  @include breakpoint($xxl) { @include responsive($story, 'xxl'); }
-}
-
 
 #app {
   // Squarespace makes this complicated (additional spacing is added to the toolbox)

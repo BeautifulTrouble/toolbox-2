@@ -80,6 +80,45 @@ $ss-mobile-header: "only screen and (pointer: coarse) and (max-width: 1024px), s
 //}
 
 
+// Development styles
+@mixin debug($color, $text) {
+  &::after {
+    content: $text;
+    background-color: $color;
+    padding: 1rem;
+    border: 1px dotted white;
+    position: fixed;
+    bottom: 0; left: 0;
+    z-index: 10000;
+    color: white;
+  }
+}
+@if $NODE_ENV == 'development' {
+  @font-face {
+      font-family: 'aktiv-grotesk';
+      src: url('aktiv-grotesk.woff2') format('woff2');
+      font-weight: normal;
+      font-style: normal;
+  }
+  @font-face {
+      font-family: 'ff-good-headline-web-pro-condensed';
+      src: url('good-headline-pro.woff2') format('woff2');
+      font-weight: 700;
+      font-style: normal;
+  }
+  body {
+    @include breakpoint($sm) { @include debug($theory, 'sm'); }
+    @include breakpoint($md) { @include debug($tactic, 'md'); }
+    @include breakpoint($lg) { @include debug($story, 'lg'); }
+    @include breakpoint($xl) { @include debug($principle, 'xl'); }
+    @include breakpoint($xxl) { @include debug($methodology, 'xxl'); }
+  }
+  .langs {
+    background-color: black;
+  }
+}
+
+
 // Global sizes
 $searchWidth: 24rem;
 
@@ -131,10 +170,10 @@ hr {
 }
 .h1, .h2, .h3 {
   font-family: ff-good-headline-web-pro-condensed, sans-serif; 
+  line-height: 1;
 }
 .h1 {
   font-size: 3.125rem;
-  line-height: 1;
 }
 .h2 {
   font-size: 1.6rem;
