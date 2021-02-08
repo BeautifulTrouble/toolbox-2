@@ -60,7 +60,7 @@
               </div>
 
               <div :class="{block: true, saved: true, active: routeCollection == 'saved', 'mobile-only': true}"
-                v-scroll-to="{el: '.tools', duration: 750}"
+                v-scroll-to="scroll"
                 @click="selectCollection('saved')">
                 <img svg-inline class="bt-icon" src="./assets/favorite-active.svg">
                 <div class="h3">{{ text['type.saved'] }}</div>
@@ -110,7 +110,7 @@
             <div class="by by-set" v-if="activeTab == 'set'">
               <div v-for="(set, slug) in sets" :key="slug + 'mobile'"
                 :class="{block: true, set: true, [slug]: true, active: routeSet == slug, 'mobile-only': true}"
-                v-scroll-to="{el: '.tools', duration: 750}"
+                v-scroll-to="scroll"
                 @click="selectSet(slug)">
                 <img svg-inline class="bt-icon set" src="./assets/set.svg">
                 <div class="h3 set">{{ text[`set.${slug}`] }}</div>
@@ -129,7 +129,7 @@
             <div class="by by-tag" v-if="activeTab == 'tag'" :key="'tag'">
               <p v-for="(tag, i) in sortedTags" :key="i + 'mobile'"
                 :class="{active: routeTag == tag, disabled: !tagsAvailable.has(tag), 'mobile-only': true}"
-                v-scroll-to="{el: '.tools', duration: 750}"
+                v-scroll-to="scroll"
                 @click="selectTag(tag)">
                 {{ text[`tag.${tag}`] }}
               </p>
@@ -184,6 +184,7 @@ export default {
     regions: ['africa', 'asia', 'europe', 'latin-america-and-the-caribbean', 'middle-east', 'north-america', 'oceania'],
     sets,
     types: ['story', 'tactic', 'principle', 'theory', 'methodology'],
+    scroll: {el: '.tools', duration: 750, offset: -100},
   }),
   components: {
     ToolTile,
@@ -430,10 +431,10 @@ export default {
   //border-top: 1px solid white;
   border-radius: 5px;
   border-right: 1px solid $bgdark2;
+  line-height: 1.1;
 
   @include breakpoint($lg) {
     font-size: .9rem;
-    line-height: 1.1;
   }
   @include breakpoint($md) {
     font-size: .8rem;
