@@ -58,7 +58,22 @@
                 <div class="h3">{{ text['type.set.plural'] }}</div>
                 <p>{{ text['type.set.description'] }}</p>
               </div>
-              <div :class="{block: true, saved: true, active: routeCollection == 'saved'}" @click="selectCollection('saved')">
+
+              <div :class="{block: true, saved: true, active: routeCollection == 'saved', 'mobile-only': true}"
+                v-scroll-to="{el: '.tools', duration: 750}"
+                @click="selectCollection('saved')">
+                <img svg-inline class="bt-icon" src="./assets/favorite-active.svg">
+                <div class="h3">{{ text['type.saved'] }}</div>
+                <p>{{ text['type.saved.description'] }}
+                  <span @click.stop="$store.state.savedTools.size && downloadPDF($store.state.savedTools)"
+                    :class="{download: true, disabled: !$store.state.savedTools.size}"
+                    :title="text[$store.state.savedTools.size ? 'site.downloadpdf' : 'site.saved.description']">
+                    <img svg-inline class="bt-icon" src="./assets/download.svg">
+                    <div>{{ text['site.downloadpdf'] }}</div>
+                  </span>
+                </p>
+              </div>
+              <div :class="{block: true, saved: true, active: routeCollection == 'saved', 'mobile-hidden': true}" @click="selectCollection('saved')">
                 <img svg-inline class="bt-icon" src="./assets/favorite-active.svg">
                 <div class="h3">{{ text['type.saved'] }}</div>
                 <p>{{ text['type.saved.description'] }}
@@ -93,9 +108,17 @@
 
             <!-- BY SET -->
             <div class="by by-set" v-if="activeTab == 'set'">
+              <div v-for="(set, slug) in sets" :key="slug + 'mobile'"
+                :class="{block: true, set: true, [slug]: true, active: routeSet == slug, 'mobile-only': true}"
+                v-scroll-to="{el: '.tools', duration: 750}"
+                @click="selectSet(slug)">
+                <img svg-inline class="bt-icon set" src="./assets/set.svg">
+                <div class="h3 set">{{ text[`set.${slug}`] }}</div>
+                <p>{{ text[`set.${slug}.description`] }}</p>
+              </div>
               <div v-for="(set, slug) in sets" :key="slug"
-                 :class="{block: true, set: true, [slug]: true, active: routeSet == slug}"
-                 @click="selectSet(slug)">
+                :class="{block: true, set: true, [slug]: true, active: routeSet == slug, 'mobile-hidden': true}"
+                @click="selectSet(slug)">
                 <img svg-inline class="bt-icon set" src="./assets/set.svg">
                 <div class="h3 set">{{ text[`set.${slug}`] }}</div>
                 <p>{{ text[`set.${slug}.description`] }}</p>
@@ -104,8 +127,14 @@
 
             <!-- BY TAG -->
             <div class="by by-tag" v-if="activeTab == 'tag'" :key="'tag'">
+              <p v-for="(tag, i) in sortedTags" :key="i + 'mobile'"
+                :class="{active: routeTag == tag, disabled: !tagsAvailable.has(tag), 'mobile-only': true}"
+                v-scroll-to="{el: '.tools', duration: 750}"
+                @click="selectTag(tag)">
+                {{ text[`tag.${tag}`] }}
+              </p>
               <p v-for="(tag, i) in sortedTags" :key="i"
-                :class="{active: routeTag == tag, disabled: !tagsAvailable.has(tag)}"
+                :class="{active: routeTag == tag, disabled: !tagsAvailable.has(tag), 'mobile-hidden': true}"
                 @click="selectTag(tag)">
                 {{ text[`tag.${tag}`] }}
               </p>
