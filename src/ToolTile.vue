@@ -81,6 +81,14 @@ export default {
     height: 100%;
   }
 
+  @include breakpoint($sm) {
+    .h3 {
+      font-size: 1.1rem;
+    }
+    .h2 {
+      font-size: 1.4rem;
+    }
+  }
   .upper {
     height: 10%;
     min-height: 2.5rem;

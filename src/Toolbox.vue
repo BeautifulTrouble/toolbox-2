@@ -457,6 +457,9 @@ export default {
         align-items: center;
         justify-content: flex-start;
         fill: $text;
+        @include breakpoint($sm) {
+          margin-top: .5rem;
+        }
         &.disabled {
           cursor: default;
           opacity: .2;
@@ -508,7 +511,7 @@ export default {
         &:nth-of-type(5) {
           flex: 1 0 100%;
           p {
-            max-width: 50%;
+            max-width: 70%;
           }
         }
       }
@@ -626,6 +629,7 @@ export default {
     @include breakpoint($sm) {
       flex: 0 0 50%;
       height: 50vw;
+      border: 1px solid transparent;
     }
   }
 }

@@ -73,11 +73,11 @@ export default {
   box-shadow: 0 0 .5rem rgba(0,0,0,.2);
   div {
     width: 0;
-    border-bottom: 1.4rem solid $text;
+    border-bottom: 1.1rem solid $text;
     border-left: .8rem solid transparent;
     border-right: .8rem solid transparent;
     position: relative;
-    bottom: .15rem;
+    bottom: .1rem;
     left: .35rem;
   }
   @include breakpoint($sm) {
