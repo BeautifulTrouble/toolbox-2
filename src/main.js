@@ -5,6 +5,7 @@ import Axios from 'axios'
 import Router from 'vue-router'
 import Showdown from 'showdown'
 import ShowdownTargetBlank from 'showdown-target-blank'
+import BackToTop from 'vue-backtotop'
 import VueLazyload from 'vue-lazyload'
 import VueLazyImageLoading from 'vue-lazy-image-loading'
 import VueScollTo from 'vue-scrollto'
@@ -129,6 +130,9 @@ Vue.use(VueLazyImageLoading, {
 
 // Smooth scroll to element
 Vue.use(VueScollTo)
+
+// Scroll to top button
+Vue.use(BackToTop)
 
 Vue.mixin({
   data: () => ({

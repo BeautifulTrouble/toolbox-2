@@ -151,6 +151,7 @@ export default {
       margin: 0 .6rem;
       font-size: 3rem;
       position: relative;
+      top: 2px;
     }
   }
   // Hover

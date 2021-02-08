@@ -27,6 +27,10 @@
     </div>
     -->
 
+    <back-to-top bottom="1.25rem" right="1.25rem">
+      <button type="button" class="btn-to-top"><div></div></button>
+      <!-- ▲ -->
+    </back-to-top>
   </div>
 </template>
 
@@ -58,6 +62,27 @@ export default {
 }
 .header-announcement-bar-wrapper::after {
   display: none; // Hide fake Squarespace language button
+}
+.btn-to-top {
+  display: none;
+  width: 3.0rem;
+  height: 3.0rem;;
+  border-radius: 50%;
+  border: none;
+  background: white;
+  box-shadow: 0 0 .5rem rgba(0,0,0,.2);
+  div {
+    width: 0;
+    border-bottom: 1.4rem solid $text;
+    border-left: .8rem solid transparent;
+    border-right: .8rem solid transparent;
+    position: relative;
+    bottom: .15rem;
+    left: .35rem;
+  }
+  @include breakpoint($sm) {
+    display: block;
+  }
 }
 .langs {
   font-family: 'ff-good-headline-web-pro-condensed';

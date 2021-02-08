@@ -327,6 +327,9 @@ $sidebar: 18rem;
     z-index: 0;
     height: $image-height;
     max-height: $image-height-max;
+    @include breakpoint($sm) {
+      height: calc(100vh - 6vmax);
+    }
   }
   .lazy-background-image {
     background: black;
@@ -349,6 +352,9 @@ $sidebar: 18rem;
     position: relative;
     height: $image-height;
     max-height: $image-height-max;
+    @include breakpoint($sm) {
+      height: calc(100vh - 6vmax);
+    }
     a {
       text-decoration: none;
     }
@@ -360,7 +366,7 @@ $sidebar: 18rem;
     .h1 {
       color: white;
       margin: 0 3rem;
-      line-height: 1.1;
+      line-height: 1;
       @include breakpoint($sm) {
         margin: 0 1rem;
       }

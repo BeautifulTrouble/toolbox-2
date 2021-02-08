@@ -134,6 +134,7 @@
         <div class="filler-square tool-tile" />
       </div>
     </transition-group>
+
   </div>
 </template>
 
@@ -277,7 +278,6 @@ export default {
 
 <style lang="scss">
 @import 'common.scss';
-
 .toolbox {
   padding-top: 4rem;
   width: 100%;
@@ -285,6 +285,9 @@ export default {
   // Mobile header adjustments for the Squarespace theme
   @media #{$ss-mobile-header} {
     padding-top: 10rem;
+  }
+  @include breakpoint($sm) {
+    padding-top: 6rem;
   }
 }
 .filter-pane {
@@ -394,8 +397,8 @@ export default {
 }
 .widget {
   background-color: $bggray;
-  border-left: 1px solid white;
-  border-top: 1px solid white;
+  //border-left: 1px solid white;
+  //border-top: 1px solid white;
   border-radius: 5px;
   border-right: 1px solid $bgdark2;
 
@@ -412,6 +415,7 @@ export default {
 
   .block {
     border-left: 1px solid white;
+    border-top: 1px solid white;
     height: 20rem;
 
     cursor: pointer;
@@ -500,7 +504,13 @@ export default {
         flex: 3 0 25%;
       }
       @include breakpoint($sm) {
-        flex: 3 0 50%;
+        flex: 0 0 50%;
+        &:nth-of-type(5) {
+          flex: 1 0 100%;
+          p {
+            max-width: 50%;
+          }
+        }
       }
     }
   }
@@ -517,7 +527,7 @@ export default {
         flex: 0 0 25%;
       }
       @include breakpoint($sm) {
-        flex: 0 0 50%;
+        flex: 0 0 33.3%;
       }
       p {
         min-height: 15%;
@@ -532,6 +542,8 @@ export default {
     height: 20rem;
     justify-content: flex-start;
     align-items: space-between;
+    border-left: 1px solid white;
+    border-top: 1px solid white;
 
     @include breakpoint($md) {
       height: 24rem;
@@ -563,6 +575,10 @@ export default {
       @include breakpoint($md) {
         height: 24rem;
       }
+      @include breakpoint($sm) {
+        height: 8rem;
+        flex: 0 0 50%;
+      }
     }
   }
   .bt-icon {
@@ -577,7 +593,7 @@ export default {
       max-height: 3rem;
     }
     @include breakpoint($sm) {
-      margin: 0;
+      margin: .25rem 0 0 0;
     }
   }
 }
