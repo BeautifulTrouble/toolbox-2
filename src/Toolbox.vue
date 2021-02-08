@@ -64,14 +64,15 @@
                 @click="selectCollection('saved')">
                 <img svg-inline class="bt-icon" src="./assets/favorite-active.svg">
                 <div class="h3">{{ text['type.saved'] }}</div>
-                <p>{{ text['type.saved.description'] }}
-                  <span @click.stop="$store.state.savedTools.size && downloadPDF($store.state.savedTools)"
-                    :class="{download: true, disabled: !$store.state.savedTools.size}"
-                    :title="text[$store.state.savedTools.size ? 'site.downloadpdf' : 'site.saved.description']">
-                    <img svg-inline class="bt-icon" src="./assets/download.svg">
-                    <div>{{ text['site.downloadpdf'] }}</div>
-                  </span>
-                </p>
+              </div>
+              <div v-if="routeCollection == 'saved'"
+                :class="{block: true, saved: true, active: routeCollection == 'saved', 'mobile-only': true}">
+                <span @click.stop="$store.state.savedTools.size && downloadPDF($store.state.savedTools)"
+                  :class="{download: true, disabled: !$store.state.savedTools.size}"
+                  :title="text[$store.state.savedTools.size ? 'site.downloadpdf' : 'site.saved.description']">
+                  <img svg-inline class="bt-icon" src="./assets/download.svg">
+                  <div>{{ text['site.downloadpdf'] }}</div>
+                </span>
               </div>
               <div :class="{block: true, saved: true, active: routeCollection == 'saved', 'mobile-hidden': true}" @click="selectCollection('saved')">
                 <img svg-inline class="bt-icon" src="./assets/favorite-active.svg">
@@ -465,8 +466,9 @@ export default {
       flex: 0 0 25%;
     }
     @include breakpoint($sm) {
-      padding: .5rem;
-      height: 8rem;
+      padding: .5rem 1rem;
+      height: 4rem;
+      overflow: hidden;
       flex: 0 0 25%;
     }
     &.active {
@@ -538,12 +540,24 @@ export default {
       }
       @include breakpoint($sm) {
         flex: 0 0 50%;
+        display: flex;
+        flex-direction: row;
+        padding: 0 1rem;
+        p {
+          display: none;
+        }
+        .h3 {
+          flex: 0 0 70%;
+          text-align: left;
+        }
+        /* Before hiding the paragraphs
         &:nth-of-type(5) {
           flex: 1 0 100%;
           p {
             max-width: 70%;
           }
         }
+        */
       }
     }
   }
@@ -560,7 +574,11 @@ export default {
         flex: 0 0 25%;
       }
       @include breakpoint($sm) {
+        height: 5.33rem;
         flex: 0 0 33.3%;
+        p {
+          display: none;
+        }
       }
       p {
         min-height: 15%;
@@ -582,7 +600,7 @@ export default {
       height: 24rem;
     }
     @include breakpoint($sm) {
-      height: 32rem;
+      height: 30rem;
       padding: 1rem 1rem;
     }
     p {
@@ -599,7 +617,9 @@ export default {
         pointer-events: none;
       }
       @include breakpoint($sm) {
-        min-height: 1.2rem;
+        padding: 0;
+        font-size: .9rem;
+        min-height: 1.1rem;
       }
     }
   }
@@ -626,7 +646,8 @@ export default {
       max-height: 3rem;
     }
     @include breakpoint($sm) {
-      margin: .25rem 0 0 0;
+      //margin: .25rem 0 0 0;
+      margin: 0 .5rem 0 0;
     }
   }
 }
