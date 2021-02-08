@@ -362,7 +362,7 @@ $sidebar: 18rem;
       margin: 0 3rem;
       line-height: 1.1;
       @include breakpoint($sm) {
-        margin: 0;
+        margin: 0 1rem;
       }
     }
     .h3 {

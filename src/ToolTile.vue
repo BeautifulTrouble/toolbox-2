@@ -83,7 +83,7 @@ export default {
 
   .upper {
     height: 10%;
-    min-height: 3rem;
+    min-height: 2.5rem;
     display: flex;
     justify-content: space-between;
     align-items: center;

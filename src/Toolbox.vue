@@ -53,6 +53,11 @@
                 <div class="h3">{{ text[`type.${type}.plural`] }}</div>
                 <p>{{ text[`type.${type}.description`] }}</p>
               </div>
+              <div :class="{block: true, set: true, active: routeCollection == 'set'}" @click="selectCollection('set')">
+                <img svg-inline class="bt-icon" src="./assets/set.svg">
+                <div class="h3">{{ text['type.set.plural'] }}</div>
+                <p>{{ text['type.set.description'] }}</p>
+              </div>
               <div :class="{block: true, saved: true, active: routeCollection == 'saved'}" @click="selectCollection('saved')">
                 <img svg-inline class="bt-icon" src="./assets/favorite-active.svg">
                 <div class="h3">{{ text['type.saved'] }}</div>
@@ -64,11 +69,6 @@
                     <div>{{ text['site.downloadpdf'] }}</div>
                   </span>
                 </p>
-              </div>
-              <div :class="{block: true, set: true, active: routeCollection == 'set'}" @click="selectCollection('set')">
-                <img svg-inline class="bt-icon" src="./assets/set.svg">
-                <div class="h3">{{ text['type.set.plural'] }}</div>
-                <p>{{ text['type.set.description'] }}</p>
               </div>
             </div>
 
@@ -296,8 +296,10 @@ export default {
   min-height: 6rem;
   display: flex;
   flex-direction: column;
-  //align-items: center;
   justify-content: flex-end; // align to bottom of flex row
+  @include breakpoint($sm) {
+    width: 100%;
+  }
 }
 .sentence {
   display: flex;
@@ -305,14 +307,26 @@ export default {
   font-size: 1.25rem;
   margin: 0 1rem;
   width: 100%;
+  position: relative;
   @include breakpoint($md) {
     font-size: 1rem;
   }
+  @include breakpoint($sm) {
+    font-size: 1rem;
+    flex-wrap: wrap;
+    margin: 0;
+  }
   .plain {
+    flex: 1 1 auto;
     @include breakpoint($md) {
       margin-bottom: .25rem;
     }
-    flex: 1 1 auto;
+    @include breakpoint($sm) {
+      flex: 0 0 27%;
+      text-align: right;
+      padding: 0 .5rem .5rem 0;
+      overflow-x: hidden;
+    }
   }
   .tab {
     cursor: pointer;
@@ -329,18 +343,26 @@ export default {
 
     border-radius: 5px 5px 0 0;
     border-right: 1px solid $bgdark1;
-    color: $bgdark3;
     background: linear-gradient(180deg, $bggray 75%, darken($bggray, 1%) 95%, darken($bggray, 8%) 100%);
+    color: $bgdark3;
 
     transition: all .1s linear;
     @include breakpoint($md) {
       padding: .5rem .5rem;
+    }
+    @include breakpoint($sm) {
+      border-radius: 5px;
+      flex: 0 0 73%;
+      margin: 0;
     }
     &.active {
       color: $text;
       background: $bggray;
       border-right: 1px solid $bgdark2;
       z-index: 1;
+      @include breakpoint($sm) {
+        background: linear-gradient(180deg, $bggray 75%, darken($bggray, 1%) 95%, darken($bggray, 8%) 100%);
+      }
     }
   }
   .bt-icon {
@@ -357,6 +379,11 @@ export default {
         fill: black;
       }
     }
+    @include breakpoint($sm) {
+      position: absolute;
+      right: 1rem;
+      top: -2.5rem;
+    }
   }
 }
 .widget-wrapper {
@@ -372,12 +399,15 @@ export default {
   border-radius: 5px;
   border-right: 1px solid $bgdark2;
 
-  @include breakpoint($md) {
-    font-size: .8rem;
-  }
   @include breakpoint($lg) {
     font-size: .9rem;
     line-height: 1.1;
+  }
+  @include breakpoint($md) {
+    font-size: .8rem;
+  }
+  @include breakpoint($sm) {
+    font-size: .7rem;
   }
 
   .block {
@@ -391,9 +421,18 @@ export default {
     justify-content: center;
     align-items: center;
     overflow-x: hidden;
+    padding: 1rem;
 
+    @include breakpoint($lg) {
+      padding: .75rem;
+    }
     @include breakpoint($md) {
       height: 12rem;
+      flex: 0 0 25%;
+    }
+    @include breakpoint($sm) {
+      padding: .5rem;
+      height: 8rem;
       flex: 0 0 25%;
     }
     &.active {
@@ -439,6 +478,10 @@ export default {
       @include breakpoint($md) {
         margin-top: .25rem;
       }
+      @include breakpoint($sm) {
+        min-height: 35%;
+        margin-top: .25rem;
+      }
     }
     .h3 {
       margin: 0;
@@ -447,13 +490,7 @@ export default {
   }
   .by {
     display: flex;
-    .block {
-      padding: 1rem;
-      @include breakpoint($lg) {
-        padding: .75rem;
-      }
-    }
-    @include breakpoint($md) {
+    @include breakpoint($lower) {
       flex-wrap: wrap;
     }
   }
@@ -461,6 +498,9 @@ export default {
     .block {
       @include breakpoint($md) {
         flex: 3 0 25%;
+      }
+      @include breakpoint($sm) {
+        flex: 3 0 50%;
       }
     }
   }
@@ -475,6 +515,9 @@ export default {
       flex: 1 2 12.5%;
       @include breakpoint($md) {
         flex: 0 0 25%;
+      }
+      @include breakpoint($sm) {
+        flex: 0 0 50%;
       }
       p {
         min-height: 15%;
@@ -493,6 +536,10 @@ export default {
     @include breakpoint($md) {
       height: 24rem;
     }
+    @include breakpoint($sm) {
+      height: 32rem;
+      padding: 1rem 1rem;
+    }
     p {
       cursor: pointer;
       min-height: 1.25rem;
@@ -505,6 +552,9 @@ export default {
       &.disabled {
         color: $bgdark2;
         pointer-events: none;
+      }
+      @include breakpoint($sm) {
+        min-height: 1.2rem;
       }
     }
   }
@@ -526,6 +576,9 @@ export default {
       margin: .25rem;
       max-height: 3rem;
     }
+    @include breakpoint($sm) {
+      margin: 0;
+    }
   }
 }
 .tools {
@@ -542,10 +595,6 @@ export default {
     height: 25vw;
     border: 2px solid transparent; // For toolbox margins
 
-    @include breakpoint($md) {
-      flex: 0 0 33.3%;
-      height: 33.3vw;
-    }
     @include breakpoint($xl) {
       flex: 0 0 20%;
       height: 20vw;
@@ -553,6 +602,14 @@ export default {
     @include breakpoint($xxl) {
       flex: 0 0 12.5%;
       height: 12.5vw;
+    }
+    @include breakpoint($md) {
+      flex: 0 0 33.3%;
+      height: 33.3vw;
+    }
+    @include breakpoint($sm) {
+      flex: 0 0 50%;
+      height: 50vw;
     }
   }
 }
