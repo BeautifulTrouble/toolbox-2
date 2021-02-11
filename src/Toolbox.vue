@@ -189,7 +189,7 @@ export default {
   },
   computed: {
     filteredToolsAllTags() {
-      if (this.$route.name == 'toolbox-search') {
+      if (this.$route.name == 'toolbox-search' && this.$route.params.query) {
         return this.$store.state.searchResults.map(k => this.$store.state.toolsBySlug[k])
       }
 
