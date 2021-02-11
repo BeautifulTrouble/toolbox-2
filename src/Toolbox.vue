@@ -27,7 +27,7 @@
           <div v-if="routeCollection != 'saved'"
             :class="{tab: true, active: ['tag', 'set'].includes(activeTab)}"
             @click="activeTab = routeCollection == 'set' ? 'set' : 'tag'">
-            {{ ($route.params.tag && text[`tag.${$route.params.tag}`])
+            {{ ($route.params.tag && text[`tag.${routeTag}`])
               || (routeCollection == 'set' && text[`set.${routeSet}`])
               || $route.params.query
               || text['site.sentence.everything'] }}
@@ -183,9 +183,9 @@ export default {
     ALL,
     activeTab: 'collection',
     regions: ['africa', 'asia', 'europe', 'latin-america-and-the-caribbean', 'middle-east', 'north-america', 'oceania'],
-    sets,
-    types: ['story', 'tactic', 'principle', 'theory', 'methodology'],
     scroll: {el: '.tools', duration: 750, offset: -100},
+    sets, // hard-coded in sets.json, GOTO: mise-en-place.py
+    types: ['story', 'tactic', 'principle', 'theory', 'methodology'],
   }),
   components: {
     ToolTile,
@@ -216,7 +216,7 @@ export default {
         tools = tools.filter(t => (t.tags || []).includes(this.routeTag))
       return tools
     },
-    routeSet() { // This is dissimilar to other route* computed properties because it doesn't default to ALL
+    routeSet() {
       return this.$route.params.set || Object.keys(this.sets)[0]
     },
     routeCollection() {
@@ -235,12 +235,27 @@ export default {
               .map(t => t.slice(4))
     },
     tagsAvailable() {
+      // Tags available for the current level of filtering
       return this.filteredToolsAllTags
         .map(t => t.tags)
         .reduce((a, c) => c !== undefined ? new Set([...a, ...c]) : a, new Set([]))
     },
     text() {
       return textByLang[this.$store.state.lang]
+    },
+    validRegions() {
+      return new Set([ALL, ...this.regions])
+    },
+    validSets() {
+      return new Set(Object.keys(this.sets))
+    },
+    validTags() {
+      // Tags available in entire toolbox (for the sake of the route guard)
+      return new Set(
+        Object.keys(this.text)
+          .filter(k => /^tag\./.test(k))
+          .map(k => k.slice(4))
+      )
     },
   },
   methods: {
@@ -274,9 +289,9 @@ export default {
       let { query, region, set, tag } = route.params
 
       // Reject invalid regions, tags, or sets. Fall back to top-level toolbox.
-      if ((region && !this.regions.includes(region)) ||
-          (tag && !(`tag.${tag}` in this.text)) ||
-          (set && !(set in this.sets)))
+      if ((region && !this.validRegions.has(region)) ||
+          (tag && !this.validTags.has(tag)) ||
+          (set && !this.validSets.has(set)))
         return next({name: 'toolbox', replace: true})
 
       // Set an appropriate activeTab (one of: collection, region, set, tag)
