@@ -27,9 +27,8 @@
     </div>
     -->
 
-    <back-to-top bottom="1.25rem" right="1.25rem">
-      <button type="button" class="btn-to-top"><div></div></button>
-      <!-- ▲ -->
+    <back-to-top bottom="1rem" right="1rem">
+      <button type="button" class="btn-to-top"><div>▲</div></button>
     </back-to-top>
   </div>
 </template>
@@ -65,23 +64,22 @@ export default {
 }
 .btn-to-top {
   display: none;
-  width: 3.0rem;
-  height: 3.0rem;;
-  border-radius: 50%;
-  border: none;
-  background: white;
-  box-shadow: 0 0 .5rem rgba(0,0,0,.2);
-  div {
-    width: 0;
-    border-bottom: 1.1rem solid $text;
-    border-left: .8rem solid transparent;
-    border-right: .8rem solid transparent;
-    position: relative;
-    bottom: .1rem;
-    left: .35rem;
-  }
   @include breakpoint($sm) {
-    display: block;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    width: 3rem;
+    height: 3rem;
+    border-radius: 50%;
+    border: none;
+    background: white;
+    opacity: .5;
+    box-shadow: 0 0 2rem lighten(black, 50%);
+    div {
+      color: lighten(black, 60%);
+      font-size: 1.5rem;
+    }
   }
 }
 .langs {
