@@ -177,11 +177,13 @@
           <div class="h4">{{ text[`meta.contributor${authors.length > 1 ? '.plural' : ''}`] }}</div>
           <div v-for="a in authors" :key="a.slug">
             <div class="upper">
-              <img :src="`${config.imagePrefix}/icon-${a.image}`">
-              <div>
-                <div class="h3">{{ a.title }}</div>
-                <div>{{ a['team-title'] }}</div>
-              </div>
+              <router-link :to="{name: 'toolbox-search', params: {query: `@${a.title}`}}">
+                <img :src="`${config.imagePrefix}/icon-${a.image}`">
+                <div>
+                  <div class="h3">{{ a.title }}</div>
+                  <div>{{ a['team-title'] }}</div>
+                </div>
+              </router-link>
             </div>
             <div class="lower" v-html="markdown(a.bio)" />
           </div>
@@ -808,6 +810,7 @@ $sidebar: 18rem;
           margin: 0 0 .1rem 0;
         }
         div {
+          color: $text;
           display: flex;
           align-items: flex-start;
           flex-direction: column;

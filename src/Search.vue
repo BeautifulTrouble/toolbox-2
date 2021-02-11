@@ -1,5 +1,6 @@
 <template>
-  <input class="search" type="text" :placeholder="`${text} 🔍`" v-model="query" ref="input" @keyup="search">
+  <input class="search" type="text" :placeholder="`${text} 🔍`" v-model="query" ref="input"
+    @focus="debounceSearch">
 </template>
 
 <script>
@@ -7,27 +8,44 @@ export default {
   name: 'Search',
   data: () => ({
     query: '',
+    debounce: null,
   }),
   props: {
     text: {type: String, default: 'Search'},
   },
   methods: {
-    search() {
+    debounceSearch() {
+      clearTimeout(this.debounce)
+      this.debounce = setTimeout(() => {
+        this.query && this.$store.dispatch('SEARCH', this.query)
+      }, 500)
+      this.updateRoute()
+    },
+    updateRoute() {
       if (this.query == this.$route.params.query) return
-      this.$router.push({
-        name: 'toolbox-search',
-        ...(this.query && {params: {query: this.query}}),
-      })
+      if (!this.query) {
+        this.$store.dispatch('SEARCH_CLEAR')
+        this.$router.push({name: 'toolbox-search'})
+      } else {
+        this.$router.push({name: 'toolbox-search', params: {query: this.query}})
+      }
+    },
+    focusInput() {
+      this.$nextTick(() => this.$refs.input.focus())
     },
   },
   watch: {
     query() {
-      this.query && this.$store.dispatch('SEARCH', this.query)
+      this.debounceSearch()
     },
+  },
+  mounted() {
+    this.focusInput()
   },
   created() {
     console.log('created', this.$route.name)
     this.query = this.$route.params.query
+    this.debounceSearch()
     // TODO: Find a smarter way to detect idle time and build the index
     //       Proposal: set a recurring timer that looks at the most recent route changes and
     //       generates the index when a) someone appears to be reading a tool or b) they're idle

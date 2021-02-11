@@ -62,6 +62,7 @@ export const store = new Vuex.Store({
     tools: [],
     toolsBySlug: {},
     searchIndices: {},
+    searchResults: [],
   },
   actions: {
     // API TOOLS
@@ -106,6 +107,9 @@ export const store = new Vuex.Store({
       context.commit('setSavedTools', tools)
     },
     // SEARCH
+    SEARCH_CLEAR(context) {
+      context.commit('setSearch', [])
+    },
     SEARCH_INDEX(context) {
       context.commit('setDebug', `Building search index for ${context.state.lang}`)
       context.commit('setSearchIndex', lunr(function() {
@@ -119,10 +123,22 @@ export const store = new Vuex.Store({
       }))
     },
     SEARCH(context, query) {
-      context.commit('setDebug', `Searching "${query}"`)
       if (!context.state.searchIndices[context.state.lang]) context.dispatch('SEARCH_INDEX')
-      let results = new Set(context.state.searchIndices[context.state.lang].search(query))
-      context.commit('setSearch', results)
+
+      // Remove query-breaking dots
+      query = query.replace(/\./g, '')
+
+      // Preprocess byline queries "@Joe Schmoe" => "+byline:Joe +byline:Schmoe"
+      if (/^@/.test(query)) {
+        let words = query.slice(1)
+        query = words.split(/\s/).map(word => `+byline:${word}`).join(' ')
+      }
+
+      context.commit('setDebug', `Searching: ${query}`)
+      context.commit('setSearch',
+        context.state.searchIndices[context.state.lang]
+          .search(query)
+          .map(r => r.ref))
     },
   },
   mutations: {
@@ -155,7 +171,7 @@ export const store = new Vuex.Store({
     },
     // SEARCH
     setSearch(state, results) {
-      state.searchResults = new Set(results)
+      state.searchResults = results
     },
     setSearchIndex(state, index) {
       state.searchIndices[state.lang] = index

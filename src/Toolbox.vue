@@ -9,9 +9,7 @@
             {{ text['site.sentence.showme'] }}
           </div>
           <div :class="{tab: true, active: activeTab == 'collection'}" @click="activeTab = 'collection'">
-            {{ $route.name == 'toolbox'
-                ? text['site.sentence.everything']
-                : text[`type.${routeCollection}${['saved', 'set', 'search'].includes(routeCollection) ? '' : '.plural'}`] }}
+            {{ collectionTab }}
           </div>
           <!-- Extra tab for regions -->
           <div v-if="routeCollection == 'story'" class="plain">
@@ -139,10 +137,7 @@
                 @click="selectTag(tag)">
                 {{ text[`tag.${tag}`] }}
               </p>
-              <span v-if="$route.params.query && $route.name == 'toolbox-search'" class="active search-tag">
-                <div>{{ text['site.search'] }}:</div>
-                <input v-model="$route.params.query">
-              </span>
+              <search ref="search" :text="text['site.search']" />
             </div>
           </transition>
         </div>
@@ -169,6 +164,7 @@
 </template>
 
 <script>
+import Search from './Search'
 import ToolTile from './ToolTile'
 import sets from './sets'
 import textByLang from './text'
@@ -189,9 +185,14 @@ export default {
   }),
   components: {
     ToolTile,
+    Search,
   },
   computed: {
     filteredToolsAllTags() {
+      if (this.$route.name == 'toolbox-search') {
+        return this.$store.state.searchResults.map(k => this.$store.state.toolsBySlug[k])
+      }
+
       let tools = this.$store.state.tools.filter(t => /(full|gallery|snapshot)/.test(t['module-type-effective']))
       if (this.routeCollection == 'saved') {
         tools = tools.filter(t => this.$store.state.savedTools.has(t.slug))
@@ -233,6 +234,12 @@ export default {
               .filter(k => /^tag\./.test(k))
               .sort((a, b) => this.text[a].localeCompare(this.text[b]))
               .map(t => t.slice(4))
+    },
+    collectionTab() {
+      if (this.$route.name == 'toolbox' || (this.$route.name == 'toolbox-search' && !this.$route.params.query)) {
+        return this.text['site.sentence.everything']
+      }
+      return this.text[`type.${this.routeCollection}${['saved', 'set', 'search'].includes(this.routeCollection) ? '' : '.plural'}`]
     },
     tagsAvailable() {
       // Tags available for the current level of filtering
@@ -280,6 +287,7 @@ export default {
     },
     selectTag(tag) {
       tag = this.$route.params.tag != tag ? tag : undefined
+      delete this.$route.params.query
       this.$router.push({
         name: [ALL, 'search'].includes(this.routeCollection) ? 'toolbox' : this.$route.name,
         params: {...this.$route.params, tag}
