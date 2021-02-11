@@ -367,7 +367,7 @@ export default {
   }
   .plain {
     flex: 1 1 auto;
-    @include breakpoint($md) {
+    @include breakpoint($md-up) {
       margin-bottom: .25rem;
     }
     @include breakpoint($sm) {
