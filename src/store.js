@@ -3,6 +3,8 @@ import Storage from 'local-storage-fallback'
 import Vue from 'vue'
 import Vuex from 'vuex'
 
+import lunr from 'lunr'
+
 import config from './config'
 
 
@@ -59,6 +61,7 @@ export const store = new Vuex.Store({
     savedTools: storageGetSavedTools(),
     tools: [],
     toolsBySlug: {},
+    searchIndices: {},
   },
   actions: {
     // API TOOLS
@@ -79,6 +82,7 @@ export const store = new Vuex.Store({
           context.commit('setLangRequested', lang)
           Axios.get(`${config.api}/modules?lang=${lang}`)
             .then(r => {
+              context.commit('deleteSearchIndex', lang)
               context.commit('setLang', [r.data, lang, true])
             })
             .catch(e => {
@@ -101,6 +105,25 @@ export const store = new Vuex.Store({
       tools.delete(slug)
       context.commit('setSavedTools', tools)
     },
+    // SEARCH
+    SEARCH_INDEX(context) {
+      context.commit('setDebug', `Building search index for ${context.state.lang}`)
+      context.commit('setSearchIndex', lunr(function() {
+        this.ref('slug')
+        this.field('title', {boost: 10})
+        this.field('byline', {boost: 5})
+        this.field('snapshot')
+        this.field('short-write-up')
+        this.field('full-write-up')
+        context.state.tools.forEach(t => this.add(t))
+      }))
+    },
+    SEARCH(context, query) {
+      context.commit('setDebug', `Searching "${query}"`)
+      if (!context.state.searchIndices[context.state.lang]) context.dispatch('SEARCH_INDEX')
+      let results = new Set(context.state.searchIndices[context.state.lang].search(query))
+      context.commit('setSearch', results)
+    },
   },
   mutations: {
     // DEBUG
@@ -109,9 +132,9 @@ export const store = new Vuex.Store({
       state.debug = s
     },
     // API TOOLS
-    setLang(state, [tools, lang, cache]) {
+    setLang(state, [tools, lang, cacheTools]) {
       Storage.setItem(keyNameLang, lang)
-      if (cache) {
+      if (cacheTools) {
         storageSetCache(lang, tools)
       }
       // Preprocess tools into more convenient forms
@@ -129,6 +152,16 @@ export const store = new Vuex.Store({
     setSavedTools(state, tools) {
       state.savedTools = tools
       storageSetSavedTools(tools)
+    },
+    // SEARCH
+    setSearch(state, results) {
+      state.searchResults = new Set(results)
+    },
+    setSearchIndex(state, index) {
+      state.searchIndices[state.lang] = index
+    },
+    deleteSearchIndex(state, lang) {
+      delete state.searchIndices[lang]
     },
   },
 })

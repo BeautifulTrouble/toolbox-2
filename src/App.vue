@@ -34,11 +34,9 @@
 </template>
 
 <script>
-import Search from './Search'
 
 export default {
   components: {
-    Search,
   },
   data: () => ({
     showSearch: false,

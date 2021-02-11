@@ -41,7 +41,7 @@ const router = new Router({
     {path: '/toolbox/theory/:tag?',         name: 'toolbox-theory', component: Toolbox},
     {path: '/toolbox/methodology/:tag?',    name: 'toolbox-methodology', component: Toolbox},
     {path: '/toolbox/saved',                name: 'toolbox-saved', component: Toolbox},
-    {path: '/toolbox/search/:query',        name: 'toolbox-search', component: Toolbox},
+    {path: '/toolbox/search/:query?',       name: 'toolbox-search', component: Toolbox},
     {path: '/toolbox/set/:set?',            name: 'toolbox-set', component: Toolbox},
     {path: '/toolbox/:tag?',                name: 'toolbox', component: Toolbox},
     {path: '/toolbox/*',                    redirect: {name: 'toolbox'}},
