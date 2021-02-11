@@ -6,7 +6,7 @@ export default {
   defaultCollection: 'andrews-list',
   errorPage: '/error',
   imagePrefix: 'https://beautifulrising.org',
-  langs: ['en', 'es', 'ar', 'pt', 'fr'],
+  langs: ['ar', 'es', 'fr', 'pt', 'en'],
   mountPoint: '#page',
   pdf: 'https://api.beautifulrising.org/pdf',
   siteDomain: 'bt.org',
