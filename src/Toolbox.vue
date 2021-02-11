@@ -443,8 +443,10 @@ export default {
 }
 .widget {
   background-color: $bggray;
-  //border-left: 1px solid white;
-  //border-top: 1px solid white;
+
+  border-left: 1px solid white;
+  border-top: 1px solid white;
+
   border-radius: 5px;
   border-right: 1px solid $bgdark2;
   line-height: 1.1;
@@ -460,8 +462,8 @@ export default {
   }
 
   .block {
-    border-left: 1px solid white;
-    border-top: 1px solid white;
+    border-right: 1px solid white;
+    border-bottom: 1px solid white;
     height: 20rem;
 
     cursor: pointer;
@@ -497,6 +499,11 @@ export default {
     }
     &.saved {
       position: relative;
+      @include breakpoint($sm) {
+        &.active {
+          border-right: unset;
+        }
+      }
       .download {
         margin-top: 1rem;
         display: flex;
@@ -608,8 +615,6 @@ export default {
     height: 20rem;
     justify-content: flex-start;
     align-items: space-between;
-    border-left: 1px solid white;
-    border-top: 1px solid white;
 
     @include breakpoint($md) {
       height: 24rem;
