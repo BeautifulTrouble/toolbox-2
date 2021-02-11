@@ -318,7 +318,7 @@ export default {
     padding-top: 10rem;
   }
   @include breakpoint($sm) {
-    padding-top: 6rem;
+    padding-top: 7.5rem;
   }
 }
 .filter-pane {
