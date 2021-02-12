@@ -146,6 +146,10 @@ Vue.mixin({
     slugify(string) {
       return string.toLowerCase().replace(/\s/ig, '-').replace(/[^-\w]/ig, '');
     },
+    toolImage(tool) {
+      let image = tool.image || `pattern-${tool.type}.jpg`
+      return `${this.config.imagePrefix}/hero-${image}`
+    },
   },
 })
 
