@@ -25,28 +25,19 @@ const router = new Router({
   //mode: 'history',
   base: '/',
   routes: [
-    // Legacy redirects
-    {path: '/story/:slug',        redirect: {name: 'tool'}},
-    {path: '/tactic/:slug',       redirect: {name: 'tool'}},
-    {path: '/principle/:slug',    redirect: {name: 'tool'}},
-    {path: '/theory/:slug',       redirect: {name: 'tool'}},
-    {path: '/methodology/:slug',  redirect: {name: 'tool'}},
     // Tool pages
     {path: '/tool',               redirect: {name: 'toolbox'}},
     {path: '/tool/:slug',         name: 'tool', component: Tool},
     // Toolbox filtering
-    {path: '/toolbox/story/:region?/:tag?', name: 'toolbox-story', component: Toolbox},
-    {path: '/toolbox/tactic/:tag?',         name: 'toolbox-tactic', component: Toolbox},
-    {path: '/toolbox/principle/:tag?',      name: 'toolbox-principle', component: Toolbox},
-    {path: '/toolbox/theory/:tag?',         name: 'toolbox-theory', component: Toolbox},
-    {path: '/toolbox/methodology/:tag?',    name: 'toolbox-methodology', component: Toolbox},
-    {path: '/toolbox/saved',                name: 'toolbox-saved', component: Toolbox},
-    {path: '/toolbox/search/:query?',       name: 'toolbox-search', component: Toolbox},
-    {path: '/toolbox/set/:set?',            name: 'toolbox-set', component: Toolbox},
-    {path: '/toolbox/:tag?',                name: 'toolbox', component: Toolbox},
-    {path: '/toolbox/*',                    redirect: {name: 'toolbox'}},
-    // Catch-all
-    {path: '/*',                  redirect: {name: 'toolbox'}},
+    {path: '/story/:region?/:tag?', name: 'toolbox-story', component: Toolbox},
+    {path: '/tactic/:tag?',         name: 'toolbox-tactic', component: Toolbox},
+    {path: '/principle/:tag?',      name: 'toolbox-principle', component: Toolbox},
+    {path: '/theory/:tag?',         name: 'toolbox-theory', component: Toolbox},
+    {path: '/methodology/:tag?',    name: 'toolbox-methodology', component: Toolbox},
+    {path: '/saved',                name: 'toolbox-saved', component: Toolbox},
+    {path: '/search/:query?',       name: 'toolbox-search', component: Toolbox},
+    {path: '/set/:set?',            name: 'toolbox-set', component: Toolbox},
+    {path: '/:tag?',                name: 'toolbox', component: Toolbox},
   ],
   scrollBehavior(to, from, savedPosition) {
     if (to.hash) {
@@ -76,16 +67,13 @@ router.beforeEach((to, from, next) => {
 
   if (languageSelectionPrefix.test(to.path)) {
     // TODO
-    console.log('A')
     let lang = to.path.slice(1,3)
     store.dispatch('LANG_SET', [lang, false])
     next({path: to.path.slice(3)})
   } else if (!store.state.lang) {
-    console.log('B')
     store.dispatch('LANG_SET', [null, false])
     next()
   } else {
-    console.log('C')
     next()
   }
 })
