@@ -77,6 +77,8 @@ export default {
     div {
       color: lighten(black, 60%);
       font-size: 1.5rem;
+      position: relative;
+      bottom: 5%;
     }
   }
 }
