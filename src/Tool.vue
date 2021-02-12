@@ -37,6 +37,13 @@
             <router-link :to="{name: `toolbox-${tool.type}`}">{{ text[`type.${tool.type}`] }}</router-link> /
             <router-link :to="{name: 'tool', params: {slug: tool.slug}}">{{ tool.title }}</router-link>
           </div>
+
+          <!-- Snapshot-only write up -->
+          <div v-if="!writeUp || moreThanASnapshotInEnglish">
+            <div :class="[moreThanASnapshotInEnglish ? 'snapshot' : 'snapshot-only']" v-html="markdown(tool['snapshot'])" />
+          </div>
+
+
           <div class="epigraphs" v-if="tool.epigraphs">
             <div v-for="(e, i) in tool.epigraphs" :key="i">
               <div class="quote" v-html="markdown(e.split(/—([^—]+)$/)[0])" />
@@ -52,11 +59,11 @@
 
           <!-- Write up -->
           <div v-if="tool.video && /youtube/.test(tool.video)">
-            <div :class="['write-up', tool['module-type-effective']]" v-html="writeUpSplit[0]" />
+            <div class="write-up" v-html="writeUpSplit[0]" />
             <youtube id="video" ref="video" :videoId="tool.video" />
-            <div :class="['write-up', tool['module-type-effective']]" v-html="writeUpSplit[1]" />
+            <div class="write-up" v-html="writeUpSplit[1]" />
           </div>
-          <div v-else :class="['write-up', tool['module-type-effective']]" v-html="writeUp" />
+          <div v-else class="write-up" v-html="writeUp" />
           <div class="clear" />
 
 
@@ -221,6 +228,9 @@ export default {
     tool() {
       return this.$store.state.toolsBySlug[this.$route.params.slug]
     },
+    moreThanASnapshotInEnglish() {
+      return (this.tool['module-type-effective'] == 'snapshot' && (this.tool['full-write-up'] || this.tool['short-write-up']))
+    },
     text() {
       return textByLang[this.$store.state.lang]
     },
@@ -233,7 +243,10 @@ export default {
       return this.writeUpAsParagraphArray.join(' ')
     },
     writeUpAsParagraphArray() {
-      let text = this.tool['full-write-up'] || this.tool['short-write-up'] || this.tool['snapshot']
+      // Weed out snapshot-only pieces by returning an empty array. This makes writeUp empty.
+      let text = this.tool['module-type-effective'] == 'gallery' ? this.tool['short-write-up'] : this.tool['full-write-up']
+      if (!text) return []
+
       text = this.markdown(text)
       // Remove outermost <p>...</p> tags, split to array on inner </p><p> junctions, and re-wrap
       let paragraphs = text.replace(/(^<p>|<\/p>$)/g, '').split(/<\/p>\s*<p>/).map(p => `<p>${p}</p>`)
@@ -554,6 +567,30 @@ $sidebar: 18rem;
     .breadcrumbs.story { color: $story; }
     .breadcrumbs.principle { color: $principle; }
     .breadcrumbs.methodology { color: $methodology; }
+    .snapshot, .snapshot-only {
+      p {
+        line-height: .9;
+        color: $text;
+        margin: 0 0 3rem 0;
+      }
+    }
+    .snapshot-only {
+      p {
+        @extend .h1;
+        width: 80%;
+        @include breakpoint($lg) {
+          width: unset;
+        }
+        @include breakpoint($lower) {
+          width: 100%;
+        }
+      }
+    }
+    .snapshot {
+      p {
+        @extend .h2;
+      }
+    }
     .epigraphs {
       margin: 0 1rem 1.5rem 1rem;
       p {
