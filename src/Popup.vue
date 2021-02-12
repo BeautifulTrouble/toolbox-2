@@ -66,7 +66,7 @@ export default {
       max-width: 2.5rem;
     }
     p {
-      margin: 0;
+      margin: 1rem 0 0 0;
     }
     .content {
       padding: .5rem 1rem;
