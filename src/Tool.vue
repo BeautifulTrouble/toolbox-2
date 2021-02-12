@@ -13,7 +13,7 @@
           <img svg-inline v-else-if="tool.type == 'story'" class="bt-icon" src="./assets/story.svg">
           <img svg-inline v-else-if="tool.type == 'principle'" class="bt-icon" src="./assets/principle.svg">
           <img svg-inline v-else-if="tool.type == 'methodology'" class="bt-icon" src="./assets/methodology.svg">
-          <div class="h3">{{ text[`type.${tool.type}`] }}</div>
+          <div class="h2">{{ text[`type.${tool.type}`] }}</div>
         </router-link>
         <div class="h1" @dblclick="openTab(tool.document_link)">{{ tool.title }}</div>
       </div>
@@ -379,7 +379,7 @@ $sidebar: 18rem;
     a {
       text-decoration: none;
     }
-    .h1, .h3 {
+    .h1, .h2 {
       text-align: center;
       text-shadow: 1px 0px 6px rgba(black, .5);
       user-select: none;
@@ -392,7 +392,7 @@ $sidebar: 18rem;
         margin: 0 1rem;
       }
     }
-    .h3 {
+    .h2 {
       margin: 0;
     }
     .edit {
@@ -573,28 +573,31 @@ $sidebar: 18rem;
     .breadcrumbs.story { color: $story; }
     .breadcrumbs.principle { color: $principle; }
     .breadcrumbs.methodology { color: $methodology; }
-    .snapshot, .snapshot-only {
-      p {
-        line-height: .9;
-        color: $text;
-        margin: 0 0 3rem 0;
-      }
-    }
     .snapshot-only {
       p {
         @extend .h1;
         width: 80%;
+        line-height: .9;
+        color: $text;
+        margin: 2rem 0;
         @include breakpoint($lg) {
           width: unset;
         }
         @include breakpoint($lower) {
           width: 100%;
         }
+        @include breakpoint($sm) {
+          font-size: 1.6rem; // h2
+          margin: 0;
+        }
       }
     }
     .snapshot {
       p {
         @extend .h2;
+        line-height: .9;
+        color: $text;
+        margin: 1.5rem 0;
       }
     }
     .epigraphs {
