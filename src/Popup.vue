@@ -65,7 +65,7 @@ export default {
       max-height: 2.5rem;
       max-width: 2.5rem;
     }
-    .h3, p {
+    p {
       margin: 0;
     }
     .content {
