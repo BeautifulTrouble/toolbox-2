@@ -4,7 +4,7 @@
     <div v-if="tool"
       @click="$router.push({name: 'tool', params: {slug: tool.slug}})"
       :class="{'tool-tile-image': true, [`hover-${tool.type}`]: true}"
-      v-lazy:background-image="image">
+      v-lazy:background-image="tool['tile-image']">
       <div :class="['upper', `bg-${tool.type}`]">
         <div>
           <img svg-inline v-if="tool.type == 'tactic'" class="bt-icon" src="./assets/tactic-inverse.svg">
@@ -65,11 +65,6 @@ export default {
     tool: {type: Object, default: null},
     text: {type: Object, default: null},
     alt: {type: String, default: ''},
-  },
-  computed: {
-    image() {
-      return this.toolImage(this.tool, 'tile')
-    },
   },
 };
 </script>

@@ -1,7 +1,7 @@
 <template>
   <div v-if="tool" :class="['tool', tool.type]" @click="handleLink">
     <!-- Use VueLazyImageLoading for fade-in effect on load -->
-    <lazy-background position="50% 0%" no-ratio :blur="0" :src="image"
+    <lazy-background position="50% 0%" no-ratio :blur="0" :src="tool['hero-image']"
       placeholder="data:image/gif;base64,R0lGODlhAQABAIAAAAUEBAAAACwAAAAAAQABAAACAkQBADs=">
     </lazy-background>
 
@@ -237,9 +237,6 @@ export default {
       let slugs = new Set()
       Object.values(this.tool['key-modules'] || []).forEach(a => a.forEach(i => slugs.add(i[2])))
       return slugs
-    },
-    image() {
-      return this.toolImage(this.tool)
     },
     writeUp() {
       return this.writeUpAsParagraphArray.join(' ')

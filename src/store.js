@@ -160,7 +160,7 @@ export const store = new Vuex.Store({
       state.toolsBySlug = Object.fromEntries(tools.map(t => [t.slug, t]))
 
       // Sort such that untranslated tools come last
-      state.tools = tools.sort((a, b) => {
+      tools = tools.sort((a, b) => {
         let compareTranslated = (a, b) => {
           let aT = a['module-type-effective']
           let bT = b['module-type-effective']
@@ -178,6 +178,14 @@ export const store = new Vuex.Store({
         return compareTranslated(a, b) || compareName(a, b)
       })
 
+      // Ensure every snapshot has an image
+      tools.forEach(t => {
+        let image = t.image || `pattern-${t.type}.jpg`
+        t['hero-image'] = `${config.imagePrefix}/hero-${image}`
+        t['tile-image'] = `${config.imagePrefix}/tile-${image}`
+      })
+
+      state.tools = tools
       state.lang = lang
       state.langRequested = null
       console.debug(`got tools e.g.`, state.tools[1].title)
