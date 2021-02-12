@@ -68,7 +68,7 @@ export default {
   },
   computed: {
     image() {
-      return this.toolImage(this.tool)
+      return this.toolImage(this.tool, 'tile')
     },
   },
 };
