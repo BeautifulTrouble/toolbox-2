@@ -39,8 +39,8 @@
           </div>
           <div class="epigraphs" v-if="tool.epigraphs">
             <div v-for="(e, i) in tool.epigraphs" :key="i">
-              <div class="quote" v-html="markdown(e.replace(/(—[^—]+)$/g, ''))" />
-              <div class="attribution" v-html="markdown(e.replace(/^([^—]+)/g, ''))" />
+              <div class="quote" v-html="markdown(e.split(/—([^—]+)$/)[0])" />
+              <div class="attribution" v-html="markdown(e.split(/—([^—]+)$/)[1])" />
             </div>
           </div>
           <div class="origins" v-if="tool.origins">
@@ -557,7 +557,6 @@ $sidebar: 18rem;
     .epigraphs {
       margin: 0 1rem 1.5rem 1rem;
       p {
-        margin: 0;
         font-size: .9rem;
         font-style: italic;
       }
