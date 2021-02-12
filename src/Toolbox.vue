@@ -35,7 +35,7 @@
       </div>
 
       <!-- FILTER WIDGET -->
-      <div :class="{'widget-wrapper': true, 'mobile-hidden': activeTab == 'tag' && hideTags}">
+      <div :class="{'widget-wrapper': true, 'mobile-hidden': activeTab == 'tag' && hideTagsOnMobile}">
         <div class="widget">
           <transition name="fade" mode="out-in">
 
@@ -165,7 +165,7 @@ export default {
   data: () => ({
     ALL,
     activeTab: 'collection',
-    hideTags: true,
+    hideTagsOnMobile: true,
     regions: ['africa', 'asia', 'europe', 'latin-america-and-the-caribbean', 'middle-east', 'north-america', 'oceania'],
     sets, // hard-coded in sets.json, GOTO: mise-en-place.py
     types: ['story', 'tactic', 'principle', 'theory', 'methodology'],
@@ -262,7 +262,7 @@ export default {
     },
     clickTagTab() { // A minor kludge to support initially hidden tags on mobile
       this.activeTab = this.routeCollection == 'set' ? 'set' : 'tag'
-      this.hideTags = !this.hideTags
+      this.hideTagsOnMobile = !this.hideTagsOnMobile
     },
     selectCollection(collection) {
       let name = `toolbox-${collection}`
@@ -297,10 +297,9 @@ export default {
         return next({name: 'toolbox', replace: true})
 
       // Set an appropriate activeTab (one of: collection, region, set, tag)
-      if (region || tag) { // Why is region here (used to be: query||region||tag)
-        console.log('region or tag')
+      if (region || tag) { // Why is region here? (used to be: query||region||tag)
         this.activeTab = 'tag'
-        this.hideTags = true
+        this.hideTagsOnMobile = true
       } else if (route.name == 'toolbox-search') {
         this.activeTab = 'tag'
       } else if (this.routeCollection == 'set') {
@@ -311,7 +310,7 @@ export default {
         this.activeTab = 'collection'
       } else {
         this.activeTab = 'tag'
-        this.hideTags = true
+        this.hideTagsOnMobile = true
       }
       next()
     },
