@@ -266,14 +266,21 @@ export default {
     },
     randomRelated() {
       // TODO use keySlugs
+      let tbs = this.$store.state.toolsBySlug
+
       return Object.fromEntries(
         Object.keys(this.types)
           .filter(T => (this.tool[this.types[T]] || []).length)
           .map(T => {
-            // this.types.forEach
             let slugs = this.tool[this.types[T]]
-            let indices = new Set([...Array(slugs.length).keys()].sort(() => 0.5 - Math.random()).slice(0, 5))
-            return [T, slugs.map((s, i) => [s, indices.has(i)])]
+            let chosenIndices = new Set([...Array(slugs.length).keys()].sort(() => 0.5 - Math.random()).slice(0, 5))
+            return [T, slugs
+                        .map((s, i) => [s, chosenIndices.has(i)])
+                        .sort((a, b) => {
+                          if (tbs[a[0]].title > tbs[b[0]].title) return 1
+                          if (tbs[a[0]].title < tbs[b[0]].title) return -1
+                          return 0
+                        })]
           })
       )
     },
