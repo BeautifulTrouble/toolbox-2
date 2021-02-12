@@ -113,7 +113,7 @@
                 @click="selectSet(slug)">
                 <img svg-inline class="bt-icon set" src="./assets/set.svg">
                 <div class="h3 set">{{ text[`set.${slug}`] }}</div>
-                <p>{{ text[`set.${slug}.description`] }}</p>
+                <div v-html="markdown(text[`set.${slug}.description`])" />
               </div>
             </div>
 
