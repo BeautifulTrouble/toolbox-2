@@ -243,6 +243,9 @@ export default {
     },
     tagsAvailable() {
       // Tags available for the current level of filtering
+      if (this.$route.name == 'toolbox-search' && this.$route.params.query) {
+        return this.validTags
+      }
       return this.filteredToolsAllTags
         .map(t => t.tags)
         .reduce((a, c) => c !== undefined ? new Set([...a, ...c]) : a, new Set([]))

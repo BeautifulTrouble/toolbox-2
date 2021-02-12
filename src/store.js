@@ -83,6 +83,9 @@ export const store = new Vuex.Store({
           context.commit('setLangRequested', lang)
           Axios.get(`${config.api}/modules?lang=${lang}`)
             .then(r => {
+              // TODO: although this clears the search RESULTS after a lang change, the search FIELD
+              //       remains populated, and this could be confusing to a user
+              context.dispatch('SEARCH_CLEAR')
               context.commit('deleteSearchIndex', lang)
               context.commit('setLang', [r.data, lang, true])
             })

@@ -1,5 +1,5 @@
 <template>
-  <input class="search" type="text" :placeholder="`${text} 🔍`" v-model="query" ref="input"
+  <input class="search" type="search" :placeholder="`${text} 🔍`" v-model="query" ref="input"
     @focus="debounceSearch">
 </template>
 
@@ -18,8 +18,8 @@ export default {
       clearTimeout(this.debounce)
       this.debounce = setTimeout(() => {
         this.query && this.$store.dispatch('SEARCH', this.query)
-      }, 500)
-      this.updateRoute()
+        this.updateRoute()
+      }, 750)
     },
     updateRoute() {
       if (this.query == this.$route.params.query) return
@@ -58,7 +58,7 @@ export default {
 <style lang="scss">
 @import 'common.scss';
 
-input[type="text"].search {
+input[type=search].search {
   cursor: pointer;
   margin-top: .4rem;
   width: unset;
@@ -77,6 +77,9 @@ input[type="text"].search {
   }
   &::-webkit-input-placeholder {
     color: $bgdark2;
+  }
+  &::-webkit-search-cancel-button {
+    color: $text;
   }
   &:focus {
     outline: 2px solid $text;
