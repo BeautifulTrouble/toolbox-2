@@ -24,18 +24,18 @@
           </div>
           <div v-if="routeCollection != 'saved'"
             :class="{tab: true, active: ['tag', 'set'].includes(activeTab)}"
-            @click="activeTab = routeCollection == 'set' ? 'set' : 'tag'">
+            @click="clickTagTab">
             {{ ($route.params.tag && text[`tag.${routeTag}`])
               || (routeCollection == 'set' && text[`set.${routeSet}`])
               || $route.params.query
-              || text['site.sentence.everything'] }}
+              || text['site.sentence.everything'] }} 🔍
           </div>
           <img v-if="routeCollection != ALL || routeTag != ALL" svg-inline class="bt-icon reset" src="./assets/reset.svg" :alt="text['site.sentence.reset']" @click="resetFilter">
         </div>
       </div>
 
       <!-- FILTER WIDGET -->
-      <div class="widget-wrapper">
+      <div :class="{'widget-wrapper': true, 'mobile-hidden': activeTab == 'tag' && hideTags}">
         <div class="widget">
           <transition name="fade" mode="out-in">
 
@@ -57,8 +57,8 @@
                 <p>{{ text['type.set.description'] }}</p>
               </div>
 
+              <!-- mobile-only -->
               <div :class="{block: true, saved: true, active: routeCollection == 'saved', 'mobile-only': true}"
-                v-scroll-to="scroll"
                 @click="selectCollection('saved')">
                 <img svg-inline class="bt-icon" src="./assets/favorite-active.svg">
                 <div class="h3">{{ text['type.saved'] }}</div>
@@ -72,6 +72,7 @@
                   <div>{{ text['site.downloadpdf'] }}</div>
                 </span>
               </div>
+              <!-- mobile-hidden -->
               <div :class="{block: true, saved: true, active: routeCollection == 'saved', 'mobile-hidden': true}" @click="selectCollection('saved')">
                 <img svg-inline class="bt-icon" src="./assets/favorite-active.svg">
                 <div class="h3">{{ text['type.saved'] }}</div>
@@ -107,16 +108,8 @@
 
             <!-- BY SET -->
             <div class="by by-set" v-if="activeTab == 'set'">
-              <div v-for="(set, slug) in sets" :key="slug + 'mobile'"
-                :class="{block: true, set: true, [slug]: true, active: routeSet == slug, 'mobile-only': true}"
-                v-scroll-to="scroll"
-                @click="selectSet(slug)">
-                <img svg-inline class="bt-icon set" src="./assets/set.svg">
-                <div class="h3 set">{{ text[`set.${slug}`] }}</div>
-                <p>{{ text[`set.${slug}.description`] }}</p>
-              </div>
               <div v-for="(set, slug) in sets" :key="slug"
-                :class="{block: true, set: true, [slug]: true, active: routeSet == slug, 'mobile-hidden': true}"
+                :class="{block: true, set: true, [slug]: true, active: routeSet == slug}"
                 @click="selectSet(slug)">
                 <img svg-inline class="bt-icon set" src="./assets/set.svg">
                 <div class="h3 set">{{ text[`set.${slug}`] }}</div>
@@ -125,15 +118,9 @@
             </div>
 
             <!-- BY TAG -->
-            <div class="by by-tag" v-if="activeTab == 'tag'" :key="'tag'">
-              <p v-for="(tag, i) in sortedTags" :key="i + 'mobile'"
-                :class="{active: routeTag == tag, disabled: !tagsAvailable.has(tag), 'mobile-only': true}"
-                v-scroll-to="scroll"
-                @click="selectTag(tag)">
-                {{ text[`tag.${tag}`] }}
-              </p>
+            <div v-if="activeTab == 'tag'" :key="'tag'" class="by by-tag">
               <p v-for="(tag, i) in sortedTags" :key="i"
-                :class="{active: routeTag == tag, disabled: !tagsAvailable.has(tag), 'mobile-hidden': true}"
+                :class="{active: routeTag == tag, disabled: !tagsAvailable.has(tag)}"
                 @click="selectTag(tag)">
                 {{ text[`tag.${tag}`] }}
               </p>
@@ -178,8 +165,8 @@ export default {
   data: () => ({
     ALL,
     activeTab: 'collection',
+    hideTags: true,
     regions: ['africa', 'asia', 'europe', 'latin-america-and-the-caribbean', 'middle-east', 'north-america', 'oceania'],
-    scroll: {el: '.tools', duration: 750, offset: -100},
     sets, // hard-coded in sets.json, GOTO: mise-en-place.py
     types: ['story', 'tactic', 'principle', 'theory', 'methodology'],
   }),
@@ -273,6 +260,10 @@ export default {
       this.activeTab = 'collection'
       this.$router.push({name: 'toolbox'})
     },
+    clickTagTab() { // A minor kludge to support initially hidden tags on mobile
+      this.activeTab = this.routeCollection == 'set' ? 'set' : 'tag'
+      this.hideTags = !this.hideTags
+    },
     selectCollection(collection) {
       let name = `toolbox-${collection}`
       if (this.$route.name != name)
@@ -306,7 +297,11 @@ export default {
         return next({name: 'toolbox', replace: true})
 
       // Set an appropriate activeTab (one of: collection, region, set, tag)
-      if (query || region || tag) {
+      if (region || tag) { // Why is region here (used to be: query||region||tag)
+        console.log('region or tag')
+        this.activeTab = 'tag'
+        this.hideTags = true
+      } else if (route.name == 'toolbox-search') {
         this.activeTab = 'tag'
       } else if (this.routeCollection == 'set') {
         this.activeTab = 'set'
@@ -316,6 +311,7 @@ export default {
         this.activeTab = 'collection'
       } else {
         this.activeTab = 'tag'
+        this.hideTags = true
       }
       next()
     },
@@ -580,14 +576,14 @@ export default {
           display: none;
         }
         .h3 {
-          flex: 0 0 70%;
+          flex: 0 0 65%;
           text-align: left;
         }
         /* Before hiding the paragraphs
         &:nth-of-type(5) {
           flex: 1 0 100%;
           p {
-            max-width: 70%;
+            max-width: 65%;
           }
         }
         */
@@ -677,8 +673,8 @@ export default {
       max-height: 3rem;
     }
     @include breakpoint($sm) {
-      //margin: .25rem 0 0 0;
-      margin: 0 .5rem 0 0;
+      max-height: 3rem;
+      margin: .25rem .5rem;
     }
   }
 }
