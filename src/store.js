@@ -159,7 +159,25 @@ export const store = new Vuex.Store({
       // Preprocess tools into more convenient forms
       state.toolsBySlug = Object.fromEntries(tools.map(t => [t.slug, t]))
 
-      state.tools = tools
+      // Sort such that untranslated tools come last
+      state.tools = tools.sort((a, b) => {
+        let compareTranslated = (a, b) => {
+          let aT = a['module-type-effective']
+          let bT = b['module-type-effective']
+          if (aT == 'untranslated' && bT != 'untranslated') return 1
+          if (bT == 'untranslated' && aT != 'untranslated') return -1
+          return 0
+        }
+        let compareName = (a, b) => {
+          let at = a['title']
+          let bt = b['title']
+          if (at > bt) return 1
+          if (bt < at) return -1
+          return 0
+        }
+        return compareTranslated(a, b) || compareName(a, b)
+      })
+
       state.lang = lang
       state.langRequested = null
       console.debug(`got tools e.g.`, state.tools[1].title)

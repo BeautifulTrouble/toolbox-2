@@ -180,7 +180,8 @@ export default {
         return this.$store.state.searchResults.map(k => this.$store.state.toolsBySlug[k])
       }
 
-      let tools = this.$store.state.tools.filter(t => /(full|gallery|snapshot)/.test(t['module-type-effective']))
+      //let tools = this.$store.state.tools.filter(t => /(full|gallery|snapshot)/.test(t['module-type-effective']))
+      let tools = this.$store.state.tools
       if (this.routeCollection == 'saved') {
         tools = tools.filter(t => this.$store.state.savedTools.has(t.slug))
       } else if (this.routeCollection == 'set') {
