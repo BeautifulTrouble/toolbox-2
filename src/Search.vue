@@ -43,7 +43,6 @@ export default {
     this.focusInput()
   },
   created() {
-    console.log('created', this.$route.name)
     this.query = this.$route.params.query
     this.debounceSearch()
     // TODO: Find a smarter way to detect idle time and build the index
