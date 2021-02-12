@@ -112,7 +112,7 @@ export default {
   .snapshot {
     opacity: 0;
     padding: 0 1rem;
-    transition: opacity .2s;
+    transition: opacity .1s;
     p {
       margin: 0;
       //line-height: 1.1;
@@ -205,7 +205,7 @@ export default {
   background-repeat: no-repeat;
   background-position: top left;
   background-size: cover;
-  transition: opacity .1s linear, filter .2s;
+  transition: opacity .1s linear;
   height: 100%;
   position: relative;
   &::after { // Dark gradient
@@ -214,12 +214,11 @@ export default {
     top: 0; left: 0;
     bottom: 0; right: 0;
     background: linear-gradient(0deg, rgba(0,0,0,0) 0%, rgba(0,0,0,.7) 90%, rgba(0,0,0,1) 100%);
-    transition: background .2 linear;
+    transition: background .1 linear;
     pointer-events: none; // Allow the heart icon to work
   }
   &[lazy="loading"] {
     opacity: 0;
-    filter: saturate(0);
   }
   &[lazy="loaded"] {
     opacity: 1;
