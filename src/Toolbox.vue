@@ -287,7 +287,7 @@ export default {
         params: {...this.$route.params, tag}
       })
     },
-    guardRoute(route, next) {
+    guardRoute(route, next) { // eslint-disable-next-line
       let { query, region, set, tag } = route.params
 
       // Reject invalid regions, tags, or sets. Fall back to top-level toolbox.
