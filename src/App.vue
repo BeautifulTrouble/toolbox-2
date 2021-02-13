@@ -28,7 +28,9 @@
     -->
 
     <back-to-top bottom="1rem" right="1rem">
-      <button type="button" class="btn-to-top"><div>▲</div></button>
+      <button type="button" class="btn-to-top">
+        <img svg-inline src="./assets/caret.svg">
+      </button>
     </back-to-top>
   </div>
 </template>
@@ -74,11 +76,9 @@ export default {
     background: white;
     opacity: .5;
     box-shadow: 0 0 2rem lighten(black, 50%);
-    div {
-      color: lighten(black, 60%);
-      font-size: 1.5rem;
-      position: relative;
-      bottom: 5%;
+    svg {
+      max-height: 1rem;
+      fill: rgba(0,0,0,.4);
     }
   }
 }
