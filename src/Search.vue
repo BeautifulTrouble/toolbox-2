@@ -39,9 +39,6 @@ export default {
       this.debounceSearch()
     },
   },
-  mounted() {
-    this.focusInput()
-  },
   created() {
     this.query = this.$route.params.query
     this.debounceSearch()
@@ -64,15 +61,17 @@ input[type=search].search {
   color: $text;
   font-size: .9rem;
   border: 1px solid $bgdark3;
+  border-radius: 3px;
   background: white;
 
   @include breakpoint($md) {
     font-size: .8rem;
   }
   @include breakpoint($sm) {
-    margin-inline-start: -1rem;
-    margin-inline-end: -2rem;
-    max-width: 55%;
+    padding: .5rem;
+    margin-inline-start: -.5rem;
+    margin-inline-end: -1.5rem;
+    max-width: 50%;
   }
   &::-webkit-input-placeholder {
     color: $bgdark2;
@@ -82,6 +81,7 @@ input[type=search].search {
   }
   &:focus {
     outline: 2px solid $text;
+    outline-offset: 0;
   }
 }
 
