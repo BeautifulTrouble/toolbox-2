@@ -262,8 +262,13 @@ export default {
       this.$router.push({name: 'toolbox'})
     },
     clickTagTab() { // A minor kludge to support initially hidden tags on mobile
+      let oldActiveTab = this.activeTab
       this.activeTab = this.routeCollection == 'set' ? 'set' : 'tag'
-      this.hideTagsOnMobile = !this.hideTagsOnMobile
+      if (oldActiveTab == this.activeTab) {
+        this.hideTagsOnMobile = !this.hideTagsOnMobile
+      } else {
+        this.hideTagsOnMobile = false
+      }
     },
     selectCollection(collection) {
       let name = `toolbox-${collection}`
@@ -298,6 +303,7 @@ export default {
         return next({name: 'toolbox', replace: true})
 
       // Set an appropriate activeTab (one of: collection, region, set, tag)
+      // When activeTab is set by the route guard, tags are ALWAYS hidden
       if (region || tag) { // Why is region here? (used to be: query||region||tag)
         this.activeTab = 'tag'
         this.hideTagsOnMobile = true
@@ -621,7 +627,7 @@ export default {
     flex-direction: column;
     height: 20rem;
     justify-content: flex-start;
-    align-items: space-between;
+    align-items: flex-start; // Don't expand to fill width (avoids stray taps)
 
     @include breakpoint($md) {
       height: 24rem;
