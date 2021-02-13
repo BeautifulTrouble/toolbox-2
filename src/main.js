@@ -37,6 +37,7 @@ const router = new Router({
     {path: '/saved',                name: 'toolbox-saved', component: Toolbox},
     {path: '/search/:query?',       name: 'toolbox-search', component: Toolbox},
     {path: '/set/:set?',            name: 'toolbox-set', component: Toolbox},
+    {path: '',                      redirect: {name: 'toolbox'}},
     {path: '/:tag?',                name: 'toolbox', component: Toolbox},
   ],
   scrollBehavior(to, from, savedPosition) {
