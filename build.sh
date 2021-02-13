@@ -1,11 +1,18 @@
 #!/bin/bash
 
-FILE=toolbox.js
-[[ "${!#}" =~ "dev" ]] && FILE=toolbox-develop.js
-
 cd "$(dirname "$(realpath "$0")")"
 #cd src && ./mise-en-place.py && cd ..
 
-if yarn build; then
-    rsync -zvcP bt/toolbox.js "develop.beautifultrouble.org:develop.beautifultrouble.org/${FILE}"
+HOST=develop.beautifultrouble.org
+LFILE=bt/toolbox.js
+RFILE=develop.beautifultrouble.org/toolbox.js
+SCRIPT=build
+
+if [ "${!#}" = "develop" ]; then
+    RFILE=develop.beautifultrouble.org/toolbox-develop.js
+    SCRIPT=build-develop
+fi
+
+if yarn ${SCRIPT}; then
+    rsync -vzaP "${LFILE}" "${HOST}:${RFILE}"
 fi
