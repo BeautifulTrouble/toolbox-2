@@ -149,11 +149,6 @@ html {
   box-sizing: border-box;
 }
 body {
-  background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba($bggray,.3) 60%, rgba($bggray,1) 100%);
-  background-size: contain;
-  background-attachment: fixed;
-  background-repeat: no-repeat; //Which browser needs this?
-
   margin: 0;
   color: $text;
   font-family: aktiv-grotesk, sans-serif;
