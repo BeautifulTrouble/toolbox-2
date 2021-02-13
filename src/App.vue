@@ -13,20 +13,6 @@
         @click="$store.dispatch('LANG_SET', [lang, false])">{{ lang.toUpperCase() }}</span>
     </div>
 
-    <!--
-    <div class="lookup">
-      <router-link to="/toolbox/saved" :class="{saved: true, moved: showSearch}">
-        <span>MY TOOLS</span>
-        <img svg-inline class="bt-icon favorite" src="./assets/favorite-active.svg">
-        <span v-if="$store.state.savedTools.size" class="count">{{ $store.state.savedTools.size }}</span>
-      </router-link>
-      <transition name="fade">
-        <search v-show="showSearch" ref="search" />
-      </transition>
-      <img svg-inline @click="toggleSearch" class="bt-icon" src="./assets/search.svg">
-    </div>
-    -->
-
     <back-to-top bottom="1rem" right="1rem">
       <button type="button" class="btn-to-top">
         <img svg-inline src="./assets/caret.svg">
@@ -62,6 +48,21 @@ export default {
 .header-announcement-bar-wrapper::after {
   display: none; // Hide fake Squarespace language button
 }
+.langs {
+  font-family: 'ff-good-headline-web-pro-condensed';
+  font-size: 1.1rem;
+  font-weight: 300;
+  cursor: pointer;
+  position: fixed;
+  top: 0; right: 0;
+  z-index: 10;
+  span {
+    padding: 0 .5rem;
+    color: white;
+    &.router-link-active {
+    }
+  }
+}
 .btn-to-top {
   display: none;
   @include breakpoint($sm) {
@@ -82,64 +83,4 @@ export default {
     }
   }
 }
-.langs {
-  font-family: 'ff-good-headline-web-pro-condensed';
-  font-size: 1.1rem;
-  font-weight: 300;
-  cursor: pointer;
-  position: fixed;
-  top: 0; right: 0;
-  z-index: 10;
-  span {
-    padding: 0 .5rem;
-    color: white;
-    &.router-link-active {
-    }
-  }
-}
-.lookup {
-  background: black;
-  z-index: 1;
-  display: flex;
-  align-items: center;
-  color: white;
-  .saved {
-    position: relative;
-    display: flex;
-    align-items: center;
-    transition: .2s;
-    position: absolute;
-    right: 5rem;
-    &.moved {
-      right: 28rem; // TODO: couple this with the search widget size
-    }
-    .rtl & {
-      right: unset;
-      left: 5rem;
-      &.moved {
-        left: 28rem;
-      }
-    }
-  }
-  .bt-icon {
-    max-width: 3rem;
-    padding: .5rem;
-    fill: white;
-    cursor: pointer;
-  }
-  .count {
-    top: 25%; right: 0;
-    position: absolute;
-    background: black;
-    padding: .1rem .25rem;
-    font-weight: normal;
-  }
-}
-@include breakpoint($upper) {
-  .lookup a:hover {
-    text-decoration: underline;
-  }
-}
-
-
 </style>
