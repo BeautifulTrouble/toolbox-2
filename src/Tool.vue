@@ -283,14 +283,17 @@ export default {
           })
       )
     },
+    shareUrl() {
+      return `https://beautifultrouble.org/toolbox/#/${this.$store.state.lang}/tool/${this.tool.slug}`
+    },
     shareUrlEmail() {
-      return `mailto:?subject=${this.text['type.' + this.tool.type]}: ${this.tool.title}&body=${this.tool.snapshot}${crlf}${crlf}${this.config.siteUrl}/${this.$store.state.lang}/${this.tool.slug}`
+      return `mailto:?subject=${this.text['type.' + this.tool.type]}: ${this.tool.title}&body=${this.tool.snapshot}${crlf}${crlf}${this.shareUrl}`
     },
     shareUrlFacebook() {
-      return `https://facebook.com/sharer/sharer.php?u=${this.config.siteUrl}/${this.$store.state.lang}/${this.tool.slug}`
+      return `https://facebook.com/sharer/sharer.php?u=${this.shareUrl}`
     },
     shareUrlTwitter() {
-      return `https://twitter.com/intent/tweet?text=${this.tool.title}&url=${this.config.siteUrl}/${this.$store.state.lang}/${this.tool.slug}`
+      return `https://twitter.com/intent/tweet?text=${this.tool.title}&url=${this.shareUrl}`
     },
   },
   methods: {
