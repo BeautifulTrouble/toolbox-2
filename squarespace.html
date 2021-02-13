@@ -1,0 +1,48 @@
+<!-- Add to header -->
+<script>
+// Increment Toolbox.urlId with each update
+window.Toolbox = {
+	enable: true,
+	evergreen: true,
+	url: 'https://develop.beautifultrouble.org/toolbox.js',
+	urlId: 2
+};
+</script>
+
+
+
+<!-- Add to page -->
+<script>
+(() => {
+	/* This code expects the following in the site header:
+
+		window.Toolbox = {
+			enable: true,
+			evergreen: false,
+			url: 'https://example.com/toolbox.js',
+			urlId: 1
+		};
+
+	*/
+	if (!(window.Toolbox && window.Toolbox.enable)) return;
+
+	// Attempt to enforce a trailing slash
+	try {
+		let url = new URL(window.location);
+		url.pathname = url.pathname.replace(/([^/])$/, '$1/');
+		window.history.replaceState(null, null, url);
+	} catch(e) { }
+
+	// Load the script with a fixed or random id to control caching
+	let script = document.createElement('script');
+	if (window.Toolbox.evergreen) {
+		script.setAttribute('src', `${window.Toolbox.url}?id=${Math.random().toString(36).substring(7)}`);
+		console.info('Loading toolbox: evergreen');
+	} else {
+		script.setAttribute('src', `${window.Toolbox.url}?id=${window.Toolbox.urlId}`);
+		console.info('Loading toolbox:', window.Toolbox.urlId);
+	}
+	document.head.appendChild(script);
+
+})();
+</script>
