@@ -264,6 +264,7 @@ export default {
     clickTagTab() { // A minor kludge to support initially hidden tags on mobile
       let oldActiveTab = this.activeTab
       this.activeTab = this.routeCollection == 'set' ? 'set' : 'tag'
+      // If tab is already active, toggle it, otherwise make it visible
       if (oldActiveTab == this.activeTab) {
         this.hideTagsOnMobile = !this.hideTagsOnMobile
       } else {

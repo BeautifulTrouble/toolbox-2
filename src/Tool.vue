@@ -322,6 +322,12 @@ export default {
       if (this.tool && this.tool.authors)
         this.tool.authors.map(a => this.$http.get(`${this.config.api}/person/${a}?lang=${this.$store.state.lang}`)
                                      .then(r => this.authors.push(r.data)))
+      // For non-existent tools, attempt a slug search (it's all we've got)
+      // TODO: when search is pre-calculated on the server, perform an english search of the slug mapped to active lang
+      if (!this.tool) this.$router.push({
+          name: 'toolbox-search',
+          params: {query: this.$route.params.slug.replace(/-/g, ' ')},
+        })
     },
   },
   watch: {
