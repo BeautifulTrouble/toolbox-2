@@ -106,13 +106,13 @@ $ss-mobile-header: "only screen and (pointer: coarse) and (max-width: 1024px), s
 @if $NODE_ENV == 'development' {
   @font-face {
       font-family: 'aktiv-grotesk';
-      src: url('aktiv-grotesk.woff2') format('woff2');
+      src: url('assets/aktiv-grotesk.woff2') format('woff2');
       font-weight: normal;
       font-style: normal;
   }
   @font-face {
       font-family: 'ff-good-headline-web-pro-condensed';
-      src: url('good-headline-pro.woff2') format('woff2');
+      src: url('assets/good-headline-pro.woff2') format('woff2');
       font-weight: 700;
       font-style: normal;
   }
