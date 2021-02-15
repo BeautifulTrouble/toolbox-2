@@ -8,7 +8,7 @@ LFILE=bt/toolbox.js
 RFILE=develop.beautifultrouble.org/toolbox.js
 SCRIPT=build
 
-if [ "${!#}" = "develop" ]; then
+if [[ "${!#}" =~ "dev" ]]; then
     RFILE=develop.beautifultrouble.org/toolbox-develop.js
     SCRIPT=build-develop
 fi
