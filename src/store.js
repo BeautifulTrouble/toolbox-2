@@ -72,13 +72,12 @@ export const store = new Vuex.Store({
         lang = Storage.getItem(keyNameLang) || navigator.language.slice(0,2)
       }
       // If language isn't already set and there's no outstanding request for this language already
-      if (context.state.lang != lang && context.state.langRequested != lang) {
+      if (forceReload || context.state.lang != lang && context.state.langRequested != lang) {
         let cache = storageGetCache(lang)
         if (cache && !forceReload) {
           console.debug('using cached tools')
           context.commit('setLang', [cache, lang, false])
         } else {
-          // TODO: When not on a toolbox page, maybe defer this.
           console.debug('fetching fresh tools')
           context.commit('setLangRequested', lang)
           Axios.get(`${config.api}/modules?lang=${lang}`)
@@ -188,7 +187,6 @@ export const store = new Vuex.Store({
       state.tools = tools
       state.lang = lang
       state.langRequested = null
-      console.debug(`got tools e.g.`, state.tools[1].title)
     },
     setLangRequested(state, lang) {
       state.langRequested = lang
