@@ -239,7 +239,7 @@ export default {
         .reduce((a, c) => c !== undefined ? new Set([...a, ...c]) : a, new Set([]))
     },
     text() {
-      return textByLang[this.$store.state.lang]
+      return textByLang[this.$store.state.lang] || {}
     },
     validRegions() {
       return new Set([ALL, ...this.regions])
