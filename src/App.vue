@@ -3,6 +3,7 @@
     <!-- TODO: loading animation
     <div v-if="$store.state.langRequested">Loading...</div>
     -->
+
     <transition name="fade" mode="out-in">
       <router-view/>
     </transition>
@@ -42,6 +43,7 @@ export default {
 @import 'common.scss';
 
 #app {
+  min-height: 75vh;
   // Squarespace makes this complicated (additional spacing is added to the toolbox)
   margin-top: 6vmax;
 }
