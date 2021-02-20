@@ -327,7 +327,7 @@ export default {
                                      .then(r => this.authors.push(r.data)))
       // For non-existent tools, attempt a slug search (it's all we've got)
       // TODO: when search is pre-calculated on the server, perform an english search of the slug mapped to active lang
-      if (!this.tool) this.$router.push({
+      if (this.$store.state.tools.length && !this.tool) this.$router.push({
           name: 'toolbox-search',
           params: {query: this.$route.params.slug.replace(/-/g, ' ')},
         })
