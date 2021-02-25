@@ -53,7 +53,8 @@ export default {
       border-right: .75rem solid transparent;
       position: absolute;
       transition: all .2s ease-out;
-      transform: scaleY(-1);
+      //transform: scaleY(-1);
+      transform: rotate(90deg);
     }
     .rtl &::after {
       right: unset; left: 2rem;
@@ -61,7 +62,8 @@ export default {
   }
   .h4.open::after {
     top: 1.5rem;
-    transform: scaleY(1);
+    //transform: scaleY(1);
+    transform: rotate(180deg);
   }
   .content {
     position: relative;

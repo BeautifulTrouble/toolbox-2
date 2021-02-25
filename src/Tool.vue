@@ -741,15 +741,18 @@ $sidebar: 18rem;
           width: 3rem;
           cursor: pointer;
           &.open::after {
-            transform: scaleY(-1);
+            //transform: scaleY(-1);
+            transform: rotate(180deg);
+            top: .6rem;
           }
           &::after {
+            transform: rotate(90deg);
             transition: all .2s ease-out;
             position: absolute;
             top: .5rem;
             content: "";
-            border-top-width: .7rem;
-            border-top-style: solid;
+            border-bottom-width: .6rem;
+            border-bottom-style: solid;
             border-left: .5rem solid transparent;
             border-right: .5rem solid transparent;
           }
@@ -809,7 +812,7 @@ $sidebar: 18rem;
       }
       @mixin type-related($color) {
         a, .h2, .h3 { color: $color; }
-        span::after { border-top-color: $color; }
+        span::after { border-bottom-color: $color; }
         .tool-popup {
           border: 1px solid $color;
           background: tint($color, 95%);
