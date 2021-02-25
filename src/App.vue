@@ -43,7 +43,7 @@ export default {
 @import 'common.scss';
 
 #app {
-  min-height: 75vh;
+  min-height: 50vh;
   // Squarespace makes this complicated (additional spacing is added to the toolbox)
   margin-top: 6vmax;
 }
