@@ -77,6 +77,12 @@ router.beforeEach((to, from, next) => {
   }
 })
 
+// Ensure Google Analytics' global ga exists
+window.ga = window.ga || (() => null)
+router.afterEach((to, from) => {
+  ga('set', 'page', to.path)
+  ga('send', 'pageview')
+})
 
 // EXTEND VUE
 const showdown = new Showdown.Converter({
