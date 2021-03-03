@@ -1,5 +1,13 @@
 <template>
   <div class="toolbox">
+    <div v-if="true" :class="['toolbox-hero', routeCollection]">
+      <div class="inner">
+        <p class="h1">{{ routeCollection == ALL ? 'Toolbox' : text[`type.${routeCollection}.plural`] }}:</p>
+        <p>
+          {{ text[`type.${routeCollection}.description`] || 'About our toolbox blurb' }}
+        </p>
+      </div>
+    </div>
     <div class="filter-pane">
 
       <!-- SENTENCE -->
@@ -31,11 +39,12 @@
               || text['site.sentence.everything'] }} 🔍
           </div>
           <img v-if="routeCollection != ALL || routeTag != ALL" svg-inline class="bt-icon reset" src="./assets/reset.svg" :alt="text['site.sentence.reset']" @click="resetFilter">
+          <search ref="search" :text="text['site.search']" />
         </div>
       </div>
 
       <!-- FILTER WIDGET -->
-      <div :class="{'widget-wrapper': true, 'mobile-hidden': activeTab == 'tag' && hideTagsOnMobile}">
+      <div :class="{'widget-wrapper': true, 'hidden': activeTab == 'tag' && hideTagsOnMobile}">
         <div class="widget">
           <transition name="fade" mode="out-in">
 
@@ -49,12 +58,12 @@
                 <img svg-inline v-if="type == 'principle'" class="bt-icon" src="./assets/principle.svg">
                 <img svg-inline v-if="type == 'methodology'" class="bt-icon" src="./assets/methodology.svg">
                 <div class="h3">{{ text[`type.${type}.plural`] }}</div>
-                <p>{{ text[`type.${type}.description`] }}</p>
+                <p class="hidden">{{ text[`type.${type}.description`] }}</p>
               </div>
               <div :class="{block: true, set: true, active: routeCollection == 'set'}" @click="selectCollection('set')">
                 <img svg-inline class="bt-icon" src="./assets/set.svg">
                 <div class="h3">{{ text['type.set.plural'] }}</div>
-                <p>{{ text['type.set.description'] }}</p>
+                <p class="hidden">{{ text['type.set.description'] }}</p>
               </div>
 
               <!-- mobile-only -->
@@ -76,7 +85,7 @@
               <div :class="{block: true, saved: true, active: routeCollection == 'saved', 'mobile-hidden': true}" @click="selectCollection('saved')">
                 <img svg-inline class="bt-icon" src="./assets/favorite-active.svg">
                 <div class="h3">{{ text['type.saved'] }}</div>
-                <p>{{ text['type.saved.description'] }}
+                <p><!--{{ text['type.saved.description'] }}-->
                   <span @click.stop="$store.state.savedTools.size && downloadPDF($store.state.savedTools)"
                     :class="{download: true, disabled: !$store.state.savedTools.size}"
                     :title="text[$store.state.savedTools.size ? 'site.downloadpdf' : 'site.saved.description']">
@@ -124,7 +133,6 @@
                 @click="selectTag(tag)">
                 {{ text[`tag.${tag}`] }}
               </p>
-              <search ref="search" :text="text['site.search']" />
             </div>
           </transition>
         </div>
@@ -305,7 +313,7 @@ export default {
 
       // Set an appropriate activeTab (one of: collection, region, set, tag)
       // When activeTab is set by the route guard, tags are ALWAYS hidden
-      if (region || tag) { // Why is region here? (used to be: query||region||tag)
+      if (tag) {
         this.activeTab = 'tag'
         this.hideTagsOnMobile = true
       } else if (route.name == 'toolbox-search') {
@@ -317,7 +325,8 @@ export default {
       } else if ([ALL, 'saved'].includes(this.routeCollection)) {
         this.activeTab = 'collection'
       } else {
-        this.activeTab = 'tag'
+        //this.activeTab = 'tag'
+        this.activeTab = 'collection'
         this.hideTagsOnMobile = true
       }
       next()
@@ -338,8 +347,53 @@ export default {
 
 <style lang="scss">
 @import 'common.scss';
+
+@mixin hero-particulars($type) {
+  background-image: url(https://beautifulrising.org/hero-pattern-#{$type}.jpg);
+}
+.toolbox-hero {
+  background: linear-gradient(to right, orange , yellow, green, cyan, blue, violet);
+  background-size: cover;
+  &.tactic { @include hero-particulars(tactic); }
+  &.theory { @include hero-particulars(theory); }
+  &.story { @include hero-particulars(story); }
+  &.principle { @include hero-particulars(principle); }
+  &.methodology { @include hero-particulars(methodology); }
+  .inner {
+    padding: 13.2vmax 0 1vw 0;
+    width: 100%;
+    max-width: 1200px;
+    div, p {
+      position: relative;
+      //text-shadow: 1px 0px 6px rgba(black, .5);
+      color: white !important;
+    }
+    p {
+      max-width: 30%;
+    }
+    .h1 {
+      margin: 0;
+      font-size: calc(3.8 * 1rem);
+      text-transform: uppercase;
+    }
+  }
+  color: white !important;
+  height: 20rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+  position: relative;
+  &::before {
+    content: "";
+    background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,.3) 60%, rgba(0,0,0,.5) 100%);
+    position: absolute;
+    top: 0; left: 0;
+    bottom: 0; right: 0;
+  }
+}
 .toolbox {
-  padding-top: 4rem;
+  //padding-top: 4rem;
   width: 100%;
 
   // Mobile header adjustments for the Squarespace theme
@@ -356,7 +410,7 @@ export default {
   align-items: center; // horizontally center
 }
 .sentence-wrapper {
-  min-height: 6rem;
+  min-height: 4rem;
   display: flex;
   flex-direction: column;
   justify-content: flex-end; // align to bottom of flex row
@@ -453,7 +507,7 @@ export default {
   border: 1px solid $bgdark1;
   border-radius: 5px;
   width: 100%;
-  max-width: 78rem;
+  max-width: 65rem;
 }
 .widget {
   background-color: $bggray;
@@ -464,6 +518,7 @@ export default {
   border-radius: 5px;
   border-right: 1px solid $bgdark2;
   line-height: 1.1;
+  font-size: .8rem;
 
   @include breakpoint($lg) {
     font-size: .9rem;
@@ -478,7 +533,7 @@ export default {
   .block {
     border-right: 1px solid white;
     border-bottom: 1px solid white;
-    height: 20rem;
+    height: 8rem;
 
     cursor: pointer;
     flex: 2 0 14%;
@@ -487,7 +542,7 @@ export default {
     justify-content: center;
     align-items: center;
     overflow-x: hidden;
-    padding: 1rem;
+    padding: .5rem 1rem;
 
     @include breakpoint($lg) {
       padding: .75rem;
@@ -549,7 +604,10 @@ export default {
     }
     p {
       margin-inline-start: .5rem; // Subtly offset the left-aligned text
-      min-height: 45%;
+      //margin-top: 0;
+      margin-top: .5rem;
+      margin-bottom: 0;
+      //min-height: 45%;
       @include breakpoint($md) {
         margin-top: .25rem;
       }
@@ -599,8 +657,8 @@ export default {
   }
   .by-region {
     .bt-icon {
-      height: 8rem;
-      max-height: 8rem;
+      height: 6rem;
+      max-height: 4rem;
       width: 7rem;
       margin: 0;
     }
@@ -623,10 +681,10 @@ export default {
     }
   }
   .by-tag {
-    padding: 1rem 3rem;
+    padding: 1rem 1rem;
     flex-wrap: wrap;
     flex-direction: column;
-    height: 20rem;
+    height: 10rem;
     justify-content: flex-start;
     align-items: flex-start; // Don't expand to fill width (avoids stray taps)
 
@@ -639,7 +697,8 @@ export default {
     }
     p {
       cursor: pointer;
-      min-height: 1.25rem;
+      //min-height: 1.25rem;
+      line-height: 1.3;
       padding: 0 1rem;
       margin: 0;
       //display: inline-flex; // For the x buttons maybe?
@@ -670,7 +729,7 @@ export default {
   }
   .bt-icon {
     width: 4rem;
-    max-height: 4rem;
+    max-height: 6rem;
     margin: .5rem;
     @include breakpoint($xl) {
       width: 6rem;

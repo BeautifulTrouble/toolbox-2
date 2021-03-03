@@ -57,6 +57,9 @@ $ss-mobile-header: "only screen and (pointer: coarse) and (max-width: 1024px), s
     display: none !important;
   }
 }
+.hidden {
+  display: none !important;
+}
 // Grid system (here if needed, but so far not needed)
 //$outer-margin: 0;
 //$gutter-width: 8px;
