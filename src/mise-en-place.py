@@ -57,6 +57,9 @@ with open(JSON, 'w') as f:
         'election-protection': [
             'recapture-the-flag', 'pillars-of-power', 'general-strike', 'put-your-target-in-a-decision-dilemma', 'use-the-power-of-ritual', 'training-for-the-win', 'gambia-has-decided'
         ],
+        'myanmar-coup-response': [
+            '-gambiahasdecided', '-thisflag', 'battle-of-the-camel', 'burmese-students-long-march', 'disrupting-obamas-town-hall-in-myanmar', 'flower-speech-campaign', 'honk-at-parliament', 'panty-power', 'standing-man', 'the-salt-march', 'who-would-accept-', 'cacerolazo-noise-making-protest-', 'clandestine-leafleting', 'civil-disobedience', 'distributed-action', 'general-strike', 'hashtag-campaign', 'jail-solidarity', 'mass-street-action', 'activate-international-mechanisms', 'dont-dress-like-a-protester', 'focus-on-basic-needs', 'if-protest-is-made-illegal-make-daily-life-a-protest', 'put-your-target-in-a-decision-dilemma', 'seek-safety-in-support-networks', 'simple-rules-can-have-grand-results', 'the-real-action-is-your-targets-reaction', '-democracy-promotion-', 'al-fazaa-a-surge-of-solidarity-', 'direct-action', 'framing', 'pillars-of-power', 'power-mapping', 'spectrum-of-allies'
+        ],
     }
 
     json.dump(sets, f, indent=2)
