@@ -494,13 +494,13 @@ export default {
     }
     @include breakpoint($md) {
       height: 12rem;
-      flex: 0 0 25%;
+      flex: 0 0 20%;
     }
     @include breakpoint($sm) {
       padding: .5rem 1rem;
       height: 4rem;
       overflow: hidden;
-      flex: 0 0 25%;
+      flex: 0 0 20%;
     }
     &.active {
       background: $bgdark1;
