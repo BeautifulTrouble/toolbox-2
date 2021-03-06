@@ -150,6 +150,7 @@ html {
 }
 *, *::before, *::after {
   box-sizing: border-box;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, .1);
 }
 body {
   margin: 0;
