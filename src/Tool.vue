@@ -27,16 +27,43 @@
       </div>
     </header>
 
+    <nav>
+      <div class="breadcrumbs">
+        <div class="inner">
+          <div :class="tool.type">
+            <router-link to="/toolbox">{{ text['site.toolbox'] }}</router-link><span class="bullet">&bullet;</span>
+            <router-link :to="{name: `toolbox-${tool.type}`}">{{ text[`type.${tool.type}`] }}</router-link><span class="bullet">&bullet;</span>
+            <router-link :to="{name: 'tool', params: {slug: tool.slug}}">{{ tool.title }}</router-link>
+          </div>
+        </div>
+      </div>
+      <aside>
+        <section class="actions">
+          <span @click="$store.dispatch('TOOL_SAVE_TOGGLE', tool.slug)" :title="text['site.saved']">
+            <img v-if="$store.state.savedTools.has(tool.slug)"
+              svg-inline :class="['bt-icon', 'active', tool.type]" src="./assets/favorite-active.svg">
+            <img v-else svg-inline class="bt-icon" src="./assets/favorite.svg">
+          </span>
+          <div @click="downloadPDF(tool.slug)" :title="text['site.downloadpdf']">
+            <img svg-inline class="bt-icon" src="./assets/download.svg">
+          </div>
+          <a :href="shareUrlFacebook" target="_blank" rel="external">
+            <img svg-inline class="bt-icon" src="./assets/facebook.svg">
+          </a>
+          <a :href="shareUrlTwitter" target="_blank" rel="external">
+            <img svg-inline class="bt-icon" src="./assets/twitter.svg">
+          </a>
+          <a :href="shareUrlEmail" target="_blank" rel="external">
+            <img svg-inline class="bt-icon" src="./assets/email.svg">
+          </a>
+        </section>
+      </aside>
+    </nav>
+
     <main>
       <!-- Tool -->
       <article>
         <div class="inner">
-          <div :class="['breadcrumbs', tool.type]">
-            <router-link to="/toolbox">{{ text['site.toolbox'] }}</router-link> /
-            <router-link :to="{name: `toolbox-${tool.type}`}">{{ text[`type.${tool.type}`] }}</router-link> /
-            <router-link :to="{name: 'tool', params: {slug: tool.slug}}">{{ tool.title }}</router-link>
-          </div>
-
           <!-- Snapshot-only write up -->
           <div v-if="!writeUp || moreThanASnapshotInEnglish">
             <div :class="[moreThanASnapshotInEnglish ? 'snapshot' : 'snapshot-only']" v-html="markdown(tool['snapshot'])" />
@@ -114,25 +141,6 @@
 
       <!-- Sidebar -->
       <aside>
-        <section class="actions">
-          <span @click="$store.dispatch('TOOL_SAVE_TOGGLE', tool.slug)" :title="text['site.saved']">
-            <img v-if="$store.state.savedTools.has(tool.slug)"
-              svg-inline :class="['bt-icon', 'active', tool.type]" src="./assets/favorite-active.svg">
-            <img v-else svg-inline class="bt-icon" src="./assets/favorite.svg">
-          </span>
-          <div @click="downloadPDF(tool.slug)" :title="text['site.downloadpdf']">
-            <img svg-inline class="bt-icon" src="./assets/download.svg">
-          </div>
-          <a :href="shareUrlFacebook" target="_blank" rel="external">
-            <img svg-inline class="bt-icon" src="./assets/facebook.svg">
-          </a>
-          <a :href="shareUrlTwitter" target="_blank" rel="external">
-            <img svg-inline class="bt-icon" src="./assets/twitter.svg">
-          </a>
-          <a :href="shareUrlEmail" target="_blank" rel="external">
-            <img svg-inline class="bt-icon" src="./assets/email.svg">
-          </a>
-        </section>
         <section v-if="tool['potential-risks']" class="risks">
           <div class="h4">{{ text['meta.risks'] }}</div>
           <div v-html="markdown(tool['potential-risks'])" />
@@ -404,17 +412,6 @@ $sidebar: 18rem;
     .h2 {
       margin: 0;
     }
-    .edit {
-      cursor: pointer;
-      position: absolute;
-      height: 2rem;
-      width: 2rem;
-      top: 1rem; right: 1rem;
-      filter: drop-shadow(0 0 1.5rem black);
-      path {
-        fill: white;
-      }
-    }
     .bt-icon {
       margin-bottom: .5rem;
       filter: drop-shadow(0px 0px 20px rgba(black, .2));
@@ -465,27 +462,62 @@ $sidebar: 18rem;
       max-height: 3.5rem;
     }
   }
-  main {
-    //position: absolute;
+  // Notice the linkage between main + nav, and article + .breadcrumbs (for horizontal placement)
+  main, nav {
     display: flex;
     flex-direction: row;
     background: $bggray;
-    padding: 1rem 0;
-    @include breakpoint($sm) {
-      flex-wrap: wrap;
-    }
-    &::before {
-      content: "";
-      height: 5rem;
-      top: -5rem;
-      left: 0; right: 0;
-      position: absolute;
-      background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,.2) 100%);
-      pointer-events: none;
-    }
     a {
       text-decoration: none;
     }
+    @include breakpoint($sm) {
+      flex-wrap: wrap;
+    }
+  }
+  nav {
+    .breadcrumbs .inner {
+      @extend .h3;
+    }
+    .bullet {
+      margin: 0 .5rem;
+    }
+    @include breakpoint($sm) {
+      aside {
+        padding-top: 0;
+      }
+    }
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      flex-direction: row;
+      align-items: center;
+      height: 100%;
+      .bt-icon {
+        max-width: 2.5rem;
+        max-height: 3rem;
+        cursor: pointer;
+        margin: 0 .5rem 0 0;
+        @include breakpoint($md) {
+          max-width: 1.75rem;
+        }
+        .rtl & {
+          margin: 0 0 0 .5rem;
+        }
+        &.tactic { fill: $tactic; }
+        &.theory { fill: $theory; }
+        &.story { fill: $story; }
+        &.principle { fill: $principle; }
+        &.methodology { fill: $methodology; }
+        &.active {
+          animation-name: add-favorite;
+          animation-duration: .5s;
+          animation-iteration-count: 1;
+        }
+      }
+    }
+  }
+  main {
+    padding-bottom: 1rem;
     .h4 {
       color: $text;
       margin: .5rem 0;
@@ -496,14 +528,13 @@ $sidebar: 18rem;
       }
     }
   }
-  article {
+  article, .breadcrumbs {
     flex: 1 0 66%;
-    background: white;
     display: flex;
     flex-direction: row;
     justify-content: flex-end;
-    box-shadow: .3rem 0 .5rem .25rem $shadow;
     padding: 2rem;
+
     @include breakpoint($sm) {
       flex: 0 0 100%;
       padding: 1.5rem;
@@ -512,6 +543,28 @@ $sidebar: 18rem;
       flex: 0 0 70%;
       padding: 1.5rem;
     }
+    .inner {
+      flex: 0 0 66%;
+      img {
+        max-width: 100%;
+      }
+      @include breakpoint($lg) {
+        flex: 0 0 75%;
+      }
+      @include breakpoint($xl) {
+        flex: 0 0 70%;
+      }
+      @include breakpoint($xxl) {
+        flex: 0 0 65%;
+      }
+      @include breakpoint($lower) {
+        flex: 0 0 100%;
+      }
+    }
+  }
+  article {
+    background: white;
+    box-shadow: .3rem 0 .5rem .25rem $shadow;
     h6 { // image captions
       margin-top: -.5rem;
     }
@@ -553,24 +606,6 @@ $sidebar: 18rem;
         &:hover {
           border-width: .6rem;
         }
-      }
-    }
-    .inner {
-      flex: 0 0 66%;
-      img {
-        max-width: 100%;
-      }
-      @include breakpoint($lg) {
-        flex: 0 0 75%;
-      }
-      @include breakpoint($xl) {
-        flex: 0 0 70%;
-      }
-      @include breakpoint($xxl) {
-        flex: 0 0 65%;
-      }
-      @include breakpoint($lower) {
-        flex: 0 0 100%;
       }
     }
     .breadcrumbs {
@@ -670,12 +705,14 @@ $sidebar: 18rem;
     }
   }
   aside {
-    height: 100%;
     flex: 2 0 33%;
     padding: 0 2rem;
     @include breakpoint($md) {
       flex: 0 0 30%;
       padding: 0 1rem 0 1.5rem;
+    }
+    @include breakpoint($sm) {
+      padding: 1.5rem;
     }
     blockquote {
       margin-inline-start: 1rem;
@@ -692,34 +729,6 @@ $sidebar: 18rem;
       max-width: 10rem;
       @include breakpoint($sm) {
         max-width: unset;
-      }
-    }
-    .actions {
-      display: flex;
-      flex-wrap: wrap;
-      flex-direction: row;
-      align-items: center;
-      .bt-icon {
-        max-width: 2.5rem;
-        cursor: pointer;
-        margin: 0 .5rem 0 0;
-        @include breakpoint($md) {
-          max-width: 1.75rem;
-          max-height: 3rem;
-        }
-        .rtl & {
-          margin: 0 0 0 .5rem;
-        }
-        &.tactic { fill: $tactic; }
-        &.theory { fill: $theory; }
-        &.story { fill: $story; }
-        &.principle { fill: $principle; }
-        &.methodology { fill: $methodology; }
-        &.active {
-          animation-name: add-favorite;
-          animation-duration: .5s;
-          animation-iteration-count: 1;
-        }
       }
     }
     .risks, .worked, .failed {
@@ -830,7 +839,6 @@ $sidebar: 18rem;
         right: 100%;
         margin: 0 1rem 0 0;
         display: none;
-        //box-shadow: .1rem 0 .2rem .2rem $shadow;
         .content {
           padding: 1rem;
         }
