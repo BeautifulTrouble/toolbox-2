@@ -749,14 +749,15 @@ export default {
   flex-wrap: wrap;
   flex-direction: row;
   position: relative; // For transition animation
-  margin: 2px -2px; // For toolbox margins
+  //margin: 2px -2px; // For toolbox margins
 
   // These styles override the ones defined in ToolTile.vue
   .tool-tile {
     // Flex-basis determines the number of tiles per row
     flex: 0 0 25%;
     height: 25vw;
-    border: 2px solid transparent; // For toolbox margins
+    //border: 2px solid transparent; // For toolbox margins
+    margin: 2px;
 
     @include breakpoint($xl) {
       flex: 0 0 20%;

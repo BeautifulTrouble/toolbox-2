@@ -15,12 +15,13 @@
           <div class="h3">{{ text[`type.${tool.type}`] }}</div>
         </div>
         <div>
+          <!--
           <img svg-inline v-if="tool.video" class="bt-icon video" src="./assets/video.svg">
-          <!-- .stop avoids calling other click handlers and .prevent avoids the same within a link -->
           <div @click.stop.prevent="$store.dispatch('TOOL_SAVE_TOGGLE', tool.slug)">
             <img svg-inline v-if="$store.state.savedTools.has(tool.slug)" class="bt-icon favorite active" src="./assets/favorite-active.svg">
             <img svg-inline v-else class="bt-icon favorite" src="./assets/favorite.svg">
           </div>
+          -->
         </div>
       </div>
       <div class="lower">
@@ -70,6 +71,14 @@ export default {
 </script>
 
 <style lang="scss">
+#app .langs,
+.header-announcement-bar-wrapper {
+  display: none;
+}
+body {
+  background-color: transparent !important;
+}
+
 @import 'common.scss';
 
 .tool-tile {
@@ -80,6 +89,7 @@ export default {
   >div {
     height: 100%;
   }
+  border-radius: 1.25rem;
 
   @include breakpoint($sm) {
     .h3 {
@@ -170,23 +180,22 @@ export default {
       position: absolute;
       left: 0; right: 0;
       top: 0; bottom: 0;
-      opacity: 0;
+      opacity: .85;
       transition: opacity .1s linear;
     }
+      .snapshot {
+        opacity: 1;
+      }
     // TODO: reorder layering so that the hover keeps the dark gradient
-    &:hover::after { // Text fade gradient
+    &::after { // Text fade gradient
       background: linear-gradient(transparent, transparent 85%, $color 95%);
       z-index: 2;
-      opacity: 0;
     }
     &:hover::after,
     &:hover::before {
       opacity: .85;
     }
     &:hover {
-      .snapshot {
-        opacity: 1;
-      }
     }
   }
   @include breakpoint($upper) {
