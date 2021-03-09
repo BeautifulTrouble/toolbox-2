@@ -11,6 +11,9 @@ SCRIPT=build
 if [[ "${!#}" =~ "dev" ]]; then
     RFILE=develop.beautifultrouble.org/toolbox-develop.js
     SCRIPT=build-develop
+elif [[ "${!#}" =~ "exp" ]]; then
+    RFILE=develop.beautifultrouble.org/toolbox-experimental.js
+    SCRIPT=build-develop
 fi
 
 if yarn ${SCRIPT}; then
