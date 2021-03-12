@@ -21,7 +21,7 @@
         <div><!-- Always render two divs to ensure proper placement -->
           <div v-if="tool['image-caption']" :class="['caption', tool.type]" v-html="markdown(tool['image-caption'])" />
         </div>
-        <a href="#" v-scroll-to="{el: '#video', offset: -16 * 6.5, duration: 200}">
+        <a href="#" v-scroll-to="{el: '#video', offset: -16 * 10.0, duration: 200}">
           <img svg-inline v-if="tool.video" class="bt-icon video" src="./assets/video.svg">
         </a>
       </div>
