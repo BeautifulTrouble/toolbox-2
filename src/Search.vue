@@ -12,6 +12,7 @@ export default {
   }),
   props: {
     text: {type: String, default: 'Search'},
+    reroute: {type: Boolean, default: true},
   },
   methods: {
     debounceSearch() {
@@ -22,12 +23,15 @@ export default {
       }, 750)
     },
     updateRoute() {
-      if (this.query == this.$route.params.query) return
+      if (this.query == this.$route.params.query) {
+        console.debug('Unchanged search query')
+        return
+      }
       if (!this.query) {
         this.$store.dispatch('SEARCH_CLEAR')
-        this.$router.push({name: 'toolbox-search'})
+        this.reroute && this.$router.push({name: 'toolbox-search'})
       } else {
-        this.$router.push({name: 'toolbox-search', params: {query: this.query}})
+        this.reroute && this.$router.push({name: 'toolbox-search', params: {query: this.query}})
       }
     },
     focusInput() {
