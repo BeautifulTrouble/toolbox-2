@@ -93,9 +93,19 @@ export default {
 <style lang="scss">
 @import 'common.scss';
 .all-modules {
-  justify-content: space-around;
-  width: 100%;
+  padding-top: 4rem;
+
+  // Mobile header adjustments for the Squarespace theme
+  @media #{$ss-mobile-header} {
+    padding-top: 10rem;
+  }
+  @include breakpoint($sm) {
+    padding-top: 7.5rem;
+  }
+
   display: flex;
+  width: 100%;
+  justify-content: space-around;
   .toolbar {
     display: flex;
     padding-bottom: 1rem;
@@ -227,6 +237,7 @@ export default {
       opacity: 0;
       display: block !important;
       transition: opacity .2s linear;
+      overflow-wrap: normal;
     }
     &.collapse {
       overflow-x: hidden;
