@@ -208,7 +208,7 @@ export default {
   }
   .column {
     flex: 2 1 20%;
-    padding: 0 1rem 1rem 1rem;
+    padding: 0 2rem 1rem 1rem;
     cursor: pointer;
     min-height: 13rem;
     .head {
