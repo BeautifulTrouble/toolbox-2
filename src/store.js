@@ -4,6 +4,8 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 
 import lunr from 'lunr'
+import lunrStemmer from 'lunr-languages/lunr.stemmer.support'
+lunrStemmer(lunr)
 
 import config from './config'
 
@@ -50,6 +52,24 @@ const storageGetCache = lang => {
 }
 
 
+// LUNRJS
+const englishNourmalisation = builder => {
+  const englishAmericanisms = {
+    'theater': 'theatre',
+    'color': 'colour',
+    'humor': 'humour',
+    'labor': 'labour',
+  }
+  let pipelineFunction = token => {
+    let t = englishAmericanisms[token.toString()]
+    return t ? token.update(() => t) : token
+  }
+  lunr.Pipeline.registerFunction(pipelineFunction, 'englishNourmalisation')
+  builder.pipeline.before(lunr.stemmer, pipelineFunction)
+  builder.searchPipeline.before(lunr.stemmer, pipelineFunction)
+}
+
+
 // VUEX
 Vue.use(Vuex)
 
@@ -92,6 +112,11 @@ export const store = new Vuex.Store({
               console.error("Couldn't get API tools!", e)
             })
         }
+        // In any case, get an appropriate stemmer
+        try {
+          if (lang != 'en') import(`lunr-languages/lunr.${lang}`)
+                              .then(lunrLang => lunrLang.default(lunr))
+        } catch(e) { console.debug(e) }
       }
     },
     // SAVED TOOLS
@@ -115,6 +140,10 @@ export const store = new Vuex.Store({
     SEARCH_INDEX(context) {
       context.commit('setDebug', `Building search index for ${context.state.lang}`)
       context.commit('setSearchIndex', lunr(function() {
+        try {
+          if (context.state.lang != 'en') this.use(lunr[context.state.lang])
+        } catch(e) { console.debug(e) }
+        this.use(englishNourmalisation)
         this.ref('slug')
         this.field('title', {boost: 10})
         this.field('byline', {boost: 5})
