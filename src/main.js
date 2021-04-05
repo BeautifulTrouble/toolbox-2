@@ -8,9 +8,11 @@ import ShowdownTargetBlank from 'showdown-target-blank'
 import BackToTop from 'vue-backtotop'
 import VueLazyload from 'vue-lazyload'
 import VueLazyImageLoading from 'vue-lazy-image-loading'
+import VueMeta from 'vue-meta'
 import VueScollTo from 'vue-scrollto'
 
 import App from './App'
+import All from './All'
 import Tool from './Tool'
 import Toolbox from './Toolbox'
 
@@ -29,6 +31,7 @@ const router = new Router({
     {path: '/tool',               redirect: {name: 'toolbox'}},
     {path: '/tool/:slug',         name: 'tool', component: Tool},
     // Toolbox filtering
+    {path: '/all',                  name: 'toolbox-all', component: All},
     {path: '/story/:region?/:tag?', name: 'toolbox-story', component: Toolbox},
     {path: '/tactic/:tag?',         name: 'toolbox-tactic', component: Toolbox},
     {path: '/principle/:tag?',      name: 'toolbox-principle', component: Toolbox},
@@ -157,6 +160,9 @@ Vue.mixin({
   },
 })
 
+
+// VueMeta
+Vue.use(VueMeta)
 
 
 // START VUE

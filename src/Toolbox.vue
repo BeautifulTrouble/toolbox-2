@@ -13,7 +13,7 @@
       <!-- SENTENCE -->
       <div class="sentence-wrapper">
         <div class="sentence">
-          <div class="plain">
+          <div class="plain" @dblclick="$router.push({name: 'toolbox-all'})">
             {{ text['site.sentence.showme'] }}
           </div>
           <div :class="{tab: true, active: activeTab == 'collection'}" @click="activeTab = 'collection'">
@@ -425,6 +425,7 @@ export default {
   margin: 0 1rem;
   width: 100%;
   position: relative;
+  user-select: none;
   @include breakpoint($md) {
     font-size: 1rem;
   }

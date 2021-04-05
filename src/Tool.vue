@@ -21,7 +21,7 @@
         <div><!-- Always render two divs to ensure proper placement -->
           <div v-if="tool['image-caption']" :class="['caption', tool.type]" v-html="markdown(tool['image-caption'])" />
         </div>
-        <a href="#" v-scroll-to="{el: '#video', offset: -16 * 6.5, duration: 200}">
+        <a href="#" v-scroll-to="{el: '#video', offset: -16 * 10.0, duration: 200}">
           <img svg-inline v-if="tool.video" class="bt-icon video" src="./assets/video.svg">
         </a>
       </div>
@@ -330,9 +330,14 @@ export default {
     initPage() {
       this.expandRelated = {story: false, tactic: false, theory: false, principle: false, methodology: false}
       this.authors = []
-      if (this.tool && this.tool.authors)
-        this.tool.authors.map(a => this.$http.get(`${this.config.api}/person/${a}?lang=${this.$store.state.lang}`)
-                                     .then(r => this.authors.push(r.data)))
+      if (this.tool && this.tool.authors) {
+        this.tool.authors.map(
+          a => this.$http.get(`${this.config.api}/person/${a}?lang=${this.$store.state.lang}`
+        ).then(r => this.authors.push(r.data)))
+      }
+      if (this.tool) {
+        //document.title = this.tool.title
+      }
       // For non-existent tools, attempt a slug search (it's all we've got)
       // TODO: when search is pre-calculated on the server, perform an english search of the slug mapped to active lang
       if (this.$store.state.tools.length && !this.tool) this.$router.push({
@@ -348,6 +353,21 @@ export default {
   },
   created() {
     this.initPage()
+  },
+  metaInfo() {
+    if (!this.tool) return { }
+    return {
+      title: `${this.tool.title}`,
+      meta: [
+        {name: 'description', content: this.tool.snapshot},
+        {property: 'og:title', content: this.tool.title},
+        {property: 'og:site_name', content: 'Beautiful Trouble'},
+        {property: 'og:description', content: this.tool.snapshot},
+        {property: 'og:type', content: 'article'},
+        {property: 'og:url', content: `${this.config.siteUrl}/toolbox/#/${this.$store.state.lang}${this.$route.path}`},
+        {property: 'og:image', content: `${this.config.imagePrefix}/${this.tool.image}`},
+      ],
+    }
   },
 };
 </script>

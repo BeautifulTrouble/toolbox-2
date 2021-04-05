@@ -4,6 +4,12 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 
 import lunr from 'lunr'
+import lunrStemmer from 'lunr-languages/lunr.stemmer.support'
+import lunrAR from 'lunr-languages/lunr.ar'
+import lunrES from 'lunr-languages/lunr.es'
+import lunrFR from 'lunr-languages/lunr.fr'
+import lunrIT from 'lunr-languages/lunr.it'
+import lunrPT from 'lunr-languages/lunr.pt'
 
 import config from './config'
 
@@ -47,6 +53,30 @@ const storageGetCache = lang => {
     console.debug("Removing bad localStorage tools cache...")
     Storage.removeItem(keyNameAPICache(lang))
   }
+}
+
+
+// LUNRJS
+lunrStemmer(lunr)
+lunrAR(lunr)
+lunrES(lunr)
+lunrFR(lunr)
+lunrIT(lunr)
+lunrPT(lunr)
+const englishNourmalisation = builder => {
+  const englishAmericanisms = {
+    'theater': 'theatre',
+    'color': 'colour',
+    'humor': 'humour',
+    'labor': 'labour',
+  }
+  let pipelineFunction = token => {
+    let t = englishAmericanisms[token.toString()]
+    return t ? token.update(() => t) : token
+  }
+  lunr.Pipeline.registerFunction(pipelineFunction, 'englishNourmalisation')
+  builder.pipeline.before(lunr.stemmer, pipelineFunction)
+  builder.searchPipeline.before(lunr.stemmer, pipelineFunction)
 }
 
 
@@ -115,6 +145,13 @@ export const store = new Vuex.Store({
     SEARCH_INDEX(context) {
       context.commit('setDebug', `Building search index for ${context.state.lang}`)
       context.commit('setSearchIndex', lunr(function() {
+        try {
+          if (context.state.lang == 'en') {
+            this.use(englishNourmalisation)
+          } else {
+            this.use(lunr[context.state.lang])
+          }
+        } catch(e) { console.debug(e) }
         this.ref('slug')
         this.field('title', {boost: 10})
         this.field('byline', {boost: 5})

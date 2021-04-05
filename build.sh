@@ -4,18 +4,24 @@ cd "$(dirname "$(realpath "$0")")"
 #cd src && ./mise-en-place.py && cd ..
 
 HOST=develop.beautifultrouble.org
-LFILE=bt/toolbox.js
-RFILE=develop.beautifultrouble.org/toolbox.js
 SCRIPT=build
 
+LDIR=bt
+LFILE=toolbox.js
+
+RDIR=develop.beautifultrouble.org
+RFILE=toolbox.js
+
+
 if [[ "${!#}" =~ "dev" ]]; then
-    RFILE=develop.beautifultrouble.org/toolbox-develop.js
+    RFILE=toolbox-develop.js
     SCRIPT=build-develop
 elif [[ "${!#}" =~ "exp" ]]; then
-    RFILE=develop.beautifultrouble.org/toolbox-experimental.js
+    RFILE=toolbox-experimental.js
     SCRIPT=build-develop
 fi
 
 if yarn ${SCRIPT}; then
-    rsync -vzaP "${LFILE}" "${HOST}:${RFILE}"
+    mv -v "${LDIR}/${LFILE}" "${LDIR}/${RFILE}"
+    rsync -vzaP "${LDIR}/" "${HOST}:${RDIR}"
 fi
