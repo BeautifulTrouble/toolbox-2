@@ -8,6 +8,7 @@ import ShowdownTargetBlank from 'showdown-target-blank'
 import BackToTop from 'vue-backtotop'
 import VueLazyload from 'vue-lazyload'
 import VueLazyImageLoading from 'vue-lazy-image-loading'
+import VueMeta from 'vue-meta'
 import VueScollTo from 'vue-scrollto'
 
 import App from './App'
@@ -159,6 +160,9 @@ Vue.mixin({
   },
 })
 
+
+// VueMeta
+Vue.use(VueMeta)
 
 
 // START VUE
