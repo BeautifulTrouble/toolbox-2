@@ -754,23 +754,11 @@ export default {
   // These styles override the ones defined in ToolTile.vue
   .tool-tile {
     // Flex-basis determines the number of tiles per row
-    flex: 0 0 25%;
-    height: 25vw;
+    flex: 0 0 50%;
+    height: 50vw;
     //border: 2px solid transparent; // For toolbox margins
     margin: 2px;
 
-    @include breakpoint($xl) {
-      flex: 0 0 20%;
-      height: 20vw;
-    }
-    @include breakpoint($xxl) {
-      flex: 0 0 12.5%;
-      height: 12.5vw;
-    }
-    @include breakpoint($md) {
-      flex: 0 0 33.3%;
-      height: 33.3vw;
-    }
     @include breakpoint($sm) {
       flex: 0 0 50%;
       height: 50vw;
