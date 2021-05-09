@@ -42,7 +42,10 @@ def sitemap():
     sitemap = requests.get(SITEMAP).text
 
     try:
-        orig = etree.fromstring(sitemap.encode())
+        # Removing whitespace in the source allows the output pretty-printer to work
+        orig = etree.fromstring(
+            sitemap.encode(), etree.XMLParser(remove_blank_text=True)
+        )
         tree = addns(orig, "xhtml", "http://www.w3.org/1999/xhtml")
         root = tree.getroot()
 
@@ -52,8 +55,8 @@ def sitemap():
             etree.SubElement(
                 url, "loc"
             ).text = f"https://www.beautifultrouble.org/toolbox/#/tool/{t['slug']}"
-            etree.SubElement(url, "changefreq").text = "weekly"
-            etree.SubElement(url, "priority").text = "0.9"
+            etree.SubElement(url, "changefreq").text = "daily"
+            etree.SubElement(url, "priority").text = "0.5"
             etree.SubElement(url, "lastmod").text = datetime.fromtimestamp(
                 t["timestamp"] // 1000
             ).strftime("%F")
@@ -65,16 +68,22 @@ def sitemap():
                 ).text = f"https://beautifulrising.org/{t['image']}"
                 addsub(image, "image:title").text = t["title"]
 
-            for lang in t.get("langs-available", []):
-                link = addsub(url, "xhtml:link")
-                link.attrib.update(
-                    {
-                        "hreflang": lang,
-                        "rel": "alternate",
-                        "href": f"https://www.beautifultrouble.org/toolbox/#/{lang}/tool/{t['slug']}",
-                    }
-                )
-            sitemap = etree.tostring(root)
+            # Disable alternates until google crawls these
+            #for lang in t.get("langs-available", []):
+            #    link = addsub(url, "xhtml:link")
+            #    link.attrib.update(
+            #        {
+            #            "hreflang": lang,
+            #            "rel": "alternate",
+            #            "href": f"https://www.beautifultrouble.org/toolbox/#/{lang}/tool/{t['slug']}",
+            #        }
+            #    )
+
+            sitemap = etree.tostring(
+                root,
+                pretty_print=True,
+                doctype="""<?xml version="1.0" encoding="UTF-8"?>""",
+            )
     except Exception as e:
         print(e)
 
