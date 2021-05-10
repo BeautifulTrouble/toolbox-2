@@ -33,7 +33,7 @@ const router = new Router({
     {path: '/tool/:slug',   name: 'tool', component: Tool},
     // Toolbox filtering
     {path: '/all',          name: 'toolbox-all', component: All},
-    {path: '/:collection',  name: 'toolbox', component: Toolbox},
+    {path: '/:collection?', name: 'toolbox', component: Toolbox},
 
     /* Routes to be merged
     {path: '/story',        name: 'toolbox-story', component: Toolbox},

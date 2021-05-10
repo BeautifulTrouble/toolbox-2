@@ -1,8 +1,8 @@
 <template>
   <div class="toolbox">
-    <div v-if="true" :class="['toolbox-hero', collection]">
+    <div :class="['toolbox-hero', collection]">
       <div class="inner">
-        <p class="h1">{{ collection == ALL ? text['site.toolbox'] : text[`type.${collection}.plural`] }}:</p>
+        <p class="h1">{{ collection ? text[`type.${collection}.plural`] : text['site.toolbox'] }}{{ collection ? ':' : '' }}</p>
         <p>
           {{ text[`type.${collection}.description`] || '' }}
         </p>
@@ -10,13 +10,13 @@
     </div>
     <div class="filter-pane">
 
-      <!-- SENTENCE -->
+      <!-- SENTENCE (labels and tabs) -->
       <div class="sentence-wrapper">
         <div class="sentence">
           <div class="plain" @dblclick="$router.push({name: 'toolbox-all'})">
             {{ text['site.sentence.showme'] }}
           </div>
-          <div :class="{tab: true, active: activeTab == 'collection'}" @click="activeTab = 'collection'">
+          <div :class="{tab: true, active: tab == 'collection'}" @click="tab = 'collection'">
             {{ collectionTab }}
           </div>
 
@@ -24,8 +24,8 @@
           <div v-if="collection == 'story'" class="plain">
             {{ text['site.sentence.from'] }}
           </div>
-          <div v-if="collection == 'story'" :class="{tab: true, active: activeTab == 'region'}" @click="activeTab = 'region'">
-            {{ text[`type.story.region.${routeRegion}`] }}
+          <div v-if="collection == 'story'" :class="{tab: true, active: tab == 'story'}" @click="tab = 'story'">
+            {{ text[`type.story.region.${region}`] }}
           </div>
 
           <!-- Label for all collection search + sets -->
@@ -38,31 +38,32 @@
 
           <!-- Tab for sets -->
           <div v-if="collection == 'set'"
-            :class="{tab: true, active: activeTab == 'set'}"
-            @click="activeTab = 'set'">
-            {{ text[`set.${routeSet}`] }}
+            :class="{tab: true, active: tab == 'set'}"
+            @click="tab = 'set'">
+            {{ text[`set.${set}`] }}
           </div>
 
           <!-- Search when collection is neither saved nor set -->
           <search v-if="!['saved', 'set'].includes(collection)" ref="search" :text="text['site.sentence.everything']" />
 
-          <!-- Show reset when any filters are applied -->
-          <img v-if="collection || query || region || set || tag"
+          <!-- Show reset when any filters are applied (set/region have default values and therefore don't count) -->
+          <img v-if="collection || query || tag"
             svg-inline class="bt-icon reset" src="./assets/reset.svg"
             :alt="text['site.sentence.reset']"
-            @click="resetFilter">
+            @click="reset">
         </div>
       </div>
 
-      <!-- FILTER WIDGET -->
-      <div :class="{'widget-wrapper': true, 'hidden': hideFilterPane}">
+      <!-- FILTER WIDGET (panels corresponding to tabs) -->
+      <div :class="{'widget-wrapper': true}">
         <div class="widget">
           <transition name="fade" mode="out-in">
 
-            <!-- BY COLLECTION -->
-            <div class="by by-collection" v-if="activeTab == 'collection'">
+            <!-- Collection panel -->
+            <div class="by by-collection" v-if="tab == 'collection'">
               <div v-for="type in types" :key="type"
-                 :class="{block: true, [type]: true, active: collection == type}" @click="selectCollection(type)">
+                :class="{block: true, [type]: true, active: collection == type}" @click="selectCollection(type)">
+                <!-- svg-inline directive can't predict runtime :src binding -->
                 <img svg-inline v-if="type == 'tactic'" class="bt-icon" src="./assets/tactic.svg">
                 <img svg-inline v-if="type == 'theory'" class="bt-icon" src="./assets/theory.svg">
                 <img svg-inline v-if="type == 'story'" class="bt-icon" src="./assets/story.svg">
@@ -108,28 +109,28 @@
             </div>
 
             <!-- BY REGION -->
-            <div class="by by-region" v-if="activeTab == 'region'">
-              <div :class="{block: true, active: routeRegion == 'all'}" @click="selectRegion('all')">
+            <div class="by by-region" v-if="tab == 'story'">
+              <div :class="{block: true, active: region == ALL}" @click="selectRegion()">
                 <img svg-inline class="bt-icon" src="./assets/regions/world.svg">
                 <p>{{ text['type.story.region.all'] }}</p>
               </div>
-              <div v-for="region in regions" :key="region"
-                :class="{block: true, active: $route.params.region == region}" @click="selectRegion(region)">
-                <img svg-inline v-if="region == 'africa'" class="bt-icon" src="./assets/regions/africa.svg">
-                <img svg-inline v-if="region == 'asia'" class="bt-icon" src="./assets/regions/asia.svg">
-                <img svg-inline v-if="region == 'europe'" class="bt-icon" src="./assets/regions/europe.svg">
-                <img svg-inline v-if="region == 'latin-america-and-the-caribbean'" class="bt-icon" src="./assets/regions/latin-america-and-the-caribbean.svg">
-                <img svg-inline v-if="region == 'middle-east'" class="bt-icon" src="./assets/regions/middle-east.svg">
-                <img svg-inline v-if="region == 'north-america'" class="bt-icon" src="./assets/regions/north-america.svg">
-                <img svg-inline v-if="region == 'oceania'" class="bt-icon" src="./assets/regions/oceania.svg">
-                <p>{{ text[`type.story.region.${region}`] }}</p>
+              <div v-for="r in regions" :key="r"
+                :class="{block: true, active: region == r}" @click="selectRegion(r)">
+                <img svg-inline v-if="r == 'africa'" class="bt-icon" src="./assets/regions/africa.svg">
+                <img svg-inline v-if="r == 'asia'" class="bt-icon" src="./assets/regions/asia.svg">
+                <img svg-inline v-if="r == 'europe'" class="bt-icon" src="./assets/regions/europe.svg">
+                <img svg-inline v-if="r == 'latin-america-and-the-caribbean'" class="bt-icon" src="./assets/regions/latin-america-and-the-caribbean.svg">
+                <img svg-inline v-if="r == 'middle-east'" class="bt-icon" src="./assets/regions/middle-east.svg">
+                <img svg-inline v-if="r == 'north-america'" class="bt-icon" src="./assets/regions/north-america.svg">
+                <img svg-inline v-if="r == 'oceania'" class="bt-icon" src="./assets/regions/oceania.svg">
+                <p>{{ text[`type.story.region.${r}`] }}</p>
               </div>
             </div>
 
             <!-- BY SET -->
-            <div class="by by-set" v-if="activeTab == 'set'">
-              <div v-for="(set, slug) in sets" :key="slug"
-                :class="{block: true, set: true, [slug]: true, active: routeSet == slug}"
+            <div class="by by-set" v-if="tab == 'set'">
+              <div v-for="(s, slug) in sets" :key="slug"
+                :class="{block: true, set: true, [slug]: true, active: set == slug}"
                 @click="selectSet(slug)">
                 <img svg-inline class="bt-icon set" src="./assets/set.svg">
                 <div class="h3 set">{{ text[`set.${slug}`] }}</div>
@@ -139,7 +140,7 @@
 
             <!-- BY TAG -->
             <!--
-            <div v-if="activeTab == 'tag'" :key="'tag'" class="by by-tag">
+            <div v-if="tab == 'tag'" :key="'tag'" class="by by-tag">
               <p v-for="(tag, i) in sortedTags" :key="i"
                 :class="{active: routeTag == tag, disabled: !tagsAvailable.has(tag)}"
                 @click="selectTag(tag)">
@@ -193,6 +194,9 @@ export default {
     types: ['story', 'tactic', 'principle', 'theory', 'methodology'],
 
     query: null,
+    region_: ALL,
+    set_: Object.keys(sets)[0],
+    tag: null,
     tab: 'collection',
   }),
   components: {
@@ -211,7 +215,7 @@ export default {
       if (this.collection == 'saved') {
         tools = tools.filter(t => this.$store.state.savedTools.has(t.slug))
       } else if (this.collection == 'set') {
-        tools = tools.filter(t => (this.sets[this.routeSet] || []).includes(t.slug))
+        tools = tools.filter(t => (this.sets[this.set] || []).includes(t.slug))
       } else if (this.config.toolTypes.includes(this.collection)) {
         tools = tools.filter(t => t.type == this.collection)
       }
@@ -228,8 +232,8 @@ export default {
       // TODO: why does the toolbox in other languages show snapshots?
       //       is it because some Array isn't triggering the re-compute of these propreties?
       let tools = this.filteredToolsAllTags
-      if (this.routeTag != ALL)
-        tools = tools.filter(t => (t.tags || []).includes(this.routeTag))
+      if (this.tag)
+        tools = tools.filter(t => (t.tags || []).includes(this.tag))
       return tools
     },
     // @@@ OLD @@@
@@ -237,7 +241,7 @@ export default {
       return this.$route.params.set || Object.keys(this.sets)[0]
     },
     set() {
-      return this.$route.params.set || Object.keys(this.sets)[0]
+      return this.set_ || Object.keys(this.sets)[0]
     },
 
     // @@@ OLD @@@
@@ -253,14 +257,11 @@ export default {
       return this.$route.params.region || ALL
     },
     region() {
-      return this.$route.params.region
+      return this.region_ || ALL
     },
 
     // @@@ OLD @@@
     routeTag() {
-      return this.$route.params.tag
-    },
-    tag() {
       return this.$route.params.tag
     },
     // @@@ OLD @@@
@@ -277,6 +278,12 @@ export default {
       }
       return this.text[`type.${this.collection || ALL}${['saved', 'set', 'search'].includes(this.collection) ? '' : '.plural'}`]
     },
+    collectionTab() {
+      if (!this.$route.params.collection)
+        return this.text['site.sentence.everything']
+      return this.text[`type.${this.collection || ALL}${['saved', 'set', 'search'].includes(this.collection) ? '' : '.plural'}`]
+    },
+
     // @@@ OLD @@@
     tagsAvailable() {
       // Tags available for the current level of filtering
@@ -315,24 +322,57 @@ export default {
       this.activeTab = 'collection'
       this.$router.push({name: 'toolbox'})
     },
+    reset(reroute = true) {
+      this.query = null
+      this.region_ = this.region
+      this.set_ = this.set
+      this.tag = null
+      if (reroute && this.collection) {
+        this.tab = 'collection'
+        this.$router.push({name: 'toolbox'})
+      }
+    },
+
     // @@@ OLD @@@
-    selectCollection(collection) {
+    _selectCollection(collection) {
       let name = `toolbox-${collection}`
       if (this.$route.name != name)
         this.$router.push({name: `toolbox-${collection}`})
       else
         this.$router.push({name: 'toolbox'})
     },
+    selectCollection(collection) {
+      if (collection != this.$route.params.collection) {
+        this.tab = ['story', 'set'].includes(collection) ? collection : 'collection'
+        this.reset(false)
+        this.$router.push({name: 'toolbox', params: this.$route.params.collection != collection ? {collection} : {}})
+      } else {
+        this.reset()
+      }
+    },
     // @@@ OLD @@@
-    selectRegion(region) {
+    _selectRegion(region) {
       if (this.$route.params.region != region)
         this.$router.push({name: this.$route.name, params: {region}})
     },
+    selectRegion(region) {
+      if (this.region_ != region) {
+        this.region_ = region
+      } else {
+        this.region_ = null
+      }
+    },
     // @@@ OLD @@@
-    selectSet(set) {
+    _selectSet(set) {
       if (this.$route.params.set != set)
         this.$router.push({name: this.$route.name, params: {set}})
     },
+    selectSet(set) {
+      if (this.set_ != set) {
+        this.set_ = set
+      }
+    },
+
     // @@@ OLD @@@
     selectTag(tag) {
       tag = this.$route.params.tag != tag ? tag : undefined
@@ -376,15 +416,16 @@ export default {
       //this.activeTab =
     }
   },
-  beforeRouteUpdate(to, from, next) {
+  _beforeRouteUpdate(to, from, next) {
     this.guardRoute(to, next)
   },
-  beforeRouteEnter(to, from, next) {
+  _beforeRouteEnter(to, from, next) {
     next(vm => vm.guardRoute(to, next))
   },
   created() {
     // TODO: Determine whether this is needed in production (it's needed for the webpack dev server)
-    this.guardRoute(this.$route, () => {})
+    //this.guardRoute(this.$route, () => {})
+    console.log('created')
   },
 };
 </script>
