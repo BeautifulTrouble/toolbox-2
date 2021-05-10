@@ -1,5 +1,7 @@
 import Vue from 'vue'
 
+import Autocomplete from '@trevoreyre/autocomplete-vue'
+import '@trevoreyre/autocomplete-vue/dist/style.css'
 // TODO: Axios requires promise polyfill for IE11
 import Axios from 'axios'
 import Router from 'vue-router'
@@ -28,19 +30,19 @@ const router = new Router({
   base: '/',
   routes: [
     // Tool pages
-    {path: '/tool',               redirect: {name: 'toolbox'}},
-    {path: '/tool/:slug',         name: 'tool', component: Tool},
+    {path: '/tool',                   redirect: {name: 'toolbox'}},
+    {path: '/tool/:slug',             name: 'tool', component: Tool},
     // Toolbox filtering
-    {path: '/all',                  name: 'toolbox-all', component: All},
-    {path: '/story/:region?/:tag?', name: 'toolbox-story', component: Toolbox},
-    {path: '/tactic/:tag?',         name: 'toolbox-tactic', component: Toolbox},
-    {path: '/principle/:tag?',      name: 'toolbox-principle', component: Toolbox},
-    {path: '/theory/:tag?',         name: 'toolbox-theory', component: Toolbox},
-    {path: '/methodology/:tag?',    name: 'toolbox-methodology', component: Toolbox},
-    {path: '/saved',                name: 'toolbox-saved', component: Toolbox},
-    {path: '/search/:query?',       name: 'toolbox-search', component: Toolbox},
-    {path: '/set/:set?',            name: 'toolbox-set', component: Toolbox},
-    {path: '/:tag?',                name: 'toolbox', component: Toolbox},
+    {path: '/all',                    name: 'toolbox-all', component: All},
+    {path: '/story', name: 'toolbox-story', component: Toolbox},
+    {path: '/tactic',         name: 'toolbox-tactic', component: Toolbox},
+    {path: '/principle',      name: 'toolbox-principle', component: Toolbox},
+    {path: '/theory',         name: 'toolbox-theory', component: Toolbox},
+    {path: '/methodology',    name: 'toolbox-methodology', component: Toolbox},
+    {path: '/saved',                  name: 'toolbox-saved', component: Toolbox},
+    //{path: '/search/:query?',       name: 'toolbox-search', component: Toolbox},
+    {path: '/set/:set?',              name: 'toolbox-set', component: Toolbox},
+    {path: '/:query?',                name: 'toolbox', component: Toolbox},
   ],
   scrollBehavior(to, from, savedPosition) {
     if (to.hash) {
@@ -160,6 +162,8 @@ Vue.mixin({
   },
 })
 
+// autocomplete-vue
+Vue.use(Autocomplete)
 
 // VueMeta
 Vue.use(VueMeta)

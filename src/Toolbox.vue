@@ -19,32 +19,34 @@
           <div :class="{tab: true, active: activeTab == 'collection'}" @click="activeTab = 'collection'">
             {{ collectionTab }}
           </div>
-          <!-- Extra tab for regions -->
+
+          <!-- Tab for regions -->
           <div v-if="routeCollection == 'story'" class="plain">
             {{ text['site.sentence.from'] }}
           </div>
           <div v-if="routeCollection == 'story'" :class="{tab: true, active: activeTab == 'region'}" @click="activeTab = 'region'">
             {{ text[`type.story.region.${routeRegion}`] }}
           </div>
-          <!-- Tab visisble for all except saved -->
+
+          <!-- Tab for sets -->
           <div v-if="routeCollection != 'saved'" class="plain">
             {{ text['site.sentence.about'] }}
           </div>
-          <div v-if="routeCollection != 'saved'"
-            :class="{tab: true, active: ['tag', 'set'].includes(activeTab)}"
-            @click="clickTagTab">
-            {{ ($route.params.tag && text[`tag.${routeTag}`])
-              || (routeCollection == 'set' && text[`set.${routeSet}`])
-              || $route.params.query
-              || text['site.sentence.everything'] }} 🔍
+          <div v-if="routeCollection == 'set'"
+            :class="{tab: true, active: activeTab == 'set'}"
+            @click="activeTab = 'set'">
+            {{ text[`set.${routeSet}`] }}
           </div>
+
+          <!-- TODO: Tab for saved (requires rethinking the sentence) -->
+
+          <search v-if="!['saved', 'set'].includes(routeCollection)" ref="search" :text="text['site.sentence.everything']" />
           <img v-if="routeCollection != ALL || routeTag != ALL" svg-inline class="bt-icon reset" src="./assets/reset.svg" :alt="text['site.sentence.reset']" @click="resetFilter">
-          <search ref="search" :text="text['site.search']" />
         </div>
       </div>
 
       <!-- FILTER WIDGET -->
-      <div :class="{'widget-wrapper': true, 'hidden': activeTab == 'tag' && hideTagsOnMobile}">
+      <div :class="{'widget-wrapper': true, 'hidden': hideFilterPane}">
         <div class="widget">
           <transition name="fade" mode="out-in">
 
@@ -127,6 +129,7 @@
             </div>
 
             <!-- BY TAG -->
+            <!--
             <div v-if="activeTab == 'tag'" :key="'tag'" class="by by-tag">
               <p v-for="(tag, i) in sortedTags" :key="i"
                 :class="{active: routeTag == tag, disabled: !tagsAvailable.has(tag)}"
@@ -134,6 +137,7 @@
                 {{ text[`tag.${tag}`] }}
               </p>
             </div>
+            -->
           </transition>
         </div>
       </div>
@@ -173,7 +177,7 @@ export default {
   data: () => ({
     ALL,
     activeTab: 'collection',
-    hideTagsOnMobile: true,
+    hideFilterPane: false,
     regions: ['africa', 'asia', 'europe', 'latin-america-and-the-caribbean', 'middle-east', 'north-america', 'oceania'],
     sets, // hard-coded in sets.json, GOTO: mise-en-place.py
     types: ['story', 'tactic', 'principle', 'theory', 'methodology'],
@@ -268,16 +272,6 @@ export default {
     resetFilter() {
       this.activeTab = 'collection'
       this.$router.push({name: 'toolbox'})
-    },
-    clickTagTab() { // A minor kludge to support initially hidden tags on mobile
-      let oldActiveTab = this.activeTab
-      this.activeTab = this.routeCollection == 'set' ? 'set' : 'tag'
-      // If tab is already active, toggle it, otherwise make it visible
-      if (oldActiveTab == this.activeTab) {
-        this.hideTagsOnMobile = !this.hideTagsOnMobile
-      } else {
-        this.hideTagsOnMobile = false
-      }
     },
     selectCollection(collection) {
       let name = `toolbox-${collection}`
@@ -437,7 +431,7 @@ export default {
   .plain {
     flex: 1 1 auto;
     @include breakpoint($md-up) {
-      margin-bottom: .25rem;
+      margin-bottom: .65rem;
     }
     @include breakpoint($sm) {
       flex: 0 0 27%;
@@ -456,8 +450,8 @@ export default {
     font-weight: bold;
 
     flex: 1 1 auto;
-    padding: .5rem 1rem .5rem 1rem;
-    margin: 0 .5rem -2px .5rem;
+    padding: .5rem 1rem .75rem 1rem;
+    margin: 0 .5rem -1px .5rem;
 
     border-radius: 5px 5px 0 0;
     border-right: 1px solid $bgdark1;
