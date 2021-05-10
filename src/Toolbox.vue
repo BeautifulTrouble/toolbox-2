@@ -1,10 +1,10 @@
 <template>
   <div class="toolbox">
-    <div v-if="true" :class="['toolbox-hero', routeCollection]">
+    <div v-if="true" :class="['toolbox-hero', collection]">
       <div class="inner">
-        <p class="h1">{{ routeCollection == ALL ? 'Toolbox' : text[`type.${routeCollection}.plural`] }}:</p>
+        <p class="h1">{{ collection == ALL ? text['site.toolbox'] : text[`type.${collection}.plural`] }}:</p>
         <p>
-          {{ text[`type.${routeCollection}.description`] || 'About our toolbox blurb' }}
+          {{ text[`type.${collection}.description`] || '' }}
         </p>
       </div>
     </div>
@@ -20,28 +20,37 @@
             {{ collectionTab }}
           </div>
 
-          <!-- Tab for regions -->
-          <div v-if="routeCollection == 'story'" class="plain">
+          <!-- Label + tab for regions -->
+          <div v-if="collection == 'story'" class="plain">
             {{ text['site.sentence.from'] }}
           </div>
-          <div v-if="routeCollection == 'story'" :class="{tab: true, active: activeTab == 'region'}" @click="activeTab = 'region'">
+          <div v-if="collection == 'story'" :class="{tab: true, active: activeTab == 'region'}" @click="activeTab = 'region'">
             {{ text[`type.story.region.${routeRegion}`] }}
           </div>
 
-          <!-- Tab for sets -->
-          <div v-if="routeCollection != 'saved'" class="plain">
+          <!-- Label for all collection search + sets -->
+          <div v-if="collection != 'saved'" class="plain">
             {{ text['site.sentence.about'] }}
           </div>
-          <div v-if="routeCollection == 'set'"
+
+          <!-- TODO: Label for saved -->
+          <!-- TODO: Tab for saved -->
+
+          <!-- Tab for sets -->
+          <div v-if="collection == 'set'"
             :class="{tab: true, active: activeTab == 'set'}"
             @click="activeTab = 'set'">
             {{ text[`set.${routeSet}`] }}
           </div>
 
-          <!-- TODO: Tab for saved (requires rethinking the sentence) -->
+          <!-- Search when collection is neither saved nor set -->
+          <search v-if="!['saved', 'set'].includes(collection)" ref="search" :text="text['site.sentence.everything']" />
 
-          <search v-if="!['saved', 'set'].includes(routeCollection)" ref="search" :text="text['site.sentence.everything']" />
-          <img v-if="routeCollection != ALL || routeTag != ALL" svg-inline class="bt-icon reset" src="./assets/reset.svg" :alt="text['site.sentence.reset']" @click="resetFilter">
+          <!-- Show reset when any filters are applied -->
+          <img v-if="collection || query || region || set || tag"
+            svg-inline class="bt-icon reset" src="./assets/reset.svg"
+            :alt="text['site.sentence.reset']"
+            @click="resetFilter">
         </div>
       </div>
 
@@ -53,7 +62,7 @@
             <!-- BY COLLECTION -->
             <div class="by by-collection" v-if="activeTab == 'collection'">
               <div v-for="type in types" :key="type"
-                 :class="{block: true, [type]: true, active: routeCollection == type}" @click="selectCollection(type)">
+                 :class="{block: true, [type]: true, active: collection == type}" @click="selectCollection(type)">
                 <img svg-inline v-if="type == 'tactic'" class="bt-icon" src="./assets/tactic.svg">
                 <img svg-inline v-if="type == 'theory'" class="bt-icon" src="./assets/theory.svg">
                 <img svg-inline v-if="type == 'story'" class="bt-icon" src="./assets/story.svg">
@@ -62,20 +71,20 @@
                 <div class="h3">{{ text[`type.${type}.plural`] }}</div>
                 <p class="hidden">{{ text[`type.${type}.description`] }}</p>
               </div>
-              <div :class="{block: true, set: true, active: routeCollection == 'set'}" @click="selectCollection('set')">
+              <div :class="{block: true, set: true, active: collection == 'set'}" @click="selectCollection('set')">
                 <img svg-inline class="bt-icon" src="./assets/set.svg">
                 <div class="h3">{{ text['type.set.plural'] }}</div>
                 <p class="hidden">{{ text['type.set.description'] }}</p>
               </div>
 
               <!-- mobile-only -->
-              <div :class="{block: true, saved: true, active: routeCollection == 'saved', 'mobile-only': true}"
+              <div :class="{block: true, saved: true, active: collection == 'saved', 'mobile-only': true}"
                 @click="selectCollection('saved')">
                 <img svg-inline class="bt-icon" src="./assets/favorite-active.svg">
                 <div class="h3">{{ text['type.saved'] }}</div>
               </div>
-              <div v-if="routeCollection == 'saved'"
-                :class="{block: true, saved: true, active: routeCollection == 'saved', 'mobile-only': true}">
+              <div v-if="collection == 'saved'"
+                :class="{block: true, saved: true, active: collection == 'saved', 'mobile-only': true}">
                 <span @click.stop="$store.state.savedTools.size && downloadPDF($store.state.savedTools)"
                   :class="{download: true, disabled: !$store.state.savedTools.size}"
                   :title="text[$store.state.savedTools.size ? 'site.downloadpdf' : 'site.saved.description']">
@@ -84,7 +93,7 @@
                 </span>
               </div>
               <!-- mobile-hidden -->
-              <div :class="{block: true, saved: true, active: routeCollection == 'saved', 'mobile-hidden': true}" @click="selectCollection('saved')">
+              <div :class="{block: true, saved: true, active: collection == 'saved', 'mobile-hidden': true}" @click="selectCollection('saved')">
                 <img svg-inline class="bt-icon" src="./assets/favorite-active.svg">
                 <div class="h3">{{ text['type.saved'] }}</div>
                 <p><!--{{ text['type.saved.description'] }}-->
@@ -145,8 +154,8 @@
 
     <transition-group name="tools-list" tag="div" class="tools">
       <tool-tile v-for="tool in filteredTools" :key="tool.slug" :tool="tool" :text="text" />
-      <tool-tile v-if="!['set', 'saved'].includes(routeCollection)" :key="1" :text="text" :alt="'suggest'" />
-      <tool-tile v-if="routeCollection == 'saved' && !$store.state.savedTools.size" :key="2" :text="text" :alt="'nosave'" />
+      <tool-tile v-if="!['set', 'saved'].includes(collection)" :key="1" :text="text" :alt="'suggest'" />
+      <tool-tile v-if="collection == 'saved' && !$store.state.savedTools.size" :key="2" :text="text" :alt="'nosave'" />
       <div class="filler-squares" :key="3">
         <div class="filler-square tool-tile" />
         <div class="filler-square tool-tile" />
@@ -170,6 +179,7 @@ import textByLang from './text'
 
 
 const ALL = 'all'
+  /* eslint-disable */
 
 
 export default {
@@ -179,14 +189,18 @@ export default {
     activeTab: 'collection',
     hideFilterPane: false,
     regions: ['africa', 'asia', 'europe', 'latin-america-and-the-caribbean', 'middle-east', 'north-america', 'oceania'],
-    sets, // hard-coded in sets.json, GOTO: mise-en-place.py
+    sets, // hard-coded in sets.json, SEE: mise-en-place.py
     types: ['story', 'tactic', 'principle', 'theory', 'methodology'],
+
+    query: null,
+    tab: 'collection',
   }),
   components: {
     ToolTile,
     Search,
   },
   computed: {
+    // @@@ OLD @@@
     filteredToolsAllTags() {
       if (this.$route.name == 'toolbox-search' && this.$route.params.query) {
         return this.$store.state.searchResults.map(k => this.$store.state.toolsBySlug[k])
@@ -194,14 +208,14 @@ export default {
 
       //let tools = this.$store.state.tools.filter(t => /(full|gallery|snapshot)/.test(t['module-type-effective']))
       let tools = this.$store.state.tools
-      if (this.routeCollection == 'saved') {
+      if (this.collection == 'saved') {
         tools = tools.filter(t => this.$store.state.savedTools.has(t.slug))
-      } else if (this.routeCollection == 'set') {
+      } else if (this.collection == 'set') {
         tools = tools.filter(t => (this.sets[this.routeSet] || []).includes(t.slug))
-      } else if (this.config.toolTypes.includes(this.routeCollection)) {
-        tools = tools.filter(t => t.type == this.routeCollection)
+      } else if (this.config.toolTypes.includes(this.collection)) {
+        tools = tools.filter(t => t.type == this.collection)
       }
-      if (this.routeCollection == 'story' && this.routeRegion != ALL) {
+      if (this.collection == 'story' && this.routeRegion != ALL) {
         tools = tools.filter(t => {
           let regionSlugs = t.regions.map(this.slugify) || []
           return regionSlugs.includes(this.routeRegion) || regionSlugs.includes('worldwide')
@@ -209,6 +223,7 @@ export default {
       }
       return tools
     },
+    // @@@ OLD @@@
     filteredTools() {
       // TODO: why does the toolbox in other languages show snapshots?
       //       is it because some Array isn't triggering the re-compute of these propreties?
@@ -217,30 +232,52 @@ export default {
         tools = tools.filter(t => (t.tags || []).includes(this.routeTag))
       return tools
     },
-    routeSet() {
+    // @@@ OLD @@@
+    __routeSet() {
       return this.$route.params.set || Object.keys(this.sets)[0]
     },
-    routeCollection() {
+    set() {
+      return this.$route.params.set || Object.keys(this.sets)[0]
+    },
+
+    // @@@ OLD @@@
+    _routeCollection() {
       return this.$route.name.replace(/^toolbox-?/, '') || ALL
     },
+    collection() {
+      return this.$route.params.collection
+    },
+
+    // @@@ OLD @@@
     routeRegion() {
       return this.$route.params.region || ALL
     },
-    routeTag() {
-      return this.$route.params.tag || ALL
+    region() {
+      return this.$route.params.region
     },
+
+    // @@@ OLD @@@
+    routeTag() {
+      return this.$route.params.tag
+    },
+    tag() {
+      return this.$route.params.tag
+    },
+    // @@@ OLD @@@
     sortedTags() {
       return Object.keys(this.text)
               .filter(k => /^tag\./.test(k))
               .sort((a, b) => this.text[a].localeCompare(this.text[b]))
               .map(t => t.slice(4))
     },
+    // @@@ OLD @@@
     collectionTab() {
       if (this.$route.name == 'toolbox' || (this.$route.name == 'toolbox-search' && !this.$route.params.query)) {
         return this.text['site.sentence.everything']
       }
-      return this.text[`type.${this.routeCollection}${['saved', 'set', 'search'].includes(this.routeCollection) ? '' : '.plural'}`]
+      return this.text[`type.${this.collection || ALL}${['saved', 'set', 'search'].includes(this.collection) ? '' : '.plural'}`]
     },
+    // @@@ OLD @@@
     tagsAvailable() {
       // Tags available for the current level of filtering
       if (this.$route.name == 'toolbox-search' && this.$route.params.query) {
@@ -250,15 +287,19 @@ export default {
         .map(t => t.tags)
         .reduce((a, c) => c !== undefined ? new Set([...a, ...c]) : a, new Set([]))
     },
+    // @@@ OLD @@@
     text() {
       return textByLang[this.$store.state.lang] || {}
     },
+    // @@@ OLD @@@
     validRegions() {
       return new Set([ALL, ...this.regions])
     },
+    // @@@ OLD @@@
     validSets() {
       return new Set(Object.keys(this.sets))
     },
+    // @@@ OLD @@@
     validTags() {
       // Tags available in entire toolbox (for the sake of the route guard)
       return new Set(
@@ -269,10 +310,12 @@ export default {
     },
   },
   methods: {
+    // @@@ OLD @@@
     resetFilter() {
       this.activeTab = 'collection'
       this.$router.push({name: 'toolbox'})
     },
+    // @@@ OLD @@@
     selectCollection(collection) {
       let name = `toolbox-${collection}`
       if (this.$route.name != name)
@@ -280,22 +323,26 @@ export default {
       else
         this.$router.push({name: 'toolbox'})
     },
+    // @@@ OLD @@@
     selectRegion(region) {
       if (this.$route.params.region != region)
         this.$router.push({name: this.$route.name, params: {region}})
     },
+    // @@@ OLD @@@
     selectSet(set) {
       if (this.$route.params.set != set)
         this.$router.push({name: this.$route.name, params: {set}})
     },
+    // @@@ OLD @@@
     selectTag(tag) {
       tag = this.$route.params.tag != tag ? tag : undefined
       delete this.$route.params.query
       this.$router.push({
-        name: [ALL, 'search'].includes(this.routeCollection) ? 'toolbox' : this.$route.name,
+        name: [ALL, 'search'].includes(this.collection) ? 'toolbox' : this.$route.name,
         params: {...this.$route.params, tag}
       })
     },
+    // @@@ OLD @@@
     guardRoute(route, next) { // eslint-disable-next-line
       let { query, region, set, tag } = route.params
 
@@ -312,11 +359,11 @@ export default {
         this.hideTagsOnMobile = true
       } else if (route.name == 'toolbox-search') {
         this.activeTab = 'tag'
-      } else if (this.routeCollection == 'set') {
+      } else if (this.collection == 'set') {
         this.activeTab = 'set'
-      } else if (this.routeCollection == 'story') {
+      } else if (this.collection == 'story') {
         this.activeTab = 'region'
-      } else if ([ALL, 'saved'].includes(this.routeCollection)) {
+      } else if ([ALL, 'saved'].includes(this.collection)) {
         this.activeTab = 'collection'
       } else {
         //this.activeTab = 'tag'
@@ -325,6 +372,9 @@ export default {
       }
       next()
     },
+    _guardRoute(route, next) {
+      //this.activeTab =
+    }
   },
   beforeRouteUpdate(to, from, next) {
     this.guardRoute(to, next)

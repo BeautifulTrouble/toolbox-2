@@ -29,19 +29,24 @@ const router = new Router({
   base: '/',
   routes: [
     // Tool pages
-    {path: '/tool',                   redirect: {name: 'toolbox'}},
-    {path: '/tool/:slug',             name: 'tool', component: Tool},
+    {path: '/tool',         redirect: {name: 'toolbox'}},
+    {path: '/tool/:slug',   name: 'tool', component: Tool},
     // Toolbox filtering
-    {path: '/all',                    name: 'toolbox-all', component: All},
-    {path: '/story', name: 'toolbox-story', component: Toolbox},
-    {path: '/tactic',         name: 'toolbox-tactic', component: Toolbox},
-    {path: '/principle',      name: 'toolbox-principle', component: Toolbox},
-    {path: '/theory',         name: 'toolbox-theory', component: Toolbox},
-    {path: '/methodology',    name: 'toolbox-methodology', component: Toolbox},
-    {path: '/saved',                  name: 'toolbox-saved', component: Toolbox},
+    {path: '/all',          name: 'toolbox-all', component: All},
+    {path: '/:collection',  name: 'toolbox', component: Toolbox},
+
+    /* Routes to be merged
+    {path: '/story',        name: 'toolbox-story', component: Toolbox},
+    {path: '/tactic',       name: 'toolbox-tactic', component: Toolbox},
+    {path: '/principle',    name: 'toolbox-principle', component: Toolbox},
+    {path: '/theory',       name: 'toolbox-theory', component: Toolbox},
+    {path: '/methodology',  name: 'toolbox-methodology', component: Toolbox},
+    {path: '/saved',        name: 'toolbox-saved', component: Toolbox},
+    {path: '/set',          name: 'toolbox-set', component: Toolbox},
+    */
+
     //{path: '/search/:query?',       name: 'toolbox-search', component: Toolbox},
-    {path: '/set/:set?',              name: 'toolbox-set', component: Toolbox},
-    {path: '/:query?',                name: 'toolbox', component: Toolbox},
+    //{path: '/:query?',      name: 'toolbox', component: Toolbox},
   ],
   scrollBehavior(to, from, savedPosition) {
     if (to.hash) {
