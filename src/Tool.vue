@@ -31,8 +31,8 @@
       <div class="breadcrumbs">
         <div class="inner">
           <div :class="tool.type">
-            <router-link to="/toolbox">{{ text['site.toolbox'] }}</router-link><span class="bullet">&bullet;</span>
-            <router-link :to="{name: `toolbox-${tool.type}`}">{{ text[`type.${tool.type}`] }}</router-link><span class="bullet">&bullet;</span>
+            <router-link :to="{name: 'toolbox'}">{{ text['site.toolbox'] }}</router-link><span class="bullet">&bullet;</span>
+            <router-link :to="{name: 'toolbox', params: {collection: tool.type}}">{{ text[`type.${tool.type}`] }}</router-link><span class="bullet">&bullet;</span>
             <router-link :to="{name: 'tool', params: {slug: tool.slug}}">{{ tool.title }}</router-link>
           </div>
         </div>
