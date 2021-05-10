@@ -2,7 +2,6 @@ import Vue from 'vue'
 
 import Autocomplete from '@trevoreyre/autocomplete-vue'
 import '@trevoreyre/autocomplete-vue/dist/style.css'
-// TODO: Axios requires promise polyfill for IE11
 import Axios from 'axios'
 import Router from 'vue-router'
 import Showdown from 'showdown'
@@ -115,7 +114,6 @@ const showdown = new Showdown.Converter({
 Vue.config.productionTip = false
 Vue.prototype.$http = Axios
 
-// TODO: Use IE shim for Intersection Observer API
 // This lazy-loader loads images on scroll (v-lazy directive)
 Vue.use(VueLazyload, {
   observer: true,
