@@ -28,12 +28,13 @@ const router = new Router({
   //mode: 'history',
   base: '/',
   routes: [
-    // Tool pages
     {path: '/tool',         redirect: {name: 'toolbox'}},
     {path: '/tool/:slug',   name: 'tool', component: Tool},
-    // Toolbox filtering
     {path: '/all',          name: 'toolbox-all', component: All},
-    {path: '/:collection?', name: 'toolbox', component: Toolbox},
+    // Match only the valid collections, and everything else will fall through
+    {path: '/:collection(story|tactic|principle|theory|methodology|saved|set)?',
+                            name: 'toolbox', component: Toolbox},
+    {path: '/*',            redirect: {name: 'toolbox'}},
 
     /* Routes to be merged
     {path: '/story',        name: 'toolbox-story', component: Toolbox},

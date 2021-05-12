@@ -2,14 +2,12 @@
   <div class="toolbox">
     <div :class="['toolbox-hero', collection]">
       <div class="inner">
-        <p class="h1">{{ collection ? text[`type.${collection}.plural`] : text['site.toolbox'] }}{{ collection ? ':' : '' }}</p>
-        <p>
-          {{ text[`type.${collection}.description`] || '' }}
-        </p>
+        <p class="h1">{{ collection != ALL ? (text[`type.${collection}.plural`] + ':') : text['site.toolbox'] }}</p>
+        <p>{{ text[`type.${collection}.description`] || '' }}</p>
       </div>
     </div>
-    <div class="filter-pane">
 
+    <div class="filter-pane">
       <!-- SENTENCE (labels and tabs) -->
       <div class="sentence-wrapper">
         <div class="sentence">
@@ -37,14 +35,22 @@
           <!-- TODO: Tab for saved -->
 
           <!-- Tab for sets -->
+          <!--
           <div v-if="collection == 'set'"
             :class="{tab: true, active: tab == 'set'}"
             @click="tab = 'set'">
             {{ text[`set.${set}`] }}
           </div>
+          -->
 
           <!-- Search when collection is neither saved nor set -->
+          <!--
           <search v-if="!['saved', 'set'].includes(collection)" ref="search" :text="text['site.sentence.everything']" />
+          -->
+          <autocomplete class="autocomplete-wrapper" v-if="collection != 'saved'"
+            @click="tab = collection == 'set' ? 'set' : tab"
+            :placeholder="text[collection == 'set' ? `set.${set}` : 'site.sentence.everything']"
+            :search="search" />
 
           <!-- Show reset when any filters are applied (set/region have default values and therefore don't count) -->
           <img v-if="collection || query || tag"
@@ -154,7 +160,7 @@
     </div>
 
     <transition-group name="tools-list" tag="div" class="tools">
-      <tool-tile v-for="tool in filteredTools" :key="tool.slug" :tool="tool" :text="text" />
+      <tool-tile v-for="tool in filteredToolsByCollection" :key="tool.slug" :tool="tool" :text="text" />
       <tool-tile v-if="!['set', 'saved'].includes(collection)" :key="1" :text="text" :alt="'suggest'" />
       <tool-tile v-if="collection == 'saved' && !$store.state.savedTools.size" :key="2" :text="text" :alt="'nosave'" />
       <div class="filler-squares" :key="3">
@@ -188,7 +194,6 @@ export default {
   data: () => ({
     ALL,
     activeTab: 'collection',
-    hideFilterPane: false,
     regions: ['africa', 'asia', 'europe', 'latin-america-and-the-caribbean', 'middle-east', 'north-america', 'oceania'],
     sets, // hard-coded in sets.json, SEE: mise-en-place.py
     types: ['story', 'tactic', 'principle', 'theory', 'methodology'],
@@ -236,6 +241,49 @@ export default {
         tools = tools.filter(t => (t.tags || []).includes(this.tag))
       return tools
     },
+
+    // A filter for every collection type
+    filtersByCollection() {
+      return Object.assign(
+        Object.fromEntries(this.types.map(T => [T, t => t.type == T])),
+        {
+          [ALL]: t => true,
+          'saved': t => this.$store.state.savedTools.has(t.slug),
+          'set': t => (this.sets[this.set] || []).includes(t.slug),
+          'story': t => {
+            let regionSlugs = (t.regions || []).map(this.slugify)
+            console.log(t, 'regionSlugs', regionSlugs)
+            return t.type == 'story' && (
+              this.region == ALL ||
+              regionSlugs.includes('worldwide') ||
+              regionSlugs.includes(this.region)
+            )
+          }
+        })
+    },
+
+    // Stage 1 tool filtering (before tag/query is applied)
+    filteredToolsByCollection() {
+      return (this.$store.state.tools || []).filter(this.filtersByCollection[this.collection])
+    },
+
+    // Stage 2 tool filtering (tag/query)
+    filteredTools() {
+    },
+
+    /*
+      let tools = this.$store.state.tools
+      if (this.collection == 'saved') {
+        tools = tools.filter(t => this.$store.state.savedTools.has(t.slug))
+      } else if (this.collection == 'set') {
+        tools = tools.filter(t => (this.sets[this.set] || []).includes(t.slug))
+      } else if (this.config.toolTypes.includes(this.collection)) {
+        tools = tools.filter(t => t.type == this.collection)
+        if (this.collection == 'story' && this.routeRegion != ALL) {
+          tools = tools.filter(t =>
+    },
+    */
+
     // @@@ OLD @@@
     __routeSet() {
       return this.$route.params.set || Object.keys(this.sets)[0]
@@ -249,7 +297,7 @@ export default {
       return this.$route.name.replace(/^toolbox-?/, '') || ALL
     },
     collection() {
-      return this.$route.params.collection
+      return this.$route.params.collection || ALL
     },
 
     // @@@ OLD @@@
@@ -315,8 +363,37 @@ export default {
           .map(k => k.slice(4))
       )
     },
+    allTags() {
+      return new Set(
+        Object.keys(this.text)
+          .filter(/^tag\./.test)
+          .map(k => k.slice(4))
+      )
+    },
+    // NEW
+    autocompleteTags() {
+      return
+    },
+    autocompleteTitles() {
+      return Object.fromEntries((this.$store.state.tools || {})
+        .map(tool => [`+title:${tool['title']}`, tool['title']]))
+    },
+    autocompleteItems() {
+      if (!this.$store.state.tools) return {}
+      return Object.assign({},
+        this.autocompleteTitles,
+        //Object.fromEntries(this.allTags.map(tag => [
+        //Object.fromEntries(this.$store.state.tools.map(t => [`+byline:${t['byline']}`, t['byline']])),
+      )
+    },
   },
   methods: {
+    search(text) {
+      if (!text) return []
+      text = text.toLocaleLowerCase()
+      return Object.values(this.autocompleteItems).filter(i => i && i.toLocaleLowerCase().includes(text))
+    },
+
     // @@@ OLD @@@
     resetFilter() {
       this.activeTab = 'collection'
@@ -342,11 +419,16 @@ export default {
         this.$router.push({name: 'toolbox'})
     },
     selectCollection(collection) {
-      if (collection != this.$route.params.collection) {
+      if (collection == this.collection && ['story', 'set'].includes(collection)) {
+        // Collection already active, but there's another tab to show
+        this.tab = collection
+      } else if (collection != this.collection) {
+        // Different collection selected
         this.tab = ['story', 'set'].includes(collection) ? collection : 'collection'
         this.reset(false)
         this.$router.push({name: 'toolbox', params: this.$route.params.collection != collection ? {collection} : {}})
       } else {
+        // Collection already active, no other tab to show (Q: deactivate or no?)
         this.reset()
       }
     },
@@ -521,6 +603,7 @@ export default {
   }
   .plain {
     flex: 1 1 auto;
+    text-align: center;
     @include breakpoint($md-up) {
       margin-bottom: .65rem;
     }
@@ -587,6 +670,30 @@ export default {
       right: 1rem;
       top: -2.5rem;
     }
+  }
+}
+.autocomplete-wrapper {
+  flex: 1 5 auto;
+  margin: 0 .5rem;
+  z-index: 3;
+}
+.autocomplete {
+  .autocomplete-input {
+    font-family: ff-good-headline-web-pro-condensed, sans-serif;
+    font-size: 1.4rem;
+    text-transform: uppercase;
+    color: $text;
+    padding: .05rem 1rem .3rem 3rem;
+    border-radius: 5px 5px 0 0 ;
+    &[aria-expanded=true], &:focus {
+      box-shadow: 0 0 .5rem rgba(0,0,0,.16) inset;
+    }
+    &::-webkit-input-placeholder {
+      color: $text;
+    }
+  }
+  .autocomplete-result-list {
+    overflow-x: hidden;
   }
 }
 .widget-wrapper {
