@@ -77,6 +77,7 @@ export default {
   overflow: hidden;
   flex: 0 0 18rem;
   height: 18rem;
+  border-radius: .5rem;
   >div {
     height: 100%;
   }
