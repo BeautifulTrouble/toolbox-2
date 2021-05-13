@@ -48,12 +48,13 @@
           <search v-if="!['saved', 'set'].includes(collection)" ref="search" :text="text['site.sentence.everything']" />
           -->
           <autocomplete class="autocomplete-wrapper" v-if="collection != 'saved'"
+            ref="search"
             @click="tab = collection == 'set' ? 'set' : tab"
             :placeholder="text[collection == 'set' ? `set.${set}` : 'site.sentence.everything']"
             :search="search" />
 
           <!-- Show reset when any filters are applied (set/region have default values and therefore don't count) -->
-          <img v-if="collection || query || tag"
+          <img v-if="collection != ALL || query || tag"
             svg-inline class="bt-icon reset" src="./assets/reset.svg"
             :alt="text['site.sentence.reset']"
             @click="reset">
@@ -61,7 +62,7 @@
       </div>
 
       <!-- FILTER WIDGET (panels corresponding to tabs) -->
-      <div :class="{'widget-wrapper': true}">
+      <div class="widget-wrapper">
         <div class="widget">
           <transition name="fade" mode="out-in">
 
@@ -163,16 +164,6 @@
       <tool-tile v-for="tool in filteredToolsByCollection" :key="tool.slug" :tool="tool" :text="text" />
       <tool-tile v-if="!['set', 'saved'].includes(collection)" :key="1" :text="text" :alt="'suggest'" />
       <tool-tile v-if="collection == 'saved' && !$store.state.savedTools.size" :key="2" :text="text" :alt="'nosave'" />
-      <div class="filler-squares" :key="3">
-        <div class="filler-square tool-tile" />
-        <div class="filler-square tool-tile" />
-        <div class="filler-square tool-tile" />
-        <div class="filler-square tool-tile" />
-        <div class="filler-square tool-tile" />
-        <div class="filler-square tool-tile" />
-        <div class="filler-square tool-tile" />
-        <div class="filler-square tool-tile" />
-      </div>
     </transition-group>
 
   </div>
@@ -271,47 +262,16 @@ export default {
     filteredTools() {
     },
 
-    /*
-      let tools = this.$store.state.tools
-      if (this.collection == 'saved') {
-        tools = tools.filter(t => this.$store.state.savedTools.has(t.slug))
-      } else if (this.collection == 'set') {
-        tools = tools.filter(t => (this.sets[this.set] || []).includes(t.slug))
-      } else if (this.config.toolTypes.includes(this.collection)) {
-        tools = tools.filter(t => t.type == this.collection)
-        if (this.collection == 'story' && this.routeRegion != ALL) {
-          tools = tools.filter(t =>
-    },
-    */
-
-    // @@@ OLD @@@
-    __routeSet() {
-      return this.$route.params.set || Object.keys(this.sets)[0]
-    },
     set() {
       return this.set_ || Object.keys(this.sets)[0]
     },
-
-    // @@@ OLD @@@
-    _routeCollection() {
-      return this.$route.name.replace(/^toolbox-?/, '') || ALL
-    },
     collection() {
       return this.$route.params.collection || ALL
-    },
-
-    // @@@ OLD @@@
-    routeRegion() {
-      return this.$route.params.region || ALL
     },
     region() {
       return this.region_ || ALL
     },
 
-    // @@@ OLD @@@
-    routeTag() {
-      return this.$route.params.tag
-    },
     // @@@ OLD @@@
     sortedTags() {
       return Object.keys(this.text)
@@ -408,6 +368,7 @@ export default {
         this.tab = 'collection'
         this.$router.push({name: 'toolbox'})
       }
+      this.$refs.search.setValue('')
     },
 
     // @@@ OLD @@@
@@ -427,9 +388,6 @@ export default {
         this.tab = ['story', 'set'].includes(collection) ? collection : 'collection'
         this.reset(false)
         this.$router.push({name: 'toolbox', params: this.$route.params.collection != collection ? {collection} : {}})
-      } else {
-        // Collection already active, no other tab to show (Q: deactivate or no?)
-        this.reset()
       }
     },
     // @@@ OLD @@@
@@ -438,11 +396,7 @@ export default {
         this.$router.push({name: this.$route.name, params: {region}})
     },
     selectRegion(region) {
-      if (this.region_ != region) {
-        this.region_ = region
-      } else {
-        this.region_ = null
-      }
+      this.region_ = this.region_ == region ? null : region
     },
     // @@@ OLD @@@
     _selectSet(set) {
@@ -450,9 +404,7 @@ export default {
         this.$router.push({name: this.$route.name, params: {set}})
     },
     selectSet(set) {
-      if (this.set_ != set) {
-        this.set_ = set
-      }
+      this.set_ = set
     },
 
     // @@@ OLD @@@
@@ -519,7 +471,7 @@ export default {
   background-image: url(https://beautifulrising.org/hero-pattern-#{$type}.jpg);
 }
 .toolbox-hero {
-  background: linear-gradient(to right, orange , yellow, green, cyan, blue, violet);
+  background-image: url(https://beautifulrising.org/hero-pattern-all.jpg);
   background-size: cover;
   &.tactic { @include hero-particulars(tactic); }
   &.theory { @include hero-particulars(theory); }
@@ -545,7 +497,7 @@ export default {
     }
   }
   color: white !important;
-  height: 20rem;
+  height: 12rem;
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
@@ -553,7 +505,7 @@ export default {
   position: relative;
   &::before {
     content: "";
-    background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,.3) 60%, rgba(0,0,0,.5) 100%);
+    background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,.3) 70%, rgba(0,0,0,.7) 100%);
     position: absolute;
     top: 0; left: 0;
     bottom: 0; right: 0;
@@ -562,6 +514,8 @@ export default {
 .toolbox {
   //padding-top: 4rem;
   width: 100%;
+  background-color: $bgdark4;
+  min-height: 100vh;
 
   // Mobile header adjustments for the Squarespace theme
   @media #{$ss-mobile-header} {
@@ -575,6 +529,7 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: center; // horizontally center
+  color: $bggray;
 }
 .sentence-wrapper {
   min-height: 4rem;
@@ -624,45 +579,41 @@ export default {
     font-weight: bold;
 
     flex: 1 1 auto;
-    padding: .5rem 1rem .75rem 1rem;
-    margin: 0 .5rem -1px .5rem;
-
+    padding: .5rem 1rem .7rem 1rem;
+    margin: 0 .75rem 0 .75rem;
+    border-top: .5rem solid black;
     border-radius: 5px 5px 0 0;
-    border-right: 1px solid $bgdark1;
-    background: linear-gradient(180deg, $bggray 75%, darken($bggray, 1%) 95%, darken($bggray, 8%) 100%);
-    color: $bgdark3;
+
+    background: black;
+    color: $text;
 
     transition: all .1s linear;
     @include breakpoint($md) {
       padding: .5rem .5rem;
     }
     @include breakpoint($sm) {
-      border-radius: 5px;
       flex: 0 0 73%;
       margin: 0;
     }
     &.active {
-      color: $text;
-      background: $bggray;
-      border-right: 1px solid $bgdark2;
-      z-index: 1;
-      @include breakpoint($sm) {
-        background: linear-gradient(180deg, $bggray 75%, darken($bggray, 1%) 95%, darken($bggray, 8%) 100%);
-      }
+      color: white;
+      border-top: .5rem solid $bgdark3;
     }
   }
   .bt-icon {
     flex: 0 0 2.5rem; // width + margin
-    margin: .5rem 0;
-    margin-inline-start: .5rem;
-    width: 1.5rem;
-    height: 1.5rem;
+    margin: .65rem 0;
+    //margin-inline-start: .5rem;
+    width: 1.7rem;
+    height: 1.7rem;
     cursor: pointer;
-    fill: $text;
+    fill: $bggray;
+    transform: rotate(-32deg);
     @include breakpoint($upper) {
-      transition: fill .2s linear;
+      transition: transform .2s linear;
       &:hover {
-        fill: black;
+        transform: scale(1.25) rotate(-60deg);
+        fill: white;
       }
     }
     @include breakpoint($sm) {
@@ -676,6 +627,15 @@ export default {
   flex: 1 5 auto;
   margin: 0 .5rem;
   z-index: 3;
+  position: relative;
+  &::after {
+    content: "";
+    width: 3rem;
+    top: .5rem; right: 0;
+    bottom: .5rem;
+    background: linear-gradient(to right, transparent, black);
+    position: absolute;
+  }
 }
 .autocomplete {
   .autocomplete-input {
@@ -683,33 +643,44 @@ export default {
     font-size: 1.4rem;
     text-transform: uppercase;
     color: $text;
-    padding: .05rem 1rem .3rem 3rem;
-    border-radius: 5px 5px 0 0 ;
+    padding: .1rem 1rem .4rem 3rem;
+    background-color: black;
+    background-image: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjNmI2YjZiIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+PGNpcmNsZSBjeD0iMTEiIGN5PSIxMSIgcj0iOCIvPjxwYXRoIGQ9Ik0yMSAyMWwtNC00Ii8+PC9zdmc+Cg==);
+
+    position: relative;
+    border: none;
+    border-top: .5rem solid black;
+    border-radius: .5rem .5rem 0 0;
     &[aria-expanded=true], &:focus {
+      color: white;
+      border-top: .5rem solid $bgdark3;
       box-shadow: 0 0 .5rem rgba(0,0,0,.16) inset;
+      background-image: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZmZmIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+PGNpcmNsZSBjeD0iMTEiIGN5PSIxMSIgcj0iOCIvPjxwYXRoIGQ9Ik0yMSAyMWwtNC00Ii8+PC9zdmc+);
     }
     &::-webkit-input-placeholder {
       color: $text;
     }
   }
+  .autocomplete-result {
+    background-image: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjNmI2YjZiIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+PGNpcmNsZSBjeD0iMTEiIGN5PSIxMSIgcj0iOCIvPjxwYXRoIGQ9Ik0yMSAyMWwtNC00Ii8+PC9zdmc+Cg==);
+  }
+  .autocomplete-result:hover, .autocomplete-result[aria-selected="true"] {
+    background-color: $bgdark4;
+  }
   .autocomplete-result-list {
     overflow-x: hidden;
+    background: black;
   }
 }
 .widget-wrapper {
-  border: 1px solid $bgdark1;
-  border-radius: 5px;
   width: 100%;
   max-width: 65rem;
+  position: relative;
+  border-radius: .5rem .5rem 0 0 ;
+  background-color: black;
+  padding: .5rem;
 }
 .widget {
-  background-color: $bggray;
-
-  border-left: 1px solid white;
-  border-top: 1px solid white;
-
-  border-radius: 5px;
-  border-right: 1px solid $bgdark2;
   line-height: 1.1;
   font-size: .8rem;
 
@@ -724,21 +695,21 @@ export default {
   }
 
   .block {
-    border-right: 1px solid white;
-    border-bottom: 1px solid white;
-    height: 8rem;
+    height: 9rem;
 
     cursor: pointer;
-    flex: 2 0 14%;
+    flex: 2 0 12%;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    overflow-x: hidden;
-    padding: .5rem 1rem;
+    overflow: hidden;
+    border: 0px solid $bgdark4;
+    border-radius: .5rem;
+    transition: .1s linear all;
 
     @include breakpoint($lg) {
-      padding: .75rem;
+      //padding: .75rem;
     }
     @include breakpoint($md) {
       height: 12rem;
@@ -751,23 +722,36 @@ export default {
       flex: 0 0 20%;
     }
     &.active {
-      background: $bgdark1;
+      //background: $bgdark4;
+      border: .5rem solid $bgdark4;
     }
     &.set {
-      fill: $set;
+      svg {
+        fill: $set;
+        margin: 0;
+        max-height: 3rem;
+      }
       .h3 {
         color: $set;
+        margin: 0;
+      }
+      p {
+        margin: .5rem;
       }
     }
     &.saved {
       position: relative;
+      svg {
+        fill: white;
+        max-height: 2rem;
+      }
       @include breakpoint($sm) {
         &.active {
           border-right: unset;
         }
       }
       .download {
-        margin-top: 1rem;
+        margin-bottom: 1rem;
         display: flex;
         flex-direction: row;
         align-items: center;
@@ -796,10 +780,7 @@ export default {
       word-break: break-all; // Sets have editor-made names #BlackLivesMatter
     }
     p {
-      margin-inline-start: .5rem; // Subtly offset the left-aligned text
-      //margin-top: 0;
-      margin-top: .5rem;
-      margin-bottom: 0;
+      margin: .5rem .25rem 0 .25rem;
       //min-height: 45%;
       @include breakpoint($md) {
         margin-top: .25rem;
@@ -810,7 +791,7 @@ export default {
       }
     }
     .h3 {
-      margin: 0;
+      margin: 0 0 .5rem 0;
       text-align: center;
     }
   }
@@ -870,42 +851,6 @@ export default {
       p {
         min-height: 15%;
         text-align: center;
-      }
-    }
-  }
-  .by-tag {
-    padding: 1rem 1rem;
-    flex-wrap: wrap;
-    flex-direction: column;
-    height: 10rem;
-    justify-content: flex-start;
-    align-items: flex-start; // Don't expand to fill width (avoids stray taps)
-
-    @include breakpoint($md) {
-      height: 24rem;
-    }
-    @include breakpoint($sm) {
-      height: 30rem;
-      padding: 1rem 1rem;
-    }
-    p {
-      cursor: pointer;
-      //min-height: 1.25rem;
-      line-height: 1.3;
-      padding: 0 1rem;
-      margin: 0;
-      //display: inline-flex; // For the x buttons maybe?
-      &.active {
-        font-weight: bold;
-      }
-      &.disabled {
-        color: $bgdark2;
-        pointer-events: none;
-      }
-      @include breakpoint($sm) {
-        padding: 0;
-        font-size: .9rem;
-        min-height: 1.1rem;
       }
     }
   }
@@ -969,19 +914,6 @@ export default {
       border: 1px solid transparent;
     }
   }
-}
-.filler-squares {
-  z-index: -1;
-  position: absolute;
-  bottom: 0;
-  display: flex;
-  width: 100%;
-  overflow-x: hidden;
-  .filler-square {
-    border: 2px solid white;
-    box-shadow: 0 0 0 1px $bggray inset;
-  }
-
 }
 
 // Transition-group animation

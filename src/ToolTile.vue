@@ -141,19 +141,11 @@ export default {
   // Alt
   .alt {
     position: relative;
-    background: $bgdark2;
+    background: $bgdark5;
     .upper {
-      background: $bgdark3;
+      background: black;
     }
     height: 100%;
-    &::before {
-      content: "";
-      position: absolute;
-      top: 0; left: 0;
-      bottom: 0; right: 0;
-      border: .5rem dashed $bgdark3;
-      z-index: 2;
-    }
   }
   .suggest {
     .add {
@@ -196,7 +188,7 @@ export default {
     .hover-story { @include hover-particulars($story); }
     .hover-principle { @include hover-particulars($principle); }
     .hover-methodology { @include hover-particulars($methodology); }
-    .alt { @include hover-particulars($bgdark3); }
+    .alt { @include hover-particulars($bgdark5); }
   }
 }
 

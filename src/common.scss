@@ -21,7 +21,9 @@ $bglight: lighten($bggray, 20%);
 $bgdark1: darken($bggray, 5%);
 $bgdark2: darken($bggray, 20%);
 $bgdark3: darken($bggray, 30%);
-$set: #005577;
+$bgdark4: #2b2b2b;
+$bgdark5: darken($bgdark4, 10%);
+$set: $bgdark1;
 
 $ztop: 10;
 
