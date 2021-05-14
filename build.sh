@@ -3,13 +3,13 @@
 cd "$(dirname "$(realpath "$0")")"
 #cd src && ./mise-en-place.py && cd ..
 
-HOST=develop.beautifultrouble.org
+HOST=toolbox.beautifultrouble.org
 SCRIPT=build
 
 LDIR=bt
 LFILE=toolbox.js
 
-RDIR=develop.beautifultrouble.org
+RDIR=toolbox
 RFILE=toolbox.js
 
 
