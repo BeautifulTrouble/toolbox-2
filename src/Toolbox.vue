@@ -43,11 +43,13 @@
           </div>
           -->
 
-          <!-- Search when collection is neither saved nor set -->
+          <!-- OLD search -->
           <!--
           <search v-if="!['saved', 'set'].includes(collection)" ref="search" :text="text['site.sentence.everything']" />
           -->
-          <autocomplete class="autocomplete-wrapper" v-if="collection != 'saved'"
+
+          <!-- Search when collection is neither saved nor set -->
+          <autocomplete class="autocomplete-wrapper" v-show="collection != 'saved'"
             ref="search"
             @click="tab = collection == 'set' ? 'set' : tab"
             :placeholder="text[collection == 'set' ? `set.${set}` : 'site.sentence.everything']"
@@ -233,7 +235,7 @@ export default {
       return tools
     },
 
-    // A filter for every collection type
+    // Filter functions for every collection type
     filtersByCollection() {
       return Object.assign(
         Object.fromEntries(this.types.map(T => [T, t => t.type == T])),
@@ -296,7 +298,7 @@ export default {
     tagsAvailable() {
       // Tags available for the current level of filtering
       if (this.$route.name == 'toolbox-search' && this.$route.params.query) {
-        return this.validTags
+        return this.allTags
       }
       return this.filteredToolsAllTags
         .map(t => t.tags)
@@ -314,25 +316,24 @@ export default {
     validSets() {
       return new Set(Object.keys(this.sets))
     },
-    // @@@ OLD @@@
-    validTags() {
-      // Tags available in entire toolbox (for the sake of the route guard)
+    allTags() {
       return new Set(
         Object.keys(this.text)
           .filter(k => /^tag\./.test(k))
           .map(k => k.slice(4))
       )
     },
-    allTags() {
-      return new Set(
-        Object.keys(this.text)
-          .filter(/^tag\./.test)
-          .map(k => k.slice(4))
-      )
+    availableTags() {
+      return [...this.filteredToolsByCollection
+        .map(t => t.tags)
+        .reduce((a, c) => c !== undefined ? new Set([...a, ...c]) : a, new Set([]))
+      ].sort()
     },
     // NEW
     autocompleteTags() {
-      return
+      return this.availableTags
+        .map(s => this.text[`tag.${s}`])
+        .filter(t => t)
     },
     autocompleteTitles() {
       return Object.fromEntries((this.$store.state.tools || {})
@@ -341,7 +342,8 @@ export default {
     autocompleteItems() {
       if (!this.$store.state.tools) return {}
       return Object.assign({},
-        this.autocompleteTitles,
+        //this.autocompleteTitles,
+        this.autocompleteTags,
         //Object.fromEntries(this.allTags.map(tag => [
         //Object.fromEntries(this.$store.state.tools.map(t => [`+byline:${t['byline']}`, t['byline']])),
       )
@@ -349,20 +351,17 @@ export default {
   },
   methods: {
     search(text) {
-      if (!text) return []
+      //if (!text) return []
       text = text.toLocaleLowerCase()
+      // This should return some kind of object which tells how to filter
       return Object.values(this.autocompleteItems).filter(i => i && i.toLocaleLowerCase().includes(text))
     },
 
-    // @@@ OLD @@@
-    resetFilter() {
-      this.activeTab = 'collection'
-      this.$router.push({name: 'toolbox'})
-    },
     reset(reroute = true) {
+      // TODO: what should be done resetting tag and query?
       this.query = null
-      this.region_ = this.region
-      this.set_ = this.set
+      this.selectRegion()
+      this.selectSet()
       this.tag = null
       if (reroute && this.collection) {
         this.tab = 'collection'
@@ -371,14 +370,6 @@ export default {
       this.$refs.search.setValue('')
     },
 
-    // @@@ OLD @@@
-    _selectCollection(collection) {
-      let name = `toolbox-${collection}`
-      if (this.$route.name != name)
-        this.$router.push({name: `toolbox-${collection}`})
-      else
-        this.$router.push({name: 'toolbox'})
-    },
     selectCollection(collection) {
       if (collection == this.collection && ['story', 'set'].includes(collection)) {
         // Collection already active, but there's another tab to show
@@ -390,18 +381,8 @@ export default {
         this.$router.push({name: 'toolbox', params: this.$route.params.collection != collection ? {collection} : {}})
       }
     },
-    // @@@ OLD @@@
-    _selectRegion(region) {
-      if (this.$route.params.region != region)
-        this.$router.push({name: this.$route.name, params: {region}})
-    },
     selectRegion(region) {
-      this.region_ = this.region_ == region ? null : region
-    },
-    // @@@ OLD @@@
-    _selectSet(set) {
-      if (this.$route.params.set != set)
-        this.$router.push({name: this.$route.name, params: {set}})
+      this.region_ = region == this.region_ ? null : region
     },
     selectSet(set) {
       this.set_ = set
@@ -422,7 +403,7 @@ export default {
 
       // Reject invalid regions, tags, or sets. Fall back to top-level toolbox.
       if ((region && !this.validRegions.has(region)) ||
-          (tag && !this.validTags.has(tag)) ||
+          (tag && !this.allTags.has(tag)) ||
           (set && !this.validSets.has(set)))
         return next({name: 'toolbox', replace: true})
 
@@ -446,20 +427,6 @@ export default {
       }
       next()
     },
-    _guardRoute(route, next) {
-      //this.activeTab =
-    }
-  },
-  _beforeRouteUpdate(to, from, next) {
-    this.guardRoute(to, next)
-  },
-  _beforeRouteEnter(to, from, next) {
-    next(vm => vm.guardRoute(to, next))
-  },
-  created() {
-    // TODO: Determine whether this is needed in production (it's needed for the webpack dev server)
-    //this.guardRoute(this.$route, () => {})
-    console.log('created')
   },
 };
 </script>
@@ -484,8 +451,8 @@ export default {
     max-width: 1200px;
     div, p {
       position: relative;
-      //text-shadow: 1px 0px 6px rgba(black, .5);
       color: white !important;
+      //text-shadow: 1px 0px 6px rgba(black, .5);
     }
     p {
       max-width: 30%;
@@ -505,7 +472,8 @@ export default {
   position: relative;
   &::before {
     content: "";
-    background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,.3) 70%, rgba(0,0,0,.7) 100%);
+    background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,.2) 80%, rgba(0,0,0,.4) 100%);
+    //background: linear-gradient(180deg, rgba(255,255,255,0) 0%, rgba(255,255,255,.3) 70%, rgba(255,255,255,.7) 100%);
     position: absolute;
     top: 0; left: 0;
     bottom: 0; right: 0;
@@ -585,7 +553,7 @@ export default {
     border-radius: 5px 5px 0 0;
 
     background: black;
-    color: $text;
+    color: $bgdark3;
 
     transition: all .1s linear;
     @include breakpoint($md) {
@@ -642,7 +610,7 @@ export default {
     font-family: ff-good-headline-web-pro-condensed, sans-serif;
     font-size: 1.4rem;
     text-transform: uppercase;
-    color: $text;
+    color: $bgdark3;
     padding: .1rem 1rem .4rem 3rem;
     background-color: black;
     background-image: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjNmI2YjZiIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+PGNpcmNsZSBjeD0iMTEiIGN5PSIxMSIgcj0iOCIvPjxwYXRoIGQ9Ik0yMSAyMWwtNC00Ii8+PC9zdmc+Cg==);
@@ -670,6 +638,12 @@ export default {
   .autocomplete-result-list {
     overflow-x: hidden;
     background: black;
+    &::-webkit-scrollbar {
+      background-color: $bgdark4;
+    }
+    &::-webkit-scrollbar-thumb {
+      background-color: $bgdark3;
+    }
   }
 }
 .widget-wrapper {
