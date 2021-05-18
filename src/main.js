@@ -56,6 +56,7 @@ const router = new Router({
       )
     }
     // TODO: https://forum.vuejs.org/t/vue-router-page-position-when-navigating-pages/32885/4
+    if (to.name == 'toolbox' && from.name == 'toolbox') return
     return savedPosition ? savedPosition : {x: 0, y: 0}
   },
 })
