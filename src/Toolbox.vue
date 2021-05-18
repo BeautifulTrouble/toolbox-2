@@ -2,7 +2,7 @@
   <div class="toolbox">
     <div :class="['toolbox-hero', collection]">
       <div class="inner">
-        <p class="h1">{{ collection != ALL ? (text[`type.${collection}.plural`] + ':') : text['site.toolbox'] }}</p>
+        <div class="h1">{{ collection != ALL ? (text[`type.${collection}.plural`] + ':') : text['site.toolbox'] }}</div>
         <p>{{ text[`type.${collection}.description`] || '' }}</p>
       </div>
     </div>
@@ -34,26 +34,27 @@
           <!-- TODO: Label for saved -->
           <!-- TODO: Tab for saved -->
 
-          <!-- Tab for sets -->
-          <!--
-          <div v-if="collection == 'set'"
-            :class="{tab: true, active: tab == 'set'}"
-            @click="tab = 'set'">
-            {{ text[`set.${set}`] }}
-          </div>
-          -->
-
-          <!-- OLD search -->
-          <!--
-          <search v-if="!['saved', 'set'].includes(collection)" ref="search" :text="text['site.sentence.everything']" />
-          -->
-
           <!-- Search when collection is neither saved nor set -->
           <autocomplete class="autocomplete-wrapper" v-show="collection != 'saved'"
             ref="search"
             @click="tab = collection == 'set' ? 'set' : tab"
+            @submit="search"
+            auto-select
             :placeholder="text[collection == 'set' ? `set.${set}` : 'site.sentence.everything']"
-            :search="search" />
+            :search="autocomplete"
+            :get-result-value="getResultValue"
+            >
+            <template #result="{result, props}">
+              <li v-bind="props" :class="['autocomplete-result', result.icon]">
+                <img svg-inline v-if="result.icon == 'tactic'" class="bt-icon" src="./assets/tactic.svg">
+                <img svg-inline v-if="result.icon == 'theory'" class="bt-icon" src="./assets/theory.svg">
+                <img svg-inline v-if="result.icon == 'story'" class="bt-icon" src="./assets/story.svg">
+                <img svg-inline v-if="result.icon == 'principle'" class="bt-icon" src="./assets/principle.svg">
+                <img svg-inline v-if="result.icon == 'methodology'" class="bt-icon" src="./assets/methodology.svg">
+                {{ result.text }}
+              </li>
+            </template>
+          </autocomplete>
 
           <!-- Show reset when any filters are applied (set/region have default values and therefore don't count) -->
           <img v-if="collection != ALL || query || tag"
@@ -70,6 +71,10 @@
 
             <!-- Collection panel -->
             <div class="by by-collection" v-if="tab == 'collection'">
+              <div :class="{block: true, all: true, active: collection == ALL}" @click="selectCollection(ALL)">
+                <img svg-inline class="bt-icon" src="./assets/all.svg">
+                <div class="h3">{{ text['site.sentence.everything'] }}</div>
+              </div>
               <div v-for="type in types" :key="type"
                 :class="{block: true, [type]: true, active: collection == type}" @click="selectCollection(type)">
                 <!-- svg-inline directive can't predict runtime :src binding -->
@@ -79,16 +84,15 @@
                 <img svg-inline v-if="type == 'principle'" class="bt-icon" src="./assets/principle.svg">
                 <img svg-inline v-if="type == 'methodology'" class="bt-icon" src="./assets/methodology.svg">
                 <div class="h3">{{ text[`type.${type}.plural`] }}</div>
-                <p class="hidden">{{ text[`type.${type}.description`] }}</p>
               </div>
               <div :class="{block: true, set: true, active: collection == 'set'}" @click="selectCollection('set')">
                 <img svg-inline class="bt-icon" src="./assets/set.svg">
                 <div class="h3">{{ text['type.set.plural'] }}</div>
-                <p class="hidden">{{ text['type.set.description'] }}</p>
               </div>
 
               <!-- mobile-only -->
-              <div :class="{block: true, saved: true, active: collection == 'saved', 'mobile-only': true}"
+              <!--
+              <div :class="{block: true, saved: true, active: collection == 'saved', 'mobile-only': false}"
                 @click="selectCollection('saved')">
                 <img svg-inline class="bt-icon" src="./assets/favorite-active.svg">
                 <div class="h3">{{ text['type.saved'] }}</div>
@@ -102,8 +106,9 @@
                   <div>{{ text['site.downloadpdf'] }}</div>
                 </span>
               </div>
+              -->
               <!-- mobile-hidden -->
-              <div :class="{block: true, saved: true, active: collection == 'saved', 'mobile-hidden': true}" @click="selectCollection('saved')">
+              <div :class="{block: true, saved: true, active: collection == 'saved', 'mobile-hidden': false}" @click="selectCollection('saved')">
                 <img svg-inline class="bt-icon" src="./assets/favorite-active.svg">
                 <div class="h3">{{ text['type.saved'] }}</div>
                 <p><!--{{ text['type.saved.description'] }}-->
@@ -289,9 +294,9 @@ export default {
       return this.text[`type.${this.collection || ALL}${['saved', 'set', 'search'].includes(this.collection) ? '' : '.plural'}`]
     },
     collectionTab() {
-      if (!this.$route.params.collection)
+      if (this.collection == ALL)
         return this.text['site.sentence.everything']
-      return this.text[`type.${this.collection || ALL}${['saved', 'set', 'search'].includes(this.collection) ? '' : '.plural'}`]
+      return this.text[`type.${this.collection}${['saved', 'set', 'search'].includes(this.collection) ? '' : '.plural'}`]
     },
 
     // @@@ OLD @@@
@@ -331,30 +336,53 @@ export default {
     },
     // NEW
     autocompleteTags() {
-      return this.availableTags
-        .map(s => this.text[`tag.${s}`])
-        .filter(t => t)
+      return [...new Set(this.filteredToolsByCollection.map(t => t.tags).flat())]
+        //.sort()
+        .map(slug => ({
+          type: 'tag',
+          icon: 'search',
+          value: slug,
+          text: this.text[`tag.${slug}`],
+        }))
+        .filter(t => t.text)
     },
     autocompleteTitles() {
-      return Object.fromEntries((this.$store.state.tools || {})
-        .map(tool => [`+title:${tool['title']}`, tool['title']]))
+      return this.filteredToolsByCollection
+        .map(tool => ({
+          type: 'title',
+          icon: tool.type,
+          value: tool.slug,
+          text: tool.title
+        }))
     },
-    autocompleteItems() {
-      if (!this.$store.state.tools) return {}
-      return Object.assign({},
-        //this.autocompleteTitles,
-        this.autocompleteTags,
-        //Object.fromEntries(this.allTags.map(tag => [
-        //Object.fromEntries(this.$store.state.tools.map(t => [`+byline:${t['byline']}`, t['byline']])),
-      )
+    autocompleteSets() {
+      return Object.keys(this.sets)
+        .map(set => ({
+          type: 'set',
+          icon: 'set',
+          value: set,
+          text: this.text[`set.${set}`],
+        }))
     },
   },
   methods: {
-    search(text) {
-      //if (!text) return []
+    autocomplete(text) {
+      let autocompletions = this.autocompleteTags
+      if (this.collection == 'set') {
+        autocompletions = this.autocompleteSets
+      } else if (text) {
+        autocompletions = [...this.autocompleteTags, ...this.autocompleteTitles]
+      }
       text = text.toLocaleLowerCase()
-      // This should return some kind of object which tells how to filter
-      return Object.values(this.autocompleteItems).filter(i => i && i.toLocaleLowerCase().includes(text))
+      return autocompletions
+        .filter(i => i.text.toLocaleLowerCase().includes(text))
+        .sort((a, b) => a.text > b.text ? 1 : -1)
+    },
+    getResultValue(result) {
+      return result.text
+    },
+    search(value) {
+      console.log(value)
     },
 
     reset(reroute = true) {
@@ -363,6 +391,7 @@ export default {
       this.selectRegion()
       this.selectSet()
       this.tag = null
+      // TODO:
       if (reroute && this.collection) {
         this.tab = 'collection'
         this.$router.push({name: 'toolbox'})
@@ -386,6 +415,7 @@ export default {
     },
     selectSet(set) {
       this.set_ = set
+      this.$refs.search.setValue('')
     },
 
     // @@@ OLD @@@
@@ -436,31 +466,41 @@ export default {
 
 @mixin hero-particulars($type) {
   background-image: url(https://beautifulrising.org/hero-pattern-#{$type}.jpg);
+  background-position: 50% 0%;
+  //filter: brightness(1.2);
 }
 .toolbox-hero {
   background-image: url(https://beautifulrising.org/hero-pattern-all.jpg);
   background-size: cover;
+  background-position: 50% 80%;
   &.tactic { @include hero-particulars(tactic); }
   &.theory { @include hero-particulars(theory); }
   &.story { @include hero-particulars(story); }
   &.principle { @include hero-particulars(principle); }
   &.methodology { @include hero-particulars(methodology); }
   .inner {
-    padding: 13.2vmax 0 1vw 0;
+    padding: 13.2vmax 3vw 1vw 3vw;
     width: 100%;
     max-width: 1200px;
     div, p {
       position: relative;
       color: white !important;
-      //text-shadow: 1px 0px 6px rgba(black, .5);
     }
     p {
-      max-width: 30%;
+      margin: 0 0 .5rem 0;
+      max-width: 40%;
+      text-shadow: 1px 0px 2rem rgba(black, .6), 0 0 2px rgba(white, .4);
+      line-height: 1.2;
     }
     .h1 {
       margin: 0;
       font-size: calc(3.8 * 1rem);
       text-transform: uppercase;
+    }
+    @include breakpoint($sm) {
+      p {
+        max-width: unset;
+      }
     }
   }
   color: white !important;
@@ -472,8 +512,8 @@ export default {
   position: relative;
   &::before {
     content: "";
-    background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,.2) 80%, rgba(0,0,0,.4) 100%);
-    //background: linear-gradient(180deg, rgba(255,255,255,0) 0%, rgba(255,255,255,.3) 70%, rgba(255,255,255,.7) 100%);
+    background: linear-gradient(to top, rgba(0,0,0,0) 0%, rgba(0,0,0,.2) 80%, rgba(0,0,0,.4) 100%),
+                linear-gradient(to top, rgba(255,255,255,0) 0%, rgba(255,255,255,.2) 40%, rgba(255,255,255,.4) 100%);
     position: absolute;
     top: 0; left: 0;
     bottom: 0; right: 0;
@@ -556,16 +596,24 @@ export default {
     color: $bgdark3;
 
     transition: all .1s linear;
+    &.active {
+      color: white;
+      border-top: .5rem solid $bgdark3;
+    }
     @include breakpoint($md) {
       padding: .5rem .5rem;
     }
     @include breakpoint($sm) {
       flex: 0 0 73%;
       margin: 0;
-    }
-    &.active {
-      color: white;
-      border-top: .5rem solid $bgdark3;
+      text-align: start;
+      border: none;
+      border-inline-start: .75rem solid black;
+      border-radius: 7px 0 0 7px;
+      &.active {
+        border: none;
+        border-inline-start: .75rem solid $bgdark3;
+      }
     }
   }
   .bt-icon {
@@ -586,8 +634,9 @@ export default {
     }
     @include breakpoint($sm) {
       position: absolute;
-      right: 1rem;
-      top: -2.5rem;
+      left: 1rem;
+      bottom: .25rem;
+      transform: scale(1.25);
     }
   }
 }
@@ -596,6 +645,9 @@ export default {
   margin: 0 .5rem;
   z-index: 3;
   position: relative;
+  @include breakpoint($sm) {
+    margin: 0;
+  }
   &::after {
     content: "";
     width: 3rem;
@@ -628,16 +680,46 @@ export default {
     &::-webkit-input-placeholder {
       color: $text;
     }
+    @include breakpoint($sm) {
+      border: none;
+      border-radius: .5rem 0 0 .5rem;
+      border-inline-start: .75rem solid black;
+      &[aria-expanded=true], &:focus {
+        border: none;
+        border-radius: .5rem 0 0 .5rem;
+        border-inline-start: .75rem solid $bgdark3;
+      }
+    }
   }
+
   .autocomplete-result {
     background-image: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjNmI2YjZiIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+PGNpcmNsZSBjeD0iMTEiIGN5PSIxMSIgcj0iOCIvPjxwYXRoIGQ9Ik0yMSAyMWwtNC00Ii8+PC9zdmc+Cg==);
+    @mixin autocomplete-particulars($type) {
+      //background-image: url(./assets/#{$type}.svg);
+      background-image: none;
+      //background-size: 1.6rem;
+      position: relative;
+      .bt-icon {
+        position: absolute;
+        left: 0;
+        height: 100%;
+      }
+    }
+    &.story { @include autocomplete-particulars(story); }
+    &.tactic { @include autocomplete-particulars(tactic); }
+    &.principle { @include autocomplete-particulars(principle); }
+    &.theory { @include autocomplete-particulars(theory); }
+    &.methodology { @include autocomplete-particulars(methodology); }
+    &.set { @include autocomplete-particulars(set); }
   }
   .autocomplete-result:hover, .autocomplete-result[aria-selected="true"] {
     background-color: $bgdark4;
   }
   .autocomplete-result-list {
+    box-shadow: 0 1rem 2rem 0rem rgba(255,255,255,.1);
     overflow-x: hidden;
     background: black;
+    max-height: 50vh;
     &::-webkit-scrollbar {
       background-color: $bgdark4;
     }
@@ -670,7 +752,6 @@ export default {
 
   .block {
     height: 9rem;
-
     cursor: pointer;
     flex: 2 0 12%;
     display: flex;
@@ -681,13 +762,10 @@ export default {
     border: 0px solid $bgdark4;
     border-radius: .5rem;
     transition: .1s linear all;
-
     @include breakpoint($lg) {
-      //padding: .75rem;
     }
     @include breakpoint($md) {
-      height: 12rem;
-      flex: 0 0 20%;
+      height: 8rem;
     }
     @include breakpoint($sm) {
       padding: .5rem 1rem;
@@ -696,7 +774,6 @@ export default {
       flex: 0 0 20%;
     }
     &.active {
-      //background: $bgdark4;
       border: .5rem solid $bgdark4;
     }
     &.set {
@@ -712,27 +789,34 @@ export default {
       p {
         margin: .5rem;
       }
+      @include breakpoint($md) {
+        flex: 0 0 20%;
+      }
     }
     &.saved {
-      position: relative;
       svg {
         fill: white;
         max-height: 2rem;
       }
+      p {
+        margin: 0;
+      }
+      @include breakpoint($md) {
+      }
       @include breakpoint($sm) {
-        &.active {
-          border-right: unset;
+        .h3 {
+          flex: 0 0 40% !important;
         }
       }
       .download {
-        margin-bottom: 1rem;
+        margin: 0 0 0 .5rem;
         display: flex;
+        flex: 2 0 60%;
         flex-direction: row;
         align-items: center;
         justify-content: flex-start;
-        fill: $text;
+        //fill: $text;
         @include breakpoint($sm) {
-          margin-top: .5rem;
         }
         &.disabled {
           cursor: default;
@@ -753,20 +837,25 @@ export default {
     .blacklivesmatter {
       word-break: break-all; // Sets have editor-made names #BlackLivesMatter
     }
-    p {
-      margin: .5rem .25rem 0 .25rem;
-      //min-height: 45%;
-      @include breakpoint($md) {
-        margin-top: .25rem;
-      }
-      @include breakpoint($sm) {
-        min-height: 35%;
-        margin-top: .25rem;
-      }
-    }
     .h3 {
       margin: 0 0 .5rem 0;
       text-align: center;
+    }
+  }
+  .bt-icon {
+    width: 5.5rem;
+    max-height: 6rem;
+    margin: .5rem;
+    @include breakpoint($xl) {
+      width: 6rem;
+    }
+    @include breakpoint($md) {
+      margin: .25rem;
+      max-height: 4rem;
+    }
+    @include breakpoint($sm) {
+      max-height: 3rem;
+      margin: .25rem .5rem;
     }
   }
   .by {
@@ -785,21 +874,10 @@ export default {
         display: flex;
         flex-direction: row;
         padding: 0 1rem;
-        p {
-          display: none;
-        }
         .h3 {
           flex: 0 0 65%;
           text-align: left;
         }
-        /* Before hiding the paragraphs
-        &:nth-of-type(5) {
-          flex: 1 0 100%;
-          p {
-            max-width: 65%;
-          }
-        }
-        */
       }
     }
   }
@@ -809,9 +887,12 @@ export default {
       max-height: 4rem;
       width: 7rem;
       margin: 0;
+      path {
+        //fill: $story;
+      }
     }
     .block {
-      flex: 1 2 12.5%;
+      //flex: 1 2 12.5%;
       @include breakpoint($md) {
         flex: 0 0 25%;
       }
@@ -823,36 +904,20 @@ export default {
         }
       }
       p {
-        min-height: 15%;
         text-align: center;
+        margin-bottom: 0;
       }
     }
   }
   .by-set {
     .block {
       @include breakpoint($md) {
-        height: 24rem;
+        height: 16rem;
       }
       @include breakpoint($sm) {
         height: 8rem;
         flex: 0 0 50%;
       }
-    }
-  }
-  .bt-icon {
-    width: 4rem;
-    max-height: 6rem;
-    margin: .5rem;
-    @include breakpoint($xl) {
-      width: 6rem;
-    }
-    @include breakpoint($md) {
-      margin: .25rem;
-      max-height: 3rem;
-    }
-    @include breakpoint($sm) {
-      max-height: 3rem;
-      margin: .25rem .5rem;
     }
   }
 }
@@ -861,7 +926,8 @@ export default {
   flex-wrap: wrap;
   flex-direction: row;
   position: relative; // For transition animation
-  margin: 2px -2px; // For toolbox margins
+  margin: 2px -2px -.25rem 2px; // For toolbox margins
+  padding-bottom: .5rem;
 
   // These styles override the ones defined in ToolTile.vue
   .tool-tile {
