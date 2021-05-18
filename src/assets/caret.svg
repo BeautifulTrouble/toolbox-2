@@ -1,1 +1,35 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="115.13" height="18mm" viewBox="0 0 30.462 18"><path style="fill:#000;fill-opacity:1;stroke:none;stroke-width:.276923px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" d="m103.188 120.94-2.77 2.77-12.461-12.462-12.462 12.462-2.769-2.77 15.23-15.23z" transform="translate(-72.726 -105.71)"/></svg>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   width="30.46154mm"
+   height="18mm"
+   viewBox="0 0 30.46154 18"
+   version="1.1"
+   id="svg8">
+  <defs
+     id="defs2" />
+  <metadata
+     id="metadata5">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     id="layer1"
+     transform="translate(-72.725959,-105.70993)">
+    <path
+       style="fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.276923px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="M 103.1875,120.94069 100.41827,123.70993 87.956739,111.24839 75.495189,123.70993 72.725959,120.94069 87.956739,105.70993 Z"
+       id="path835" />
+  </g>
+</svg>
