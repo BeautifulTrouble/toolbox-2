@@ -46,11 +46,6 @@
             >
             <template #result="{result, props}">
               <li v-bind="props" :class="['autocomplete-result', result.icon]">
-                <img svg-inline v-if="result.icon == 'tactic'" class="bt-icon" src="./assets/tactic.svg">
-                <img svg-inline v-if="result.icon == 'theory'" class="bt-icon" src="./assets/theory.svg">
-                <img svg-inline v-if="result.icon == 'story'" class="bt-icon" src="./assets/story.svg">
-                <img svg-inline v-if="result.icon == 'principle'" class="bt-icon" src="./assets/principle.svg">
-                <img svg-inline v-if="result.icon == 'methodology'" class="bt-icon" src="./assets/methodology.svg">
                 {{ result.text }}
               </li>
             </template>
@@ -463,21 +458,26 @@ export default {
 
 <style lang="scss">
 @import 'common.scss';
+@import 'icons.scss';
 
-@mixin hero-particulars($type) {
-  background-image: url(https://beautifulrising.org/hero-pattern-#{$type}.jpg);
-  background-position: 50% 0%;
+@mixin hero-particulars($type, $color) {
+  //background-image: url(https://beautifulrising.org/hero-pattern-#{$type}.jpg);
+  //background-position: 50% 0%;
   //filter: brightness(1.2);
+  &::before {
+    background: linear-gradient(to top, rgba($color,0) 0%, rgba($color,.2) 80%, rgba($color,.4) 100%),
+                linear-gradient(to top, rgba(255,255,255,0) 0%, rgba(255,255,255,.2) 40%, rgba(255,255,255,.4) 100%);
+  }
 }
 .toolbox-hero {
   background-image: url(https://beautifulrising.org/hero-pattern-all.jpg);
   background-size: cover;
   background-position: 50% 80%;
-  &.tactic { @include hero-particulars(tactic); }
-  &.theory { @include hero-particulars(theory); }
-  &.story { @include hero-particulars(story); }
-  &.principle { @include hero-particulars(principle); }
-  &.methodology { @include hero-particulars(methodology); }
+  &.tactic { @include hero-particulars(tactic, $tactic); }
+  &.theory { @include hero-particulars(theory, $theory); }
+  &.story { @include hero-particulars(story, $story); }
+  &.principle { @include hero-particulars(principle, $principle); }
+  &.methodology { @include hero-particulars(methodology, $methodology); }
   .inner {
     padding: 13.2vmax 3vw 1vw 3vw;
     width: 100%;
@@ -658,6 +658,9 @@ export default {
   }
 }
 .autocomplete {
+  .autocomplete-input, .autocomplete-result {
+    // background-image:
+  }
   .autocomplete-input {
     font-family: ff-good-headline-web-pro-condensed, sans-serif;
     font-size: 1.4rem;
@@ -665,7 +668,7 @@ export default {
     color: $bgdark3;
     padding: .1rem 1rem .4rem 3rem;
     background-color: black;
-    background-image: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjNmI2YjZiIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+PGNpcmNsZSBjeD0iMTEiIGN5PSIxMSIgcj0iOCIvPjxwYXRoIGQ9Ik0yMSAyMWwtNC00Ii8+PC9zdmc+Cg==);
+    // background-image: see icons.scss
 
     position: relative;
     border: none;
@@ -675,7 +678,7 @@ export default {
       color: white;
       border-top: .5rem solid $bgdark3;
       box-shadow: 0 0 .5rem rgba(0,0,0,.16) inset;
-      background-image: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZmZmIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+PGNpcmNsZSBjeD0iMTEiIGN5PSIxMSIgcj0iOCIvPjxwYXRoIGQ9Ik0yMSAyMWwtNC00Ii8+PC9zdmc+);
+      // background-image: see icons.scss
     }
     &::-webkit-input-placeholder {
       color: $text;
@@ -693,17 +696,9 @@ export default {
   }
 
   .autocomplete-result {
-    background-image: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjNmI2YjZiIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+PGNpcmNsZSBjeD0iMTEiIGN5PSIxMSIgcj0iOCIvPjxwYXRoIGQ9Ik0yMSAyMWwtNC00Ii8+PC9zdmc+Cg==);
     @mixin autocomplete-particulars($type) {
-      //background-image: url(./assets/#{$type}.svg);
-      background-image: none;
-      //background-size: 1.6rem;
-      position: relative;
-      .bt-icon {
-        position: absolute;
-        left: 0;
-        height: 100%;
-      }
+      // background-image: see icons.scss
+      background-size: 1.5rem;
     }
     &.story { @include autocomplete-particulars(story); }
     &.tactic { @include autocomplete-particulars(tactic); }
@@ -716,7 +711,6 @@ export default {
     background-color: $bgdark4;
   }
   .autocomplete-result-list {
-    box-shadow: 0 1rem 2rem 0rem rgba(255,255,255,.1);
     overflow-x: hidden;
     background: black;
     max-height: 50vh;
@@ -725,6 +719,9 @@ export default {
     }
     &::-webkit-scrollbar-thumb {
       background-color: $bgdark3;
+    }
+    @include breakpoint($lower) {
+      box-shadow: 0 1rem 2rem 0rem rgba(black, .5);
     }
   }
 }
@@ -926,7 +923,7 @@ export default {
   flex-wrap: wrap;
   flex-direction: row;
   position: relative; // For transition animation
-  margin: 2px -2px -.25rem 2px; // For toolbox margins
+  margin: 2px -2px -.25rem -2px; // For toolbox margins
   padding-bottom: .5rem;
 
   // These styles override the ones defined in ToolTile.vue
@@ -951,14 +948,15 @@ export default {
     @include breakpoint($sm) {
       flex: 0 0 50%;
       height: 50vw;
-      border: 1px solid transparent;
     }
   }
 }
 
 // Transition-group animation
 .tool-tile {
-  transition: opacity .1s linear;
+  @include breakpoint($upper) {
+    transition: opacity .1s linear;
+  }
 }
 .tools-list-leave-active {
   // Absolute positioning causes existing tiles to stretch which is slow
