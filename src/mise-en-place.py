@@ -83,7 +83,7 @@ Make the invisible visible
 Use your cultural assets 
 Strategic Nonviolence
 
-Al faza’a 
+Al faza’a (a surge of solidarity)
 Decolonization
 Framing 
 Human rights
@@ -104,47 +104,8 @@ with open(JSON, "w") as f:
     print(f"Writing {JSON}...")
 
     sets = {
-        "palestine-solidarity": [
-            "birthright-unplugged-replugged",
-            "welcome-to-palestine",
-            "stolen-beauty",
-            "dump-veolia-campaign",
-            "conflict-kitchen",
-            "stop-prawer-plan",
-            "general-strike",
-            "currency-hacking",
-            "consumer-boycott",
-            "divestment",
-            "civil-disobedience",
-            "culture-jamming",
-            "distributed-action",
-            "artistic-vigil",
-            "flash-mob",
-            "flotilla",
-            "guerrilla-projection",
-            "hashtag-campaign",
-            "mass-street-action",
-            "subversive-travel",
-            "follow-the-lead-of-the-most-impacted",
-            "activate-international-mechanisms",
-            "bring-the-issue-home",
-            "choose-your-target-wisely",
-            "consider-your-audience",
-            "dont-expect-a-concrete-outcome-from-a-symbolic-action",
-            "if-protest-is-made-illegal-make-daily-life-a-protest",
-            "if-youre-not-uncomfortable-your-coalition-is-too-small",
-            "make-the-invisible-visible",
-            "use-your-cultural-assets",
-            "strategic-nonviolence",
-            "al-fazaa",
-            "decolonization",
-            "framing",
-            "human-rights",
-            "intersectionality",
-            "non-cooperation",
-            "pillars-of-power",
-            "spectrum-of-allies",
-            "baraza",
+        "palestine-solidarity": 
+            ['birthright-unplugged-replugged', 'welcome-to-palestine', 'stolen-beauty', 'dump-veolia-campaign', 'conflict-kitchen', 'stop-prawer-plan', 'general-strike', 'currency-hacking', 'consumer-boycott', 'divestment', 'civil-disobedience', 'culture-jamming', 'distributed-action', 'artistic-vigil', 'flash-mob', 'flotilla', 'guerrilla-projection', 'hashtag-campaign', 'mass-street-action', 'subversive-travel', 'follow-the-lead-of-the-most-impacted', 'activate-international-mechanisms', 'bring-the-issue-home', 'choose-your-target-wisely', 'consider-your-audience', 'dont-expect-a-concrete-outcome-from-a-symbolic-action', 'if-protest-is-made-illegal-make-daily-life-a-protest', 'if-youre-not-uncomfortable-your-coalition-is-too-small', 'make-the-invisible-visible', 'use-your-cultural-assets', 'strategic-nonviolence', 'al-fazaa-a-surge-of-solidarity-', 'decolonization', 'framing', 'human-rights', 'intersectionality', 'non-cooperation', 'pillars-of-power', 'spectrum-of-allies', 'baraza'
         ],
         "new-pan-afrikanism": [
             "citizens-arrest",
