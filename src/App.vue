@@ -1,9 +1,5 @@
 <template>
   <div id="app" :class="{rtl: this.$store.state.lang == 'ar'}">
-    <!-- TODO: loading animation
-    <div v-if="$store.state.langRequested">Loading...</div>
-    -->
-
     <transition name="fade" mode="out-in">
       <router-view/>
     </transition>
@@ -25,16 +21,9 @@
 <script>
 
 export default {
-  components: {
-  },
   data: () => ({
-    showSearch: false,
   }),
   methods: {
-    toggleSearch() {
-      this.showSearch = !this.showSearch
-      this.$refs.search.focus()
-    },
   },
 };
 </script>
@@ -45,7 +34,7 @@ export default {
 #app {
   min-height: 50vh;
   // Squarespace makes this complicated (additional spacing is added to the toolbox)
-  margin-top: 6vmax;
+  //margin-top: 6vmax;
 }
 .header-announcement-bar-wrapper::after {
   display: none; // Hide fake Squarespace language button
