@@ -18,7 +18,7 @@ if [[ "${!#}" =~ "dev" ]]; then
     SCRIPT=build-develop
 elif [[ "${!#}" =~ "exp" ]]; then
     RFILE=toolbox-experimental.js
-    SCRIPT=build-develop
+    SCRIPT=build
 fi
 
 if yarn ${SCRIPT}; then
