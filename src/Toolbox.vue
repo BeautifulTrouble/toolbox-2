@@ -31,16 +31,14 @@
             {{ text['site.sentence.about'] }}
           </div>
 
-          <!-- TODO: Label for saved -->
-          <!-- TODO: Tab for saved -->
+          <!-- TODO: Label + tab for saved -->
 
           <!-- Search when collection is neither saved nor set -->
           <autocomplete class="autocomplete-wrapper" v-show="collection != 'saved'"
             ref="search"
+            :placeholder="text[collection == 'set' ? `set.${set}` : 'site.sentence.everything']"
             @click="tab = collection == 'set' ? 'set' : tab"
             @submit="search"
-            auto-select
-            :placeholder="text[collection == 'set' ? `set.${set}` : 'site.sentence.everything']"
             :search="autocomplete"
             :get-result-value="getResultValue"
             >
@@ -66,7 +64,7 @@
 
             <!-- Collection panel -->
             <div class="by by-collection" v-if="tab == 'collection'">
-              <div :class="{block: true, all: true, active: collection == ALL}" @click="selectCollection(ALL)">
+              <div :class="{block: true, all: true, active: collection == ALL}" @click="selectCollection()">
                 <img svg-inline class="bt-icon" src="./assets/all.svg">
                 <div class="h3">{{ text['site.sentence.everything'] }}</div>
               </div>
@@ -106,7 +104,7 @@
               <div :class="{block: true, saved: true, active: collection == 'saved', 'mobile-hidden': false}" @click="selectCollection('saved')">
                 <img svg-inline class="bt-icon" src="./assets/favorite-active.svg">
                 <div class="h3">{{ text['type.saved'] }}</div>
-                <p><!--{{ text['type.saved.description'] }}-->
+                <p>
                   <span @click.stop="$store.state.savedTools.size && downloadPDF($store.state.savedTools)"
                     :class="{download: true, disabled: !$store.state.savedTools.size}"
                     :title="text[$store.state.savedTools.size ? 'site.downloadpdf' : 'site.saved.description']">
@@ -140,23 +138,13 @@
             <div class="by by-set" v-if="tab == 'set'">
               <div v-for="(s, slug) in sets" :key="slug"
                 :class="{block: true, set: true, [slug]: true, active: set == slug}"
-                @click="selectSet(slug)">
+                @click="selectSet(slug, ...arguments)">
                 <img svg-inline class="bt-icon set" src="./assets/set.svg">
                 <div class="h3 set">{{ text[`set.${slug}`] }}</div>
                 <div v-html="markdown(text[`set.${slug}.description`])" />
               </div>
             </div>
 
-            <!-- BY TAG -->
-            <!--
-            <div v-if="tab == 'tag'" :key="'tag'" class="by by-tag">
-              <p v-for="(tag, i) in sortedTags" :key="i"
-                :class="{active: routeTag == tag, disabled: !tagsAvailable.has(tag)}"
-                @click="selectTag(tag)">
-                {{ text[`tag.${tag}`] }}
-              </p>
-            </div>
-            -->
           </transition>
         </div>
       </div>
@@ -245,7 +233,6 @@ export default {
           'set': t => (this.sets[this.set] || []).includes(t.slug),
           'story': t => {
             let regionSlugs = (t.regions || []).map(this.slugify)
-            console.log(t, 'regionSlugs', regionSlugs)
             return t.type == 'story' && (
               this.region == ALL ||
               regionSlugs.includes('worldwide') ||
@@ -377,7 +364,14 @@ export default {
       return result.text
     },
     search(value) {
-      console.log(value)
+      if (value) {
+        // Autocomplete item
+
+      } else {
+        // Plaintext search
+
+      }
+      console.log(value ? (value.type, value.value) : this.$refs.search.value)
     },
 
     reset(reroute = true) {
@@ -398,7 +392,7 @@ export default {
       if (collection == this.collection && ['story', 'set'].includes(collection)) {
         // Collection already active, but there's another tab to show
         this.tab = collection
-      } else if (collection != this.collection) {
+      } else if (collection != this.collection && collection != this.ALL) {
         // Different collection selected
         this.tab = ['story', 'set'].includes(collection) ? collection : 'collection'
         this.reset(false)
@@ -408,7 +402,7 @@ export default {
     selectRegion(region) {
       this.region_ = region == this.region_ ? null : region
     },
-    selectSet(set) {
+    selectSet(set, $event) {
       this.set_ = set
       this.$refs.search.setValue('')
     },
@@ -460,24 +454,49 @@ export default {
 @import 'common.scss';
 @import 'icons.scss';
 
-@mixin hero-particulars($type, $color) {
-  //background-image: url(https://beautifulrising.org/hero-pattern-#{$type}.jpg);
-  //background-position: 50% 0%;
-  //filter: brightness(1.2);
-  &::before {
-    background: linear-gradient(to top, rgba($color,0) 0%, rgba($color,.2) 80%, rgba($color,.4) 100%),
-                linear-gradient(to top, rgba(255,255,255,0) 0%, rgba(255,255,255,.2) 40%, rgba(255,255,255,.4) 100%);
-  }
-}
 .toolbox-hero {
+  height: 15vw;
+  min-height: 17.5rem;
+  @include breakpoint($md) {
+    height: 30vh;
+    min-height: 16.5rem;
+  }
+  // Mobile header adjustments for the Squarespace theme
+  @media #{$ss-mobile-header} {
+    height: 30vh;
+  }
+
   background-image: url(https://beautifulrising.org/hero-pattern-all.jpg);
   background-size: cover;
   background-position: 50% 80%;
+  @mixin hero-particulars($type, $color) {
+    //background-image: url(https://beautifulrising.org/hero-pattern-#{$type}.jpg);
+    //background-position: 50% 0%;
+    //filter: brightness(1.2);
+    &::before {
+      background: linear-gradient(to top right, rgba($color,0) 0%, rgba($color,.2) 30%, rgba($color,.4) 100%),
+                  linear-gradient(to top, rgba(white,0) 0%, rgba(white,.6) 40%, rgba(white,.9) 100%);
+    }
+  }
   &.tactic { @include hero-particulars(tactic, $tactic); }
   &.theory { @include hero-particulars(theory, $theory); }
   &.story { @include hero-particulars(story, $story); }
   &.principle { @include hero-particulars(principle, $principle); }
   &.methodology { @include hero-particulars(methodology, $methodology); }
+  color: white !important;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+  position: relative;
+  &::before {
+    content: "";
+    background: linear-gradient(to top, rgba(black,0) 0%, rgba(black,.2) 80%, rgba(black,.4) 100%),
+                linear-gradient(to top, rgba(white,0) 0%, rgba(white,.6) 40%, rgba(white,.9) 100%);
+    position: absolute;
+    top: 0; left: 0;
+    bottom: 0; right: 0;
+  }
   .inner {
     padding: 13.2vmax 3vw 1vw 3vw;
     width: 100%;
@@ -489,7 +508,7 @@ export default {
     p {
       margin: 0 0 .5rem 0;
       max-width: 40%;
-      text-shadow: 1px 0px 2rem rgba(black, .6), 0 0 2px rgba(white, .4);
+      text-shadow: 0px 0px 3rem rgba(black, .6), 0 0 2px rgba(white, .4);
       line-height: 1.2;
     }
     .h1 {
@@ -503,35 +522,11 @@ export default {
       }
     }
   }
-  color: white !important;
-  height: 12rem;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  align-items: center;
-  position: relative;
-  &::before {
-    content: "";
-    background: linear-gradient(to top, rgba(0,0,0,0) 0%, rgba(0,0,0,.2) 80%, rgba(0,0,0,.4) 100%),
-                linear-gradient(to top, rgba(255,255,255,0) 0%, rgba(255,255,255,.2) 40%, rgba(255,255,255,.4) 100%);
-    position: absolute;
-    top: 0; left: 0;
-    bottom: 0; right: 0;
-  }
 }
 .toolbox {
-  //padding-top: 4rem;
   width: 100%;
   background-color: $bgdark4;
   min-height: 100vh;
-
-  // Mobile header adjustments for the Squarespace theme
-  @media #{$ss-mobile-header} {
-    padding-top: 10rem;
-  }
-  @include breakpoint($sm) {
-    padding-top: 7.5rem;
-  }
 }
 .filter-pane {
   display: flex;
@@ -568,7 +563,7 @@ export default {
     flex: 1 1 auto;
     text-align: center;
     @include breakpoint($md-up) {
-      margin-bottom: .65rem;
+      margin-bottom: .4rem;
     }
     @include breakpoint($sm) {
       flex: 0 0 27%;
@@ -769,6 +764,9 @@ export default {
       height: 4rem;
       overflow: hidden;
       flex: 0 0 20%;
+    }
+    a {
+      text-decoration: underline;
     }
     &.active {
       border: .5rem solid $bgdark4;
