@@ -55,8 +55,8 @@ def sitemap():
             etree.SubElement(
                 url, "loc"
             ).text = f"https://www.beautifultrouble.org/toolbox/#/tool/{t['slug']}"
-            etree.SubElement(url, "changefreq").text = "daily"
-            etree.SubElement(url, "priority").text = "0.5"
+            etree.SubElement(url, "changefreq").text = "monthly"
+            etree.SubElement(url, "priority").text = "0.8"
             etree.SubElement(url, "lastmod").text = datetime.fromtimestamp(
                 t["timestamp"] // 1000
             ).strftime("%F")
@@ -69,7 +69,7 @@ def sitemap():
                 addsub(image, "image:title").text = t["title"]
 
             # Disable alternates until google crawls these
-            #for lang in t.get("langs-available", []):
+            # for lang in t.get("langs-available", []):
             #    link = addsub(url, "xhtml:link")
             #    link.attrib.update(
             #        {
