@@ -55,7 +55,7 @@ def sitemap():
             etree.SubElement(
                 url, "loc"
             ).text = f"https://www.beautifultrouble.org/toolbox/#/tool/{t['slug']}"
-            etree.SubElement(url, "changefreq").text = "monthly"
+            etree.SubElement(url, "changefreq").text = "yearly"
             etree.SubElement(url, "priority").text = "0.8"
             etree.SubElement(url, "lastmod").text = datetime.fromtimestamp(
                 t["timestamp"] // 1000
