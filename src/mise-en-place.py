@@ -77,7 +77,7 @@ with open(JSON, "w") as f:
     print(f"Writing {JSON}...")
 
     sets = {
-        "digital-tools": [
+        "digital-activism": [
             "hacking-apartheid",
             "cryptorally-in-mexico-city",
             "-gambiahasdecided",
