@@ -77,6 +77,25 @@ with open(JSON, "w") as f:
     print(f"Writing {JSON}...")
 
     sets = {
+        "digital-tools": [
+            "hacking-apartheid",
+            "cryptorally-in-mexico-city",
+            "-gambiahasdecided",
+            "-thisflag",
+            "flower-speech-campaign",
+            "bring-back-our-girls",
+            "app-flooding",
+            "autonomous-servers",
+            "distributed-denial-of-service",
+            "encryption",
+            "hashtag-campaign",
+            "hashtag-hijack",
+            "spoof-website",
+            "practice-digital-self-defence",
+            "seek-safety-in-support-networks",
+            "glitch-feminism",
+            "hacking",
+        ],
         "palestine-solidarity": [
             "birthright-unplugged-replugged",
             "welcome-to-palestine",
@@ -213,25 +232,6 @@ with open(JSON, "w") as f:
             "pillars-of-power",
             "power-mapping",
             "spectrum-of-allies",
-        ],
-        "digital-tools": [
-            "hacking-apartheid",
-            "cryptorally-in-mexico-city",
-            "-gambiahasdecided",
-            "-thisflag",
-            "flower-speech-campaign",
-            "bring-back-our-girls",
-            "app-flooding",
-            "autonomous-servers",
-            "distributed-denial-of-service",
-            "encryption",
-            "hashtag-campaign",
-            "hashtag-hijack",
-            "spoof-website",
-            "practice-digital-self-defence",
-            "seek-safety-in-support-networks",
-            "glitch-feminism",
-            "hacking",
         ],
     }
 
