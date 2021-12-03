@@ -57,7 +57,7 @@ Flower Speech Campaign
 Bring Back Our Girls
 App flooding
 Autonomous servers
-Distributed Denial of Service
+Distributed Denial of Service (DDoS)
 Encryption
 Hashtag campaign
 Hashtag hijack
@@ -86,7 +86,7 @@ with open(JSON, "w") as f:
             "bring-back-our-girls",
             "app-flooding",
             "autonomous-servers",
-            "distributed-denial-of-service",
+            "distributed-denial-of-service-ddos-",
             "encryption",
             "hashtag-campaign",
             "hashtag-hijack",
