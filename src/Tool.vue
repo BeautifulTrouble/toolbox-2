@@ -312,7 +312,8 @@ export default {
       while (target && target.tagName != 'A') target = target.parentNode
       // Only match local links
       if (target && target.href && target.rel != 'external' &&
-          (target.matches(`.tool a[href*="${this.config.siteDomain}"]`)
+          (target.matches(`.tool a[href*="${this.config.siteDomain}/tool/"]`)
+           || target.matches(`.tool a[href*="${this.config.siteDomain}/toolbox/"]`)
            || target.matches('.tool a:not([href*="://"])'))) {
         const { altKey, ctrlKey, metaKey, shiftKey, button, defaultPrevented } = $event
         if (altKey || ctrlKey || metaKey || shiftKey) return
