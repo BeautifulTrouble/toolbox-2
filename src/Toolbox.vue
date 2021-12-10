@@ -659,9 +659,12 @@ export default {
     }
   }
   .by-set {
+    flex-wrap: wrap;
     .block {
+      flex: 0 0 25%;
+      height: 10rem;
       @include breakpoint($md) {
-        height: 24rem;
+        height: 12rem;
       }
       @include breakpoint($sm) {
         height: 8rem;
