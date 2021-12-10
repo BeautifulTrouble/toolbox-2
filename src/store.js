@@ -15,12 +15,28 @@ import config from './config'
 
 
 // LOCALSTORAGE
-// IMPORTANT: We need the ability to delete our large localStorage cache, and want to avoid calling
-//            localStorage.clear(), so please DON'T RENAME "bt-tools-??" after launch.
 const keyNameAPICache = lang => `bt-tools-${lang}`
 const keyNameLang = 'bt-lang'
 const keyNameSaved = 'bt-saved'
+const keyNameVersion = 'bt-version'
+// Storage versioning allows us to somewhat gracefully retain saved tools while cleaning up language cache problems
+const storageVersion = 1
 
+const storageVersionUpgrade = () => {
+  // NOTE: future storage upgrades may require this function be called from somewhere other than the setLang mutator
+  if (storageVersion > parseInt(Storage.getItem(keyNameVersion) || '0')) {
+    console.debug(`Upgrading localStorage to version ${storageVersion}...`)
+    try {
+      let oldTools = storageGetSavedTools()
+      Storage.clear()
+      storageSetSavedTools(oldTools)
+    } catch(e) {
+      console.debug("Couldn't preserve localStorage from previous version")
+      Storage.clear()
+    }
+    Storage.setItem(keyNameVersion, storageVersion.toString())
+  }
+}
 const storageGetSavedTools = () => {
   return new Set(JSON.parse(Storage.getItem(keyNameSaved) || '[]'))
 }
@@ -29,7 +45,6 @@ const storageSetSavedTools = tools => {
 }
 
 const storageSetCache = (lang, data, nestedCall = false) => {
-  // TODO: to help fit more data under quota, remove top-level key-modules, document_whatever
   try {
     Storage.setItem(keyNameAPICache(lang), JSON.stringify({'timestamp': (new Date).getTime(), data: data}))
   } catch(e) {
@@ -99,11 +114,10 @@ export const store = new Vuex.Store({
     LANG_SET(context, [lang, forceReload]) {
       // No language was requested, so detect the browser language from storage or navigator.
       if (!lang) {
-        let browserLanguage = navigator.language.slice(0,2)
-        if (!config.langs.includes(browserLanguage)) {
-          browserLanguage = 'en'
+        lang = Storage.getItem(keyNameLang) || navigator.language.slice(0,2)
+        if (!config.langs.includes(lang)) {
+          lang = 'en'
         }
-        lang = Storage.getItem(keyNameLang) || browserLanguage
       }
       // If language isn't already set and there's no outstanding request for this language already
       if (forceReload || context.state.lang != lang && context.state.langRequested != lang) {
@@ -192,6 +206,9 @@ export const store = new Vuex.Store({
     },
     // API TOOLS
     setLang(state, [tools, lang, cacheTools]) {
+      // NOTE: future storage upgrades may require moving this call elsewhere
+      storageVersionUpgrade()
+
       Storage.setItem(keyNameLang, lang)
       if (cacheTools) {
         storageSetCache(lang, tools)
