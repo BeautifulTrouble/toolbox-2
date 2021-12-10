@@ -661,6 +661,14 @@ export default {
   .by-set {
     flex-wrap: wrap;
     .block {
+      p {
+        font-size: .9rem;
+        margin-top: .25rem;
+      }
+      .bt-icon {
+        max-height: 2rem;
+        margin: 0;
+      }
       flex: 0 0 25%;
       height: 10rem;
       @include breakpoint($md) {
