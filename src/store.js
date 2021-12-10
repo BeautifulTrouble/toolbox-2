@@ -99,7 +99,11 @@ export const store = new Vuex.Store({
     LANG_SET(context, [lang, forceReload]) {
       // No language was requested, so detect the browser language from storage or navigator.
       if (!lang) {
-        lang = Storage.getItem(keyNameLang) || navigator.language.slice(0,2)
+        let browserLanguage = navigator.language.slice(0,2)
+        if (!config.langs.includes(browserLanguage)) {
+          browserLanguage = 'en'
+        }
+        lang = Storage.getItem(keyNameLang) || browserLanguage
       }
       // If language isn't already set and there's no outstanding request for this language already
       if (forceReload || context.state.lang != lang && context.state.langRequested != lang) {
