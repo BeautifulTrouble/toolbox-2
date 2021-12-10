@@ -49,23 +49,26 @@ try:
         return re.sub(rf"[^\w{allow}]+", "-", s)
 
     tools = """
-Hacking Apartheid
-CryptoRally in Mexico City
-#GambiaHasDecided
-#ThisFlag
-Flower Speech Campaign
-Bring Back Our Girls
-App flooding
-Autonomous servers
-Distributed Denial of Service (DDoS)
-Encryption
-Hashtag campaign
-Hashtag hijack
-Spoof website
-Practice digital self-defence
-Seek safety in support networks
-Glitch feminism
-Hacking
+If you’re not uncomfortable, your coalition is too small
+Baraza
+Beware the tyranny of structurelessness
+Pillars of power
+Power mapping
+Spectrum of allies
+Delegate
+SWOT
+Use organizing strategies that scale
+Build strength through repetition
+Would you like some structure with your momentum?
+Escalate strategically
+Al Faza’a (a surge of solidarity)
+Use your radical fringe to shift the overton window
+Breakfast is persuasive
+Political identity paradox
+Story of self, us, and now
+Follow the lead of the most impacted
+Build people power then negotiate
+Dunbar’s number
     """
     print(repr([slugify(t.strip()) for t in tools.splitlines() if t.strip()]))
 except ImportError:
@@ -77,6 +80,28 @@ with open(JSON, "w") as f:
     print(f"Writing {JSON}...")
 
     sets = {
+        "organizing-101": [
+            "if-youre-not-uncomfortable-your-coalition-is-too-small",
+            "baraza",
+            "beware-the-tyranny-of-structurelessness",
+            "pillars-of-power",
+            "power-mapping",
+            "spectrum-of-allies",
+            "delegate",
+            "swot",
+            "use-organizing-strategies-that-scale",
+            "build-strength-through-repetition",
+            "would-you-like-some-structure-with-your-momentum",
+            "escalate-strategically",
+            "al-fazaa-a-surge-of-solidarity-",
+            "use-your-radical-fringe-to-shift-the-overton-window",
+            "breakfast-is-persuasive",
+            "political-identity-paradox",
+            "story-of-self-us-and-now",
+            "follow-the-lead-of-the-most-impacted",
+            "build-people-power-then-negotiate",
+            "dunbars-number",
+        ],
         "digital-activism": [
             "hacking-apartheid",
             "cryptorally-in-mexico-city",
