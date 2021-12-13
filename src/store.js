@@ -115,9 +115,10 @@ export const store = new Vuex.Store({
       // No language was requested, so detect the browser language from storage or navigator.
       if (!lang) {
         lang = Storage.getItem(keyNameLang) || navigator.language.slice(0,2)
-        if (!config.langs.includes(lang)) {
-          lang = 'en'
-        }
+      }
+      // CRITICAL! Reject invalid languages!
+      if (!config.langs.includes(lang)) {
+        lang = 'en'
       }
       // If language isn't already set and there's no outstanding request for this language already
       if (forceReload || context.state.lang != lang && context.state.langRequested != lang) {

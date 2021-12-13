@@ -61,7 +61,7 @@ const router = new Router({
   },
 })
 
-const languageSelectionPrefix = new RegExp(`^/(${config.langs.join("|")})(/|$)`)
+const languageSelectionPrefix = new RegExp('^/[^/]{2}(/|$)')
 router.beforeEach((to, from, next) => {
   // NAVIGATION GUARD TO SELECT A LANGUAGE FOR THE USER
   //
