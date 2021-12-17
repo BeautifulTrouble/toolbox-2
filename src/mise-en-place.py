@@ -40,7 +40,7 @@ with open(JSON, "w") as j:
     json.dump(text_by_lang, j, indent=2)
 
 
-# To generate slug lists, use this:
+# To generate slug lists, insert the exact titles here, then copy output back in here
 try:
     import unidecode
 
@@ -69,6 +69,9 @@ Story of self, us, and now
 Follow the lead of the most impacted
 Build people power then negotiate
 Dunbar’s number
+Make new folks welcome
+Be careful with each other so we can be dangerous together
+Foster safer spaces
     """
     print(repr([slugify(t.strip()) for t in tools.splitlines() if t.strip()]))
 except ImportError:
@@ -80,28 +83,8 @@ with open(JSON, "w") as f:
     print(f"Writing {JSON}...")
 
     sets = {
-        "organizing-101": [
-            "if-youre-not-uncomfortable-your-coalition-is-too-small",
-            "baraza",
-            "beware-the-tyranny-of-structurelessness",
-            "pillars-of-power",
-            "power-mapping",
-            "spectrum-of-allies",
-            "delegate",
-            "swot",
-            "use-organizing-strategies-that-scale",
-            "build-strength-through-repetition",
-            "would-you-like-some-structure-with-your-momentum",
-            "escalate-strategically",
-            "al-fazaa-a-surge-of-solidarity-",
-            "use-your-radical-fringe-to-shift-the-overton-window",
-            "breakfast-is-persuasive",
-            "political-identity-paradox",
-            "story-of-self-us-and-now",
-            "follow-the-lead-of-the-most-impacted",
-            "build-people-power-then-negotiate",
-            "dunbars-number",
-        ],
+        "organizing-101": 
+['if-youre-not-uncomfortable-your-coalition-is-too-small', 'baraza', 'beware-the-tyranny-of-structurelessness', 'pillars-of-power', 'power-mapping', 'spectrum-of-allies', 'delegate', 'swot', 'use-organizing-strategies-that-scale', 'build-strength-through-repetition', 'would-you-like-some-structure-with-your-momentum-', 'escalate-strategically', 'al-fazaa-a-surge-of-solidarity-', 'use-your-radical-fringe-to-shift-the-overton-window', 'breakfast-is-persuasive', 'political-identity-paradox', 'story-of-self-us-and-now', 'follow-the-lead-of-the-most-impacted', 'build-people-power-then-negotiate', 'dunbars-number', 'make-new-folks-welcome', 'be-careful-with-each-other-so-we-can-be-dangerous-together', 'foster-safer-spaces'],
         "digital-activism": [
             "hacking-apartheid",
             "cryptorally-in-mexico-city",
