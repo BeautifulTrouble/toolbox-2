@@ -17,8 +17,9 @@ import All from './All'
 import Tool from './Tool'
 import Toolbox from './Toolbox'
 
-import { store } from './store'
 import config from './config'
+import { store } from './store'
+import textByLang from './text'
 
 
 // ROUTER
@@ -143,6 +144,7 @@ Vue.use(BackToTop)
 Vue.mixin({
   data: () => ({
     config,
+    textByLang,
   }),
   methods: {
     downloadPDF(tools) {

@@ -7,7 +7,7 @@
     <div class="langs">
       <span v-for="lang in config.langs" :key="lang"
         :class="{'router-link-active': lang == $store.state.lang}"
-        @click="$store.dispatch('LANG_SET', [lang, false])">{{ lang.toUpperCase() }}</span>
+        @click="$store.dispatch('LANG_SET', [lang, false])">{{ textByLang[lang]['site.language'] }}</span>
     </div>
 
     <back-to-top bottom="1rem" right="1rem">
@@ -19,7 +19,6 @@
 </template>
 
 <script>
-
 export default {
   data: () => ({
   }),
