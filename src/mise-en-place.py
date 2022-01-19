@@ -83,8 +83,32 @@ with open(JSON, "w") as f:
     print(f"Writing {JSON}...")
 
     sets = {
-        "organizing-101": 
-['if-youre-not-uncomfortable-your-coalition-is-too-small', 'baraza', 'beware-the-tyranny-of-structurelessness', 'pillars-of-power', 'power-mapping', 'spectrum-of-allies', 'delegate', 'swot', 'use-organizing-strategies-that-scale', 'build-strength-through-repetition', 'would-you-like-some-structure-with-your-momentum-', 'escalate-strategically', 'al-fazaa-a-surge-of-solidarity-', 'use-your-radical-fringe-to-shift-the-overton-window', 'breakfast-is-persuasive', 'political-identity-paradox', 'story-of-self-us-and-now', 'follow-the-lead-of-the-most-impacted', 'build-people-power-then-negotiate', 'dunbars-number', 'make-new-folks-welcome', 'be-careful-with-each-other-so-we-can-be-dangerous-together', 'foster-safer-spaces'],
+        "organizing-101": [
+            "enable-dont-command",
+            "if-youre-not-uncomfortable-your-coalition-is-too-small",
+            "baraza",
+            "beware-the-tyranny-of-structurelessness",
+            "pillars-of-power",
+            "power-mapping",
+            "spectrum-of-allies",
+            "delegate",
+            "swot",
+            "use-organizing-strategies-that-scale",
+            "build-strength-through-repetition",
+            "would-you-like-some-structure-with-your-momentum-",
+            "escalate-strategically",
+            "al-fazaa-a-surge-of-solidarity-",
+            "use-your-radical-fringe-to-shift-the-overton-window",
+            "breakfast-is-persuasive",
+            "political-identity-paradox",
+            "story-of-self-us-and-now",
+            "follow-the-lead-of-the-most-impacted",
+            "build-people-power-then-negotiate",
+            "dunbars-number",
+            "make-new-folks-welcome",
+            "be-careful-with-each-other-so-we-can-be-dangerous-together",
+            "foster-safer-spaces",
+        ],
         "digital-activism": [
             "hacking-apartheid",
             "cryptorally-in-mexico-city",
