@@ -26,8 +26,8 @@ import textByLang from './text'
 Vue.use(Router)
 
 const router = new Router({
-  //mode: 'history',
-  base: '/',
+  mode: 'history',
+  base: '/toolbox/',
   routes: [
     {path: '/tool',         redirect: {name: 'toolbox'}},
     {path: '/tool/:slug',   name: 'tool', component: Tool},
@@ -64,6 +64,11 @@ const router = new Router({
 
 const languageSelectionPrefix = new RegExp('^/[^/]{2}(/|$)')
 router.beforeEach((to, from, next) => {
+  // NAVIGATION GUARD TO PRESERVE OLD FRAGMENT URLS
+  if (to.hash) {
+    next({path: to.hash.slice(1)})
+  }
+
   // NAVIGATION GUARD TO SELECT A LANGUAGE FOR THE USER
   //
   // Capture language prefixes like /en and /ar/tool/civil-disobedience, remove them, and set the
