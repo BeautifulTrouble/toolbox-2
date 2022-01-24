@@ -336,9 +336,6 @@ export default {
           a => this.$http.get(`${this.config.api}/person/${a}?lang=${this.$store.state.lang}`
         ).then(r => this.authors.push(r.data)))
       }
-      if (this.tool) {
-        //document.title = this.tool.title
-      }
       // For non-existent tools, attempt a slug search (it's all we've got)
       // TODO: when search is pre-calculated on the server, perform an english search of the slug mapped to active lang
       if (this.$store.state.tools.length && !this.tool) this.$router.push({
@@ -357,16 +354,26 @@ export default {
   },
   metaInfo() {
     if (!this.tool) return { }
+    document.querySelectorAll('link[rel=canonical], link[rel=image_src], meta[itemprop], meta[name=description], meta[name^="twitter:"], meta[property^="og:"]')
+      .forEach(el => el.remove())
     return {
       title: `${this.tool.title}`,
+      link: [
+        {rel: 'canonical', href: `${this.config.siteUrl}/toolbox/${this.$route.path}`},
+      ],
       meta: [
         {name: 'description', content: this.tool.snapshot},
         {property: 'og:title', content: this.tool.title},
         {property: 'og:site_name', content: 'Beautiful Trouble'},
         {property: 'og:description', content: this.tool.snapshot},
         {property: 'og:type', content: 'article'},
-        {property: 'og:url', content: `${this.config.siteUrl}/toolbox/#/${this.$store.state.lang}${this.$route.path}`},
+        {property: 'og:url', content: `${this.config.siteUrl}/toolbox${this.$route.path}`},
         {property: 'og:image', content: `${this.config.imagePrefix}/${this.tool.image}`},
+        {itemprop: 'name', content: this.tool.title},
+        {itemprop: 'url', content: `${this.config.siteUrl}/toolbox${this.$route.path}`},
+        {itemprop: 'thumbnailUrl', content: `${this.config.imagePrefix}/thumbnail-${this.tool.image}`},
+        {itemprop: 'description', content: this.tool.snapshot},
+        {itemprop: 'image', content: `${this.config.imagePrefix}/${this.tool.image}`},
       ],
     }
   },
