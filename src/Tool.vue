@@ -360,7 +360,7 @@ export default {
     return {
       title: `${this.tool.title}`,
       link: [
-        {rel: 'canonical', href: `${this.config.siteUrl}/toolbox/${this.$route.path}`},
+        {rel: 'canonical', href: `${this.config.siteUrl}/toolbox${this.$route.path}`},
       ],
       meta: [
         {name: 'description', content: this.tool.snapshot},
