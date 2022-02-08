@@ -292,7 +292,7 @@ export default {
       )
     },
     shareUrl() {
-      return `https://beautifultrouble.org/toolbox/#/${this.$store.state.lang}/tool/${this.tool.slug}`
+      return `https://beautifultrouble.org/toolbox/${this.$store.state.lang}/tool/${this.tool.slug}`
     },
     shareUrlEmail() {
       return `mailto:?subject=${this.text['type.' + this.tool.type]}: ${this.tool.title}&body=${this.tool.snapshot}${crlf}${crlf}${this.shareUrl}`
