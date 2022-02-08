@@ -49,14 +49,15 @@ def sitemap():
         tree = addns(orig, "xhtml", "http://www.w3.org/1999/xhtml")
         root = tree.getroot()
 
-        for t in tools:
+        for i, t in enumerate(tools):
             url = etree.SubElement(root, "url")
+            root.insert(i, root[-1])
 
             etree.SubElement(
                 url, "loc"
             ).text = f"https://beautifultrouble.org/toolbox/tool/{t['slug']}"
-            etree.SubElement(url, "changefreq").text = "weekly"
-            etree.SubElement(url, "priority").text = "0.8"
+            etree.SubElement(url, "changefreq").text = "monthly"
+            etree.SubElement(url, "priority").text = "1.0"
             etree.SubElement(url, "lastmod").text = datetime.fromtimestamp(
                 t["timestamp"] // 1000
             ).strftime("%F")
@@ -79,11 +80,11 @@ def sitemap():
             #        }
             #    )
 
-            sitemap = etree.tostring(
-                root,
-                pretty_print=True,
-                doctype="""<?xml version="1.0" encoding="UTF-8"?>""",
-            )
+        sitemap = etree.tostring(
+            root,
+            pretty_print=True,
+            doctype="""<?xml version="1.0" encoding="UTF-8"?>""",
+        )
     except Exception as e:
         print(e)
 
