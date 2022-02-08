@@ -455,11 +455,11 @@ export default {
 @import 'icons.scss';
 
 .toolbox-hero {
-  height: 15vw;
-  min-height: 17.5rem;
+  height: 18vw;
+  min-height: 20.5rem;
   @include breakpoint($md) {
     height: 30vh;
-    min-height: 16.5rem;
+    min-height: 19.5rem;
   }
   // Mobile header adjustments for the Squarespace theme
   @media #{$ss-mobile-header} {
