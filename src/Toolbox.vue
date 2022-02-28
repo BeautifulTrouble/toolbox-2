@@ -466,18 +466,17 @@ export default {
     height: 30vh;
   }
 
-  background-image: url(https://beautifulrising.org/hero-pattern-all.jpg);
-  background-size: cover;
-  background-position: 50% 80%;
   @mixin hero-particulars($type, $color) {
-    //background-image: url(https://beautifulrising.org/hero-pattern-#{$type}.jpg);
-    //background-position: 50% 0%;
-    //filter: brightness(1.2);
+    //background-image: url(#{$imagePrefix}/hero-pattern-all.jpg);
+    background-image: url(#{$imagePrefix}/hero-pattern-#{$type}.jpg);
+    background-size: cover;
+    background-position: 50% 20%;
     &::before {
-      background: linear-gradient(to top right, rgba($color,0) 0%, rgba($color,.2) 30%, rgba($color,.4) 100%),
-                  linear-gradient(to top, rgba(white,0) 0%, rgba(white,.6) 40%, rgba(white,.9) 100%);
+      background: linear-gradient(to top right, rgba($color,0) 0%, rgba($color,.2) 30%, rgba($color,.6) 100%),
+                  linear-gradient(to bottom, rgba(black,0) 0%, rgba(black,.6) 70%, rgba(black,.9) 100%);
     }
   }
+  @include hero-particulars(all, black);
   &.tactic { @include hero-particulars(tactic, $tactic); }
   &.theory { @include hero-particulars(theory, $theory); }
   &.story { @include hero-particulars(story, $story); }
@@ -491,8 +490,6 @@ export default {
   position: relative;
   &::before {
     content: "";
-    background: linear-gradient(to top, rgba(black,0) 0%, rgba(black,.2) 80%, rgba(black,.4) 100%),
-                linear-gradient(to top, rgba(white,0) 0%, rgba(white,.6) 40%, rgba(white,.9) 100%);
     position: absolute;
     top: 0; left: 0;
     bottom: 0; right: 0;
