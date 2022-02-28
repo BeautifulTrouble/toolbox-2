@@ -32,7 +32,7 @@
         <div class="inner">
           <div :class="tool.type">
             <router-link :to="{name: 'toolbox'}">{{ text['site.toolbox'] }}</router-link><span class="bullet">&bullet;</span>
-            <router-link :to="{name: 'toolbox', params: {collection: tool.type}}">{{ text[`type.${tool.type}`] }}</router-link><span class="bullet">&bullet;</span>
+            <router-link :to="{name: 'toolbox', params: {collection: tool.type}}">{{ text[`type.${tool.type}.plural`] }}</router-link><span class="bullet">&bullet;</span>
             <router-link :to="{name: 'tool', params: {slug: tool.slug}}">{{ tool.title }}</router-link>
           </div>
         </div>
@@ -505,7 +505,7 @@ $sidebar: 18rem;
   }
   nav {
     .breadcrumbs .inner {
-      @extend .h3;
+      @extend .h2;
     }
     .bullet {
       margin: 0 .5rem;
