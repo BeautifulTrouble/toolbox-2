@@ -50,7 +50,7 @@
           </autocomplete>
 
           <!-- Show reset when any filters are applied (set/region have default values and therefore don't count) -->
-          <img v-if="collection != ALL || tag || $store.state.searchResults.length"
+          <img v-if="collection != ALL || tag || query"
             svg-inline class="bt-icon reset" src="./assets/reset.svg"
             :alt="text['site.sentence.reset']"
             @click="reset">
