@@ -15,7 +15,7 @@
             {{ text['site.sentence.showme'] }}
           </div>
           <div :class="{tab: true, active: tab == 'collection'}" @click="tab = 'collection'">
-            {{ collectionTab }}
+            {{ collectionTabText }}
           </div>
 
           <!-- Label + tab for regions -->
@@ -31,17 +31,17 @@
             {{ text['site.sentence.about'] }}
           </div>
 
-          <!-- TODO: Label + tab for saved -->
-
-          <!-- Search when collection is neither saved nor set -->
-          <autocomplete class="autocomplete-wrapper" v-show="collection != 'saved'"
-            ref="search"
-            :placeholder="text[collection == 'set' ? `set.${set}` : 'site.sentence.everything']"
+          <!-- When the active collection is set, switch tabs for clarity about what's going on -->
+          <autocomplete class="autocomplete-wrapper" v-show="collection != 'saved'" ref="search"
             @click="tab = collection == 'set' ? 'set' : tab"
-            @submit="search"
-            :search="autocomplete"
-            :get-result-value="getResultValue"
+            @submit="submitSearch"
+            :placeholder="text[collection == 'set' ? `set.${set}` : 'site.sentence.everything']"
+            :search="getAutocompletions"
+            :get-result-value="autocompletion => autocompletion.text"
             >
+            <!-- Auto-select needs some thought. Otherwise lots of users will just get the #BlackLivesMatter set and be stuck
+            auto-select
+            -->
             <template #result="{result, props}">
               <li v-bind="props" :class="['autocomplete-result', result.icon]">
                 {{ result.text }}
@@ -50,7 +50,7 @@
           </autocomplete>
 
           <!-- Show reset when any filters are applied (set/region have default values and therefore don't count) -->
-          <img v-if="collection != ALL || query || tag"
+          <img v-if="collection != ALL || tag || query"
             svg-inline class="bt-icon reset" src="./assets/reset.svg"
             :alt="text['site.sentence.reset']"
             @click="reset">
@@ -64,7 +64,7 @@
 
             <!-- Collection panel -->
             <div class="by by-collection" v-if="tab == 'collection'">
-              <div :class="{block: true, all: true, active: collection == ALL}" @click="selectCollection()">
+              <div :class="{block: true, all: true, active: collection == ALL}" @click="selectCollection(ALL)">
                 <img svg-inline class="bt-icon" src="./assets/all.svg">
                 <div class="h3">{{ text['site.sentence.everything'] }}</div>
               </div>
@@ -151,9 +151,9 @@
     </div>
 
     <transition-group name="tools-list" tag="div" class="tools">
-      <tool-tile v-for="tool in filteredToolsByCollection" :key="tool.slug" :tool="tool" />
-      <tool-tile v-if="!['set', 'saved'].includes(collection)" :key="1" :alt="'suggest'" />
-      <tool-tile v-if="collection == 'saved' && !$store.state.savedTools.size" :key="2" :alt="'nosave'" />
+      <tool-tile v-for="tool in filteredTools" :key="tool.slug" :tool="tool" :text="text" />
+      <tool-tile v-if="!['set', 'saved'].includes(collection)" :key="1" :text="text" :alt="'suggest'" />
+      <tool-tile v-if="collection == 'saved' && !$store.state.savedTools.size" :key="2" :text="text" :alt="'nosave'" />
     </transition-group>
 
   </div>
@@ -189,45 +189,21 @@ export default {
     Search,
   },
   computed: {
-    // @@@ OLD @@@
-    filteredToolsAllTags() {
-      if (this.$route.name == 'toolbox-search' && this.$route.params.query) {
-        return this.$store.state.searchResults.map(k => this.$store.state.toolsBySlug[k])
-      }
-
-      //let tools = this.$store.state.tools.filter(t => /(full|gallery|snapshot)/.test(t['module-type-effective']))
-      let tools = this.$store.state.tools
-      if (this.collection == 'saved') {
-        tools = tools.filter(t => this.$store.state.savedTools.has(t.slug))
-      } else if (this.collection == 'set') {
-        tools = tools.filter(t => (this.sets[this.set] || []).includes(t.slug))
-      } else if (this.config.toolTypes.includes(this.collection)) {
-        tools = tools.filter(t => t.type == this.collection)
-      }
-      if (this.collection == 'story' && this.routeRegion != ALL) {
-        tools = tools.filter(t => {
-          let regionSlugs = t.regions.map(this.slugify) || []
-          return regionSlugs.includes(this.routeRegion) || regionSlugs.includes('worldwide')
-        })
-      }
-      return tools
+    text() {
+      return this.textByLang[this.$store.state.lang]
     },
-    // @@@ OLD @@@
-    filteredTools() {
-      // TODO: why does the toolbox in other languages show snapshots?
-      //       is it because some Array isn't triggering the re-compute of these propreties?
-      let tools = this.filteredToolsAllTags
-      if (this.tag)
-        tools = tools.filter(t => (t.tags || []).includes(this.tag))
-      return tools
+    collectionTabText() {
+      if (this.collection == ALL)
+        return this.text['site.sentence.everything']
+      return this.text[`type.${this.collection}${['saved', 'set', 'search'].includes(this.collection) ? '' : '.plural'}`]
     },
 
     // Filter functions for every collection type
-    filtersByCollection() {
+    filterFunctionsByCollection() {
       return Object.assign(
-        Object.fromEntries(this.types.map(T => [T, t => t.type == T])),
+        Object.fromEntries(this.types.map(T => [T, t => t['module-type-effective'] != 'snapshot' && t.type == T])),
         {
-          [ALL]: t => true,
+          [ALL]: t => t['module-type-effective'] != 'snapshot',
           'saved': t => this.$store.state.savedTools.has(t.slug),
           'set': t => (this.sets[this.set] || []).includes(t.slug),
           'story': t => {
@@ -240,14 +216,16 @@ export default {
           }
         })
     },
-
     // Stage 1 tool filtering (before tag/query is applied)
     filteredToolsByCollection() {
-      return (this.$store.state.tools || []).filter(this.filtersByCollection[this.collection])
+      return (this.$store.state.tools || []).filter(this.filterFunctionsByCollection[this.collection])
     },
-
     // Stage 2 tool filtering (tag/query)
     filteredTools() {
+      return this.filteredToolsByCollection
+        .filter(t => !this.tag || (t.tags || []).includes(this.tag))
+        //.filter(t => !this.$store.state.searchResults.length || this.$store.state.searchResults.includes(t.slug))
+        .filter(t => !this.query || this.$store.state.searchResults.includes(t.slug))
     },
 
     set() {
@@ -260,74 +238,17 @@ export default {
       return this.region_ || ALL
     },
 
-    // @@@ OLD @@@
-    sortedTags() {
-      return Object.keys(this.text)
-              .filter(k => /^tag\./.test(k))
-              .sort((a, b) => this.text[a].localeCompare(this.text[b]))
-              .map(t => t.slice(4))
-    },
-    // @@@ OLD @@@
-    collectionTab() {
-      if (this.$route.name == 'toolbox' || (this.$route.name == 'toolbox-search' && !this.$route.params.query)) {
-        return this.text['site.sentence.everything']
-      }
-      return this.text[`type.${this.collection || ALL}${['saved', 'set', 'search'].includes(this.collection) ? '' : '.plural'}`]
-    },
-    collectionTab() {
-      if (this.collection == ALL)
-        return this.text['site.sentence.everything']
-      return this.text[`type.${this.collection}${['saved', 'set', 'search'].includes(this.collection) ? '' : '.plural'}`]
-    },
-
-    // @@@ OLD @@@
-    tagsAvailable() {
-      // Tags available for the current level of filtering
-      if (this.$route.name == 'toolbox-search' && this.$route.params.query) {
-        return this.allTags
-      }
-      return this.filteredToolsAllTags
-        .map(t => t.tags)
-        .reduce((a, c) => c !== undefined ? new Set([...a, ...c]) : a, new Set([]))
-    },
-    // @@@ OLD @@@
-    text() {
-      return textByLang[this.$store.state.lang] || {}
-    },
-    // @@@ OLD @@@
-    validRegions() {
-      return new Set([ALL, ...this.regions])
-    },
-    // @@@ OLD @@@
-    validSets() {
-      return new Set(Object.keys(this.sets))
-    },
-    allTags() {
-      return new Set(
-        Object.keys(this.text)
-          .filter(k => /^tag\./.test(k))
-          .map(k => k.slice(4))
-      )
-    },
-    availableTags() {
-      return [...this.filteredToolsByCollection
-        .map(t => t.tags)
-        .reduce((a, c) => c !== undefined ? new Set([...a, ...c]) : a, new Set([]))
-      ].sort()
-    },
-    // NEW
-    autocompleteTags() {
+    autocompletionTags() {
       return [...new Set(this.filteredToolsByCollection.map(t => t.tags).flat())]
-        //.sort()
         .map(slug => ({
           type: 'tag',
-          icon: 'search',
+          icon: 'tag',
           value: slug,
           text: this.text[`tag.${slug}`],
         }))
         .filter(t => t.text)
     },
-    autocompleteTitles() {
+    autocompletionTitles() {
       return this.filteredToolsByCollection
         .map(tool => ({
           type: 'title',
@@ -336,7 +257,7 @@ export default {
           text: tool.title
         }))
     },
-    autocompleteSets() {
+    autocompletionSets() {
       return Object.keys(this.sets)
         .map(set => ({
           type: 'set',
@@ -347,55 +268,86 @@ export default {
     },
   },
   methods: {
-    autocomplete(text) {
-      let autocompletions = this.autocompleteTags
+    getAutocompletions(text) {
+      let autocompletions
+      // Start with autocompletions possible for: set tab, other tabs w/text entered, and fall back to tags when field is blank
       if (this.collection == 'set') {
-        autocompletions = this.autocompleteSets
-      } else if (text) {
-        autocompletions = [...this.autocompleteTags, ...this.autocompleteTitles]
-      }
-      text = text.toLocaleLowerCase()
-      return autocompletions
-        .filter(i => i.text.toLocaleLowerCase().includes(text))
-        .sort((a, b) => a.text > b.text ? 1 : -1)
-    },
-    getResultValue(result) {
-      return result.text
-    },
-    search(value) {
-      if (value) {
-        // Autocomplete item
-
+        autocompletions = this.autocompletionSets
+      } else if (text.length) {
+        autocompletions = [...this.autocompletionSets, ...this.autocompletionTags, ...this.autocompletionTitles]
       } else {
-        // Plaintext search
-
+        autocompletions = [...this.autocompletionSets, ...this.autocompletionTags]
       }
-      console.log(value ? (value.type, value.value) : this.$refs.search.value)
+      // Limit autocompletions to a lowercase exact match
+      let lowerText = text.toLocaleLowerCase()
+      autocompletions = autocompletions
+        .filter(i => i.text.toLocaleLowerCase().includes(lowerText))
+        .sort((a, b) => a.text > b.text ? 1 : -1)
+      /* This is only useful when auto-select is enabled
+      // If there's no exact match, add the user's text as a completion
+      if (text && !autocompletions.filter(i => i.text.toLocaleLowerCase() == lowerText).length) {
+        autocompletions.splice(0, 0, {
+          type: 'search',
+          icon: 'search',
+          value: text,
+          text: text,
+        })
+      }
+      */
+      // TODO: if auto-select prop is enabled, we may want to introduce a "do nothing" autocompletion first in the list
+      return autocompletions
+    },
+    submitSearch(autocompletion) {
+      let text = this.$refs.search.value
+      if (autocompletion) {
+        // Without the auto-select prop, it's possible to get a search with no autocompletion object
+        if (autocompletion.type == 'search') {
+          this.selectQuery(text)
+        } else {
+          this.selectQuery()
+          if (autocompletion.type == 'title') {
+            this.$router.push({name: 'tool', params: {slug: autocompletion.value}})
+            return // Don't preserve the input field
+          } else if (autocompletion.type == 'tag') {
+            this.selectTag(autocompletion.value)
+          } else if (autocompletion.type == 'set') {
+            this.selectCollection('set')
+            this.selectSet(autocompletion.value)
+          }
+        }
+      } else {
+        // No autocompletion was given, but we can still do/clear a query (this is only reached if auto-select is disabled)
+        this.selectQuery(text)
+      }
+      // Preserve the text
+      this.$nextTick(() => { this.$refs.search.value = autocompletion && autocompletion.text || text })
     },
 
+    // Methods to mutate the current filtering
     reset(reroute = true) {
-      // TODO: what should be done resetting tag and query?
-      this.query = null
+      this.selectQuery()
       this.selectRegion()
       this.selectSet()
-      this.tag = null
-      // TODO:
-      if (reroute && this.collection) {
+      this.selectTag()
+      // TODO: ensure this handles all cases where we might want to reset
+      if (reroute && this.collection != ALL) {
         this.tab = 'collection'
         this.$router.push({name: 'toolbox'})
       }
-      this.$refs.search.setValue('')
     },
-
     selectCollection(collection) {
-      if (collection == this.collection && ['story', 'set'].includes(collection)) {
-        // Collection already active, but there's another tab to show
-        this.tab = collection
-      } else if (collection != this.collection && collection != this.ALL) {
-        // Different collection selected
-        this.tab = ['story', 'set'].includes(collection) ? collection : 'collection'
+      let switchToSecondaryTab = ['story', 'set'].includes(collection)
+      if (collection != this.collection) {
+        // Change the active collection
+        this.tab = switchToSecondaryTab ? collection : 'collection'
         this.reset(false)
-        this.$router.push({name: 'toolbox', params: this.$route.params.collection != collection ? {collection} : {}})
+        this.$router.push({
+          name: 'toolbox',
+          params: collection == ALL ? {} : {collection},
+        })
+      } else if (switchToSecondaryTab) {
+        // The collection is already active, but we should switch to its secondary tab
+        this.tab = collection
       }
     },
     selectRegion(region) {
@@ -405,46 +357,16 @@ export default {
       this.set_ = set
       this.$refs.search.setValue('')
     },
-
-    // @@@ OLD @@@
     selectTag(tag) {
-      tag = this.$route.params.tag != tag ? tag : undefined
-      delete this.$route.params.query
-      this.$router.push({
-        name: [ALL, 'search'].includes(this.collection) ? 'toolbox' : this.$route.name,
-        params: {...this.$route.params, tag}
-      })
+      this.tag = tag || null
     },
-    // @@@ OLD @@@
-    guardRoute(route, next) { // eslint-disable-next-line
-      let { query, region, set, tag } = route.params
-
-      // Reject invalid regions, tags, or sets. Fall back to top-level toolbox.
-      if ((region && !this.validRegions.has(region)) ||
-          (tag && !this.allTags.has(tag)) ||
-          (set && !this.validSets.has(set)))
-        return next({name: 'toolbox', replace: true})
-
-      // Set an appropriate activeTab (one of: collection, region, set, tag)
-      // When activeTab is set by the route guard, tags are ALWAYS hidden
-      if (tag) {
-        this.activeTab = 'tag'
-        this.hideTagsOnMobile = true
-      } else if (route.name == 'toolbox-search') {
-        this.activeTab = 'tag'
-      } else if (this.collection == 'set') {
-        this.activeTab = 'set'
-      } else if (this.collection == 'story') {
-        this.activeTab = 'region'
-      } else if ([ALL, 'saved'].includes(this.collection)) {
-        this.activeTab = 'collection'
-      } else {
-        //this.activeTab = 'tag'
-        this.activeTab = 'collection'
-        this.hideTagsOnMobile = true
+    selectQuery(query) {
+      this.query = query || null
+      this.$refs.search.setValue(query || '')
+      if (query) {
+        this.$store.dispatch('SEARCH', this.query)
       }
-      next()
-    },
+    }
   },
   metaInfo() {
     return { title: `${this.text['site.toolbox'] || 'Toolbox'} — Beautiful Trouble` }
@@ -589,10 +511,12 @@ export default {
     background: black;
     color: $bgdark3;
 
-    transition: all .1s linear;
     &.active {
       color: white;
       border-top: .5rem solid $bgdark3;
+    }
+    @include breakpoint($upper) {
+      transition: all .1s linear;
     }
     @include breakpoint($md) {
       padding: .5rem .5rem;
@@ -652,17 +576,14 @@ export default {
   }
 }
 .autocomplete {
-  .autocomplete-input, .autocomplete-result {
-    // background-image:
-  }
   .autocomplete-input {
+    // SEE icons.scss for background-image icons
     font-family: ff-good-headline-web-pro-condensed, sans-serif;
     font-size: 1.4rem;
     text-transform: uppercase;
     color: $bgdark3;
     padding: .1rem 1rem .4rem 3rem;
     background-color: black;
-    // background-image: see icons.scss
 
     position: relative;
     border: none;
@@ -672,7 +593,6 @@ export default {
       color: white;
       border-top: .5rem solid $bgdark3;
       box-shadow: 0 0 .5rem rgba(0,0,0,.16) inset;
-      // background-image: see icons.scss
     }
     &::-webkit-input-placeholder {
       color: $text;
@@ -690,16 +610,7 @@ export default {
   }
 
   .autocomplete-result {
-    @mixin autocomplete-particulars($type) {
-      // background-image: see icons.scss
-      background-size: 1.5rem;
-    }
-    &.story { @include autocomplete-particulars(story); }
-    &.tactic { @include autocomplete-particulars(tactic); }
-    &.principle { @include autocomplete-particulars(principle); }
-    &.theory { @include autocomplete-particulars(theory); }
-    &.methodology { @include autocomplete-particulars(methodology); }
-    &.set { @include autocomplete-particulars(set); }
+    background-size: 1.5rem;
   }
   .autocomplete-result:hover, .autocomplete-result[aria-selected="true"] {
     background-color: $bgdark4;

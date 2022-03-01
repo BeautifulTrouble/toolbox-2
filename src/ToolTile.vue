@@ -1,8 +1,7 @@
 <template>
-  <div class="tool-tile">
+  <router-link class="tool-tile" :to="tool && tool.slug ? {name: 'tool', params: {slug: tool.slug}} : {}">
     <!-- Use VueLazyLoad for loading images on scroll -->
     <div v-if="tool"
-      @click="$router.push({name: 'tool', params: {slug: tool.slug}})"
       :class="{'tool-tile-image': true, [`hover-${tool.type}`]: true}"
       v-lazy:background-image="tool['tile-image']">
       <div :class="['upper', `bg-${tool.type}`]">
@@ -54,7 +53,7 @@
         <div class="snapshot">{{ text['site.saved.help'] }}</div>
       </div>
     </div>
-  </div>
+  </router-link>
 </template>
 
 <script>
@@ -77,6 +76,7 @@ export default {
   flex: 0 0 18rem;
   height: 18rem;
   border-radius: .5rem;
+  text-decoration: none;
   >div {
     height: 100%;
   }
@@ -112,7 +112,7 @@ export default {
   .snapshot {
     opacity: 0;
     padding: 0 1rem;
-    transition: opacity .1s;
+    //transition: opacity .1s;
     p {
       margin: 0;
       //line-height: 1.1;
@@ -156,6 +156,7 @@ export default {
   }
   // Hover
   @mixin hover-particulars($color) {
+    background-color: darken($color, 40%);
     &::before { // Colored background
       background: $color;
       content: "";
@@ -163,7 +164,7 @@ export default {
       left: 0; right: 0;
       top: 0; bottom: 0;
       opacity: 0;
-      transition: opacity .1s linear;
+      //transition: opacity .1s linear;
     }
     // TODO: reorder layering so that the hover keeps the dark gradient
     &:hover::after { // Text fade gradient
@@ -193,11 +194,11 @@ export default {
 
 
 .tool-tile-image {
-  background-color: $bgdark3;
+  background-color: black;
   background-repeat: no-repeat;
   background-position: top left;
   background-size: cover;
-  transition: opacity .1s linear;
+  //transition: opacity .1s linear;
   height: 100%;
   position: relative;
   &::after { // Dark gradient
@@ -206,14 +207,16 @@ export default {
     top: 0; left: 0;
     bottom: 0; right: 0;
     background: linear-gradient(0deg, rgba(0,0,0,0) 0%, rgba(0,0,0,.7) 90%, rgba(0,0,0,1) 100%);
-    transition: background .1 linear;
+    //transition: background .1 linear;
     pointer-events: none; // Allow the heart icon to work
   }
+  /*
   &[lazy="loading"] {
-    opacity: 0;
+    opacity: .50;
   }
   &[lazy="loaded"] {
     opacity: 1;
   }
+  */
 }
 </style>
