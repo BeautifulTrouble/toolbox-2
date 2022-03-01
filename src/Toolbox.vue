@@ -592,10 +592,12 @@ export default {
     background: black;
     color: $bgdark3;
 
-    transition: all .1s linear;
     &.active {
       color: white;
       border-top: .5rem solid $bgdark3;
+    }
+    @include breakpoint($upper) {
+      transition: all .1s linear;
     }
     @include breakpoint($md) {
       padding: .5rem .5rem;
@@ -655,17 +657,14 @@ export default {
   }
 }
 .autocomplete {
-  .autocomplete-input, .autocomplete-result {
-    // background-image:
-  }
   .autocomplete-input {
+    // SEE icons.scss for background-image icons
     font-family: ff-good-headline-web-pro-condensed, sans-serif;
     font-size: 1.4rem;
     text-transform: uppercase;
     color: $bgdark3;
     padding: .1rem 1rem .4rem 3rem;
     background-color: black;
-    // background-image: see icons.scss
 
     position: relative;
     border: none;
@@ -675,7 +674,6 @@ export default {
       color: white;
       border-top: .5rem solid $bgdark3;
       box-shadow: 0 0 .5rem rgba(0,0,0,.16) inset;
-      // background-image: see icons.scss
     }
     &::-webkit-input-placeholder {
       color: $text;
@@ -693,16 +691,7 @@ export default {
   }
 
   .autocomplete-result {
-    @mixin autocomplete-particulars($type) {
-      // background-image: see icons.scss
-      background-size: 1.5rem;
-    }
-    &.story { @include autocomplete-particulars(story); }
-    &.tactic { @include autocomplete-particulars(tactic); }
-    &.principle { @include autocomplete-particulars(principle); }
-    &.theory { @include autocomplete-particulars(theory); }
-    &.methodology { @include autocomplete-particulars(methodology); }
-    &.set { @include autocomplete-particulars(set); }
+    background-size: 1.5rem;
   }
   .autocomplete-result:hover, .autocomplete-result[aria-selected="true"] {
     background-color: $bgdark4;
