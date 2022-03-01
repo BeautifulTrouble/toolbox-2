@@ -400,7 +400,7 @@ $sidebar: 18rem;
   }
   .lazy-background-image {
     background: black;
-    transition: opacity .4s linear;
+    transition: opacity .2s linear;
     &::before {
       content: "";
       //transition: opacity .1s ease-in-out;

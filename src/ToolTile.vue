@@ -157,6 +157,7 @@ export default {
   }
   // Hover
   @mixin hover-particulars($color) {
+    background-color: darken($color, 40%);
     &::before { // Colored background
       background: $color;
       content: "";
@@ -194,7 +195,7 @@ export default {
 
 
 .tool-tile-image {
-  background-color: $bgdark3;
+  background-color: black;
   background-repeat: no-repeat;
   background-position: top left;
   background-size: cover;
@@ -210,11 +211,13 @@ export default {
     //transition: background .1 linear;
     pointer-events: none; // Allow the heart icon to work
   }
+  /*
   &[lazy="loading"] {
-    opacity: 0;
+    opacity: .50;
   }
   &[lazy="loaded"] {
     opacity: 1;
   }
+  */
 }
 </style>
