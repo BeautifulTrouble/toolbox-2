@@ -84,6 +84,7 @@ with open(JSON, "w") as f:
 
     sets = {
         "organizing-101": [
+            "joy-is-a-revolutionary-force",
             "enable-dont-command",
             "if-youre-not-uncomfortable-your-coalition-is-too-small",
             "baraza",

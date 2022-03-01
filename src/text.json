@@ -1,6 +1,7 @@
 {
   "en": {
     "site.language": "English",
+    "site.tagline": "Creative tools for a more just world...",
     "site.tools": "Tools",
     "site.toolbox": "Toolbox",
     "site.search": "Search",
@@ -64,7 +65,7 @@
     "type.methodology.plural": "Methodologies",
     "type.methodology.key": "Key methodology",
     "type.methodology.keys": "Key methodologies",
-    "type.methodology.description": "Strategic frameworks and hands-on exercises to help you assess your situation and plan your campaign.",
+    "type.methodology.description": "Strategic frameworks and hands-on exercises to help you assess your situation, plan your campaign, and make decisions.",
     "type.set": "A set",
     "type.set.plural": "Sets",
     "type.set.description": "Collections of tools relevant to a theme or cause, such as Black Lives Matter.",
@@ -82,7 +83,7 @@
     "set.election-protection": "Election Protection",
     "set.election-protection.description": "Tools for defending and deepening democracy in the face of authoritarian aggression.",
     "set.myanmar-coup-response": "Coup Response",
-    "set.myanmar-coup-response.description": "Tools from the Beautiful Trouble Toolkit, Myanmar edition",
+    "set.myanmar-coup-response.description": "Tools from the Beautiful Trouble Toolkit, Myanmar edition.",
     "set.palestine-solidarity": "Palestine Solidarity",
     "set.palestine-solidarity.description": "Stories and tools in support of taking action in solidarity for freedom, justice and equality for Palestinians.",
     "set.digital-activism": "Digital Activism",
@@ -138,6 +139,7 @@
   },
   "mm": {
     "site.language": "English",
+    "site.tagline": "Creative tools for a more just world...",
     "site.tools": "Tools",
     "site.toolbox": "Toolbox",
     "site.search": "Search",
@@ -201,7 +203,7 @@
     "type.methodology.plural": "Methodologies",
     "type.methodology.key": "Key methodology",
     "type.methodology.keys": "Key methodologies",
-    "type.methodology.description": "Strategic frameworks and hands-on exercises to help you assess your situation and plan your campaign.",
+    "type.methodology.description": "Strategic frameworks and hands-on exercises to help you assess your situation, plan your campaign, and make decisions.",
     "type.set": "A set",
     "type.set.plural": "Sets",
     "type.set.description": "Collections of tools relevant to a theme or cause, such as Black Lives Matter.",
@@ -219,7 +221,7 @@
     "set.election-protection": "Election Protection",
     "set.election-protection.description": "Tools for defending and deepening democracy in the face of authoritarian aggression.",
     "set.myanmar-coup-response": "Coup Response",
-    "set.myanmar-coup-response.description": "Tools from the Beautiful Trouble Toolkit, Myanmar edition",
+    "set.myanmar-coup-response.description": "Tools from the Beautiful Trouble Toolkit, Myanmar edition.",
     "set.palestine-solidarity": "Palestine Solidarity",
     "set.palestine-solidarity.description": "Stories and tools in support of taking action in solidarity for freedom, justice and equality for Palestinians.",
     "set.digital-activism": "Digital Activism",
@@ -275,6 +277,7 @@
   },
   "bn": {
     "site.language": "\u09ac\u09be\u0982\u09b2\u09be",
+    "site.tagline": "Creative tools for a more just world...",
     "site.tools": "\u09aa\u09a6\u09cd\u09a7\u09a4\u09bf/\u099f\u09c1\u09b2",
     "site.toolbox": "\u099f\u09c1\u09b2\u09ac\u0995\u09cd\u09b8/\u09aa\u09a6\u09cd\u09a7\u09a4\u09bf\u09b0 \u09ac\u09be\u0995\u09cd\u09b8",
     "site.search": "\u0996\u09c1\u0981\u099c\u09c1\u09a8",
@@ -412,6 +415,7 @@
   },
   "pt": {
     "site.language": "Portugu\u00eas",
+    "site.tagline": "Creative tools for a more just world...",
     "site.tools": "Ferramentas",
     "site.toolbox": "Caixa de ferramentas",
     "site.search": "Buscar",
@@ -549,6 +553,7 @@
   },
   "es": {
     "site.language": "Espa\u00f1ol",
+    "site.tagline": "Creative tools for a more just world...",
     "site.tools": "Herramientas",
     "site.toolbox": "Caja de herramientas",
     "site.search": "Buscar",
@@ -686,6 +691,7 @@
   },
   "ar": {
     "site.language": "\u0639\u0631\u0628\u0649",
+    "site.tagline": "Creative tools for a more just world...",
     "site.tools": "\u0623\u062f\u0648\u0627\u062a",
     "site.toolbox": "\u0635\u0646\u062f\u0648\u0642 \u0627\u0644\u0639\u062f\u0629",
     "site.search": "\u0628\u062d\u062b",
@@ -823,6 +829,7 @@
   },
   "fr": {
     "site.language": "Fran\u00e7ais",
+    "site.tagline": "Creative tools for a more just world...",
     "site.tools": "Outils",
     "site.toolbox": "Bo\u00eete \u00e0 outils",
     "site.search": "Rechercher",
@@ -960,6 +967,7 @@
   },
   "it": {
     "site.language": "Italiano",
+    "site.tagline": "Creative tools for a more just world...",
     "site.tools": "Strumenti",
     "site.toolbox": "Cassetta degli attrezzi",
     "site.search": "Cerca",
