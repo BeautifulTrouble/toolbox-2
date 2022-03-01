@@ -1,8 +1,7 @@
 <template>
-  <div class="tool-tile">
+  <router-link class="tool-tile" :to="tool && tool.slug ? {name: 'tool', params: {slug: tool.slug}} : {}">
     <!-- Use VueLazyLoad for loading images on scroll -->
     <div v-if="tool"
-      @click="$router.push({name: 'tool', params: {slug: tool.slug}})"
       :class="{'tool-tile-image': true, [`hover-${tool.type}`]: true}"
       v-lazy:background-image="tool['tile-image']">
       <div :class="['upper', `bg-${tool.type}`]">
@@ -54,7 +53,7 @@
         <div class="snapshot">{{ text['site.saved.help'] }}</div>
       </div>
     </div>
-  </div>
+  </router-link>
 </template>
 
 <script>
@@ -78,6 +77,7 @@ export default {
   flex: 0 0 18rem;
   height: 18rem;
   border-radius: .5rem;
+  text-decoration: none;
   >div {
     height: 100%;
   }
