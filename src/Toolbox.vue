@@ -226,11 +226,11 @@ export default {
     },
 
     // Filter functions for every collection type
-    filtersByCollection() {
+    filterFunctionsByCollection() {
       return Object.assign(
         Object.fromEntries(this.types.map(T => [T, t => t.type == T])),
         {
-          [ALL]: t => true,
+          [ALL]: t => t['module-type-effective'] != 'snapshot',
           'saved': t => this.$store.state.savedTools.has(t.slug),
           'set': t => (this.sets[this.set] || []).includes(t.slug),
           'story': t => {
@@ -246,7 +246,7 @@ export default {
 
     // Stage 1 tool filtering (before tag/query is applied)
     filteredToolsByCollection() {
-      return (this.$store.state.tools || []).filter(this.filtersByCollection[this.collection])
+      return (this.$store.state.tools || []).filter(this.filterFunctionsByCollection[this.collection])
     },
 
     // Stage 2 tool filtering (tag/query)
