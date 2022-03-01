@@ -163,7 +163,6 @@
 import Search from './Search'
 import ToolTile from './ToolTile'
 import sets from './sets'
-import textByLang from './text'
 
 
 const ALL = 'all'
@@ -190,6 +189,9 @@ export default {
     Search,
   },
   computed: {
+    text() {
+      return this.textByLang[this.$store.state.lang]
+    },
     // @@@ OLD @@@
     filteredToolsAllTags() {
       if (this.$route.name == 'toolbox-search' && this.$route.params.query) {
