@@ -151,9 +151,9 @@
     </div>
 
     <transition-group name="tools-list" tag="div" class="tools">
-      <tool-tile v-for="tool in filteredToolsByCollection" :key="tool.slug" :tool="tool" :text="text" />
-      <tool-tile v-if="!['set', 'saved'].includes(collection)" :key="1" :text="text" :alt="'suggest'" />
-      <tool-tile v-if="collection == 'saved' && !$store.state.savedTools.size" :key="2" :text="text" :alt="'nosave'" />
+      <tool-tile v-for="tool in filteredToolsByCollection" :key="tool.slug" :tool="tool" />
+      <tool-tile v-if="!['set', 'saved'].includes(collection)" :key="1" :alt="'suggest'" />
+      <tool-tile v-if="collection == 'saved' && !$store.state.savedTools.size" :key="2" :alt="'nosave'" />
     </transition-group>
 
   </div>
@@ -163,7 +163,6 @@
 import Search from './Search'
 import ToolTile from './ToolTile'
 import sets from './sets'
-import textByLang from './text'
 
 
 const ALL = 'all'

@@ -151,6 +151,11 @@ Vue.mixin({
     config,
     textByLang,
   }),
+  computed: {
+    text() {
+      return this.textByLang[this.$store.state.lang] || {}
+    },
+  },
   methods: {
     downloadPDF(tools) {
       tools = typeof(tools) == "string" ? [tools] : tools

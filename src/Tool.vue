@@ -212,7 +212,6 @@
 import Expander from './Expander'
 import Popup from './Popup'
 import Youtube from './Youtube'
-import textByLang from './text'
 
 
 const crlf = '%0d%0a'
@@ -238,9 +237,6 @@ export default {
     },
     moreThanASnapshotInEnglish() {
       return (this.tool['module-type-effective'] == 'snapshot' && (this.tool['full-write-up'] || this.tool['short-write-up']))
-    },
-    text() {
-      return textByLang[this.$store.state.lang]
     },
     keySlugs() {
       let slugs = new Set()

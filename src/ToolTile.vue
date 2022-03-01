@@ -63,7 +63,6 @@ export default {
   name: 'ToolTile',
   props: {
     tool: {type: Object, default: null},
-    text: {type: Object, default: null},
     alt: {type: String, default: ''},
   },
 };

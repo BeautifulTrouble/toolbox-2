@@ -43,7 +43,6 @@
 </template>
 
 <script>
-import textByLang from './text'
 import Search from './Search'
 
 export default {
@@ -75,9 +74,6 @@ export default {
         this.$store.state.tools.forEach(tool => obj[tool.type].push(tool))
       }
       return obj
-    },
-    text() {
-      return textByLang[this.$store.state.lang]
     },
   },
   methods: {
