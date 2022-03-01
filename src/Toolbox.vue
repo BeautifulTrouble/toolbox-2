@@ -447,6 +447,9 @@ export default {
       next()
     },
   },
+  metaInfo() {
+    return { title: `${this.text['site.toolbox'] || 'Toolbox'} — Beautiful Trouble` }
+  },
 };
 </script>
 

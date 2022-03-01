@@ -358,7 +358,7 @@ export default {
     document.querySelectorAll('link[rel=canonical], link[rel=image_src], meta[itemprop], meta[name=description], meta[name^="twitter:"], meta[property^="og:"]')
       .forEach(el => el.remove())
     return {
-      title: `${this.tool.title}`,
+      title: `${this.tool.title} — Beautiful Trouble`,
       link: [
         {rel: 'canonical', href: `${this.config.siteUrl}/toolbox${this.$route.path}`},
       ],
