@@ -32,9 +32,6 @@
               </span>
               <router-link :class="{favorite: $store.state.savedTools.has(tool.slug)}" :to="{name: 'tool', params: {slug: tool.slug}}">
                 {{ tool.title }}
-                <!--
-                <popup :tools="[tool.slug]" light class="tool-popup" />
-                -->
               </router-link>
             </div>
           </div>
@@ -47,7 +44,6 @@
 
 <script>
 import textByLang from './text'
-//import Popup from './Popup'
 import Search from './Search'
 
 export default {
@@ -58,7 +54,6 @@ export default {
   }),
   components: {
     Search,
-    //Popup,
   },
   watch: {
     searchResults() {
@@ -136,10 +131,6 @@ export default {
     .bt-icon {
       fill: $color;
     }
-    .tool-popup {
-      border: 1px solid $color;
-      background: tint($color, 95%);
-    }
   }
   .tactic { @include type-specific-stuff($tactic); }
   .theory { @include type-specific-stuff($theory); }
@@ -177,9 +168,6 @@ export default {
       @include breakpoint($upper) {
         &:hover {
           text-decoration: underline;
-          .tool-popup {
-            display: initial;
-          }
         }
       }
     }
@@ -188,22 +176,6 @@ export default {
       max-height: 1.4rem;
       //margin-inline-end: .5rem;
       padding: .1rem;
-    }
-    .tool-popup {
-      display: flex;
-      position: absolute;
-      top: -1rem;
-      right: 100%;
-      margin: 0 1rem 0 0;
-      display: none;
-      .content {
-        padding: 1rem;
-      }
-      .rtl & {
-        right: unset;
-        left: 100%;
-        margin: 0 0 0 1rem;
-      }
     }
   }
   .column {
