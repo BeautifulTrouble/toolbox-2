@@ -47,9 +47,10 @@ export default {
   top: 0; right: 0;
   z-index: 10;
   span {
-    padding: 0 .5rem;
+    padding: .4rem .6rem;
     color: white;
-    &.router-link-active {
+    @include breakpoint($sm) {
+      padding: .4rem .3rem;
     }
   }
 }
