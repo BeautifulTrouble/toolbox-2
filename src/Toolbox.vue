@@ -14,7 +14,7 @@
           <div class="plain" @dblclick="$router.push({name: 'toolbox-all'})">
             {{ text['site.sentence.showme'] }}
           </div>
-          <div :class="{tab: true, active: tab == 'collection'}" @click="tab = 'collection'">
+          <div :class="{tab: true, active: activeTabOnCondition(tab == 'collection')}" @click="tab = 'collection'">
             {{ collectionTabText }}
           </div>
 
@@ -22,7 +22,7 @@
           <div v-if="collection == 'story'" class="plain">
             {{ text['site.sentence.from'] }}
           </div>
-          <div v-if="collection == 'story'" :class="{tab: true, active: tab == 'story'}" @click="tab = 'story'">
+          <div v-if="collection == 'story'" :class="{tab: true, active: activeTabOnCondition(tab == 'story')}" @click="tab = 'story'">
             {{ text[`type.story.region.${region}`] }}
           </div>
 
@@ -35,6 +35,8 @@
           <autocomplete class="autocomplete-wrapper" v-show="collection != 'saved'" ref="search"
             @click="tab = collection == 'set' ? 'set' : tab"
             @submit="submitSearch"
+            @focus="searchTabActive = true"
+            @blur="searchTabActive = false"
             :placeholder="text[collection == 'set' ? `set.${set}` : 'site.sentence.everything']"
             :search="getAutocompletions"
             :get-result-value="autocompletion => autocompletion.text"
@@ -164,6 +166,7 @@ export default {
     set_: Object.keys(sets)[0],
     tag: null,
     tab: 'collection',
+    searchTabActive: false,
   }),
   components: {
     ToolTile,
@@ -249,6 +252,9 @@ export default {
     },
   },
   methods: {
+    activeTabOnCondition(condition) {
+      return condition && !this.searchTabActive
+    },
     getAutocompletions(text) {
       let autocompletions = []
       // Start with autocompletions possible for all tab
