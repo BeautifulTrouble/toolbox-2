@@ -379,8 +379,7 @@ export default {
   }
 
   @mixin hero-particulars($type, $color) {
-    //background-image: url(#{$imagePrefix}/hero-pattern-all.jpg);
-    background-image: url(#{$imagePrefix}/hero-pattern-#{$type}.jpg);
+    //background-image: url(#{$imagePrefix}/hero-pattern-#{$type}.jpg);
     background-size: cover;
     background-position: 50% 20%;
     &::before {
@@ -389,6 +388,9 @@ export default {
     }
   }
   @include hero-particulars(all, black);
+  background-image: url('data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBAQFBAYFBQYJBgUGCQsIBgYICwwKCgsKCgwQDAwMDAwMEAwODxAPDgwTExQUExMcGxsbHB8fHx8fHx8fHx//2wBDAQcHBw0MDRgQEBgaFREVGh8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx//wAARCAABB30DAREAAhEBAxEB/8QAFgABAQEAAAAAAAAAAAAAAAAAAAEC/8QAFRABAQAAAAAAAAAAAAAAAAAAAAH/xAAZAQEBAQEBAQAAAAAAAAAAAAAAAQIDBgf/xAAVEQEBAAAAAAAAAAAAAAAAAAAAAf/aAAwDAQACEQMRAD8Aw9i+TgCKIKCoogCqgICKoKiiAiqgIogqKqAKqAiqiqgIogqKIKiqgIqxlVQEVUUQWIqoCKsRRBUVWVEUQVFVFIgqKqKRFVkEVUVUBFVFVARRFWIqsgigqsqqAiqKRlVQEVUURQVWRUUFVFEUQVFEUFVFEBFUURRBUUFVFGWosStQZbistwRuCNRWW4I6QRuCNwRuCNwRuCOkRG4DcEbgjpBG4DcEbiI3AagjcEbgjUBuCNRUagjUBoRVRoQBVQBQBFUBABUUBQEAFQAAVAAiCgQBBYAIRBQEFARAFQAUQQWACKgAqAIIKCiCACoiwBBQBAFQERQUBEAUBBRBBYACogCoEEAUBBRAAFQAEQBQAAUBAggAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD//Z');
+  background-size: 100%;
+  background-position: 50% 50%;
   &.tactic { @include hero-particulars(tactic, $tactic); }
   &.theory { @include hero-particulars(theory, $theory); }
   &.story { @include hero-particulars(story, $story); }
@@ -592,7 +594,8 @@ export default {
       border-top: .5rem solid $bgdark3;
       box-shadow: 0 0 .5rem rgba(0,0,0,.16) inset;
     }
-    &::-webkit-input-placeholder {
+    &::placeholder, &::-webkit-input-placeholder {
+      border-bottom: 1px solid $bgdark3;
       color: $text;
     }
     @include breakpoint($sm) {
