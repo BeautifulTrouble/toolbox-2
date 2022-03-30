@@ -354,6 +354,10 @@ export default {
       this.region_ = region == this.region_ ? null : region
     },
     selectSet(set, $event) {
+      if ($event !== undefined && this.set_ != set) {
+        // Don't open links accidentally
+        $event.preventDefault()
+      }
       this.set_ = set
       this.$refs.search.setValue('')
     },
