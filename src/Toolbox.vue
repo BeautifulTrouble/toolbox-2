@@ -83,25 +83,7 @@
                 <div class="h3">{{ text['type.set.plural'] }}</div>
               </div>
 
-              <!-- mobile-only -->
-              <!--
-              <div :class="{block: true, saved: true, active: collection == 'saved', 'mobile-only': false}"
-                @click="selectCollection('saved')">
-                <img svg-inline class="bt-icon" src="./assets/favorite-active.svg">
-                <div class="h3">{{ text['type.saved'] }}</div>
-              </div>
-              <div v-if="collection == 'saved'"
-                :class="{block: true, saved: true, active: collection == 'saved', 'mobile-only': true}">
-                <span @click.stop="$store.state.savedTools.size && downloadPDF($store.state.savedTools)"
-                  :class="{download: true, disabled: !$store.state.savedTools.size}"
-                  :title="text[$store.state.savedTools.size ? 'site.downloadpdf' : 'site.saved.description']">
-                  <img svg-inline class="bt-icon" src="./assets/download.svg">
-                  <div>{{ text['site.downloadpdf'] }}</div>
-                </span>
-              </div>
-              -->
-              <!-- mobile-hidden -->
-              <div :class="{block: true, saved: true, active: collection == 'saved', 'mobile-hidden': false}" @click="selectCollection('saved')">
+              <div :class="{block: true, saved: true, active: collection == 'saved'}" @click="selectCollection('saved')">
                 <img svg-inline class="bt-icon" src="./assets/favorite-active.svg">
                 <div class="h3">{{ text['type.saved'] }}</div>
                 <p>
@@ -139,9 +121,6 @@
               <div v-for="(s, slug) in sets" :key="slug"
                 :class="{block: true, set: true, [slug]: true, active: set == slug}"
                 @click="selectSet(slug, ...arguments)">
-                <!--
-                <img svg-inline class="bt-icon set" src="./assets/set.svg">
-                -->
                 <div class="h3 set">{{ text[`set.${slug}`] }}</div>
                 <div v-html="markdown(text[`set.${slug}.description`])" />
               </div>
