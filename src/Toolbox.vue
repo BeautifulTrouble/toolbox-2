@@ -139,7 +139,9 @@
               <div v-for="(s, slug) in sets" :key="slug"
                 :class="{block: true, set: true, [slug]: true, active: set == slug}"
                 @click="selectSet(slug, ...arguments)">
+                <!--
                 <img svg-inline class="bt-icon set" src="./assets/set.svg">
+                -->
                 <div class="h3 set">{{ text[`set.${slug}`] }}</div>
                 <div v-html="markdown(text[`set.${slug}.description`])" />
               </div>
@@ -389,6 +391,9 @@ export default {
     height: 30vh;
     min-height: 19.5rem;
   }
+  @include breakpoint($sm) {
+    min-height: 16rem;
+  }
   // Mobile header adjustments for the Squarespace theme
   @media #{$ss-mobile-header} {
     height: 30vh;
@@ -466,6 +471,7 @@ export default {
   justify-content: flex-end; // align to bottom of flex row
   @include breakpoint($sm) {
     width: 100%;
+    min-height: unset;
   }
 }
 .sentence {
@@ -531,22 +537,24 @@ export default {
       text-align: start;
       border: none;
       border-inline-start: .75rem solid black;
-      border-radius: 7px 0 0 7px;
+      border-radius: 0;
       &.active {
         border: none;
         border-inline-start: .75rem solid $bgdark3;
       }
     }
   }
-  .bt-icon {
+  .reset {
     flex: 0 0 2.5rem; // width + margin
     margin: .65rem 0;
-    //margin-inline-start: .5rem;
     width: 1.7rem;
     height: 1.7rem;
     cursor: pointer;
     fill: $bggray;
     transform: rotate(-32deg);
+    .rtl & {
+      transform: scaleX(-1);
+    }
     @include breakpoint($upper) {
       transition: transform .2s linear;
       &:hover {
@@ -556,9 +564,16 @@ export default {
     }
     @include breakpoint($sm) {
       position: absolute;
-      left: 1rem;
-      bottom: .25rem;
-      transform: scale(1.25);
+      width: 3rem;
+      height: 3rem;
+      padding: .5rem;
+      margin: 0;
+      right: .25rem;
+      top: 0;
+      .rtl & {
+        right: unset;
+        left: .25rem;
+      }
     }
   }
 }
@@ -603,11 +618,11 @@ export default {
     }
     @include breakpoint($sm) {
       border: none;
-      border-radius: .5rem 0 0 .5rem;
+      border-radius: 0;
       border-inline-start: .75rem solid black;
       &[aria-expanded=true], &:focus {
         border: none;
-        border-radius: .5rem 0 0 .5rem;
+        border-radius: 0;
         border-inline-start: .75rem solid $bgdark3;
       }
     }
@@ -688,15 +703,9 @@ export default {
     &.set {
       svg {
         fill: $set;
-        margin: 0;
-        max-height: 3rem;
       }
       .h3 {
         color: $set;
-        margin: 0;
-      }
-      p {
-        margin: .5rem;
       }
       @include breakpoint($md) {
         flex: 0 0 20%;
@@ -796,12 +805,8 @@ export default {
       max-height: 4rem;
       width: 7rem;
       margin: 0;
-      path {
-        //fill: $story;
-      }
     }
     .block {
-      //flex: 1 2 12.5%;
       @include breakpoint($md) {
         flex: 0 0 25%;
       }
@@ -820,11 +825,20 @@ export default {
   }
   .by-set {
     .block {
-      @include breakpoint($md) {
-        height: 16rem;
+      align-items: flex-start;
+      justify-content: flex-start;
+      padding: .25rem .5rem;
+      .h3 {
+        margin: .25rem;
+        text-align: start;
+        line-height: .9;
+      }
+      p {
+        font-size: .7rem;
+        margin: 0 .25rem .25rem .25rem;
       }
       @include breakpoint($sm) {
-        height: 8rem;
+        height: 7rem;
         flex: 0 0 50%;
       }
     }
