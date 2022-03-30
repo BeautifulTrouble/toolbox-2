@@ -250,14 +250,18 @@ export default {
   },
   methods: {
     getAutocompletions(text) {
-      let autocompletions
-      // Start with autocompletions possible for: set tab, other tabs w/text entered, and fall back to tags when field is blank
+      let autocompletions = []
+      // Start with autocompletions possible for all tab
+      if (this.collection == ALL) {
+        autocompletions = this.autocompletionSets
+      }
+      // Then for set tab, other tabs w/text entered, and fall back to tags when field is blank
       if (this.collection == 'set') {
         autocompletions = this.autocompletionSets
       } else if (text.length) {
-        autocompletions = [...this.autocompletionSets, ...this.autocompletionTags, ...this.autocompletionTitles]
+        autocompletions = [...autocompletions, ...this.autocompletionTags, ...this.autocompletionTitles]
       } else {
-        autocompletions = [...this.autocompletionSets, ...this.autocompletionTags]
+        autocompletions = [...autocompletions, ...this.autocompletionTags]
       }
       // Limit autocompletions to a lowercase exact match
       let lowerText = text.toLocaleLowerCase()
