@@ -2,8 +2,8 @@
   <div class="toolbox">
     <div :class="['toolbox-hero', collection]">
       <div class="inner">
-        <div class="h1">{{ collection != ALL ? (text[`type.${collection}.plural`] + ':') : text['site.toolbox'] }}</div>
-        <p>{{ text[`type.${collection}.description`] || '' }}</p>
+        <div class="h1">{{ (collection != ALL ? text[`type.${collection}.plural`] : text['site.toolbox']) + ':' }}</div>
+        <p>{{ text[`type.${collection}.description`] || text['site.tagline'] }}</p>
       </div>
     </div>
 
@@ -388,24 +388,26 @@ export default {
     height: 30vh;
   }
 
-  @mixin hero-particulars($type, $color) {
+  @mixin hero-particulars($type, $color, $rot) {
+    //background-image: url('data:image/jpeg;base64,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');
     //background-image: url(#{$imagePrefix}/hero-pattern-#{$type}.jpg);
-    background-size: cover;
-    background-position: 50% 20%;
+    //background-size: cover;
+    //background-position: 50% 20%;
+    background-image: url('data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBAQFBAYFBQYJBgUGCQsIBgYICwwKCgsKCgwQDAwMDAwMEAwODxAPDgwTExQUExMcGxsbHB8fHx8fHx8fHx//2wBDAQcHBw0MDRgQEBgaFREVGh8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx//wAARCAABB30DAREAAhEBAxEB/8QAFgABAQEAAAAAAAAAAAAAAAAAAAEC/8QAFRABAQAAAAAAAAAAAAAAAAAAAAH/xAAZAQEBAQEBAQAAAAAAAAAAAAAAAQIDBgf/xAAVEQEBAAAAAAAAAAAAAAAAAAAAAf/aAAwDAQACEQMRAD8Aw9i+TgCKIKCoogCqgICKoKiiAiqgIogqKqAKqAiqiqgIogqKIKiqgIqxlVQEVUUQWIqoCKsRRBUVWVEUQVFVFIgqKqKRFVkEVUVUBFVFVARRFWIqsgigqsqqAiqKRlVQEVUURQVWRUUFVFEUQVFEUFVFEBFUURRBUUFVFGWosStQZbistwRuCNRWW4I6QRuCNwRuCNwRuCOkRG4DcEbgjpBG4DcEbiI3AagjcEbgjUBuCNRUagjUBoRVRoQBVQBQBFUBABUUBQEAFQAAVAAiCgQBBYAIRBQEFARAFQAUQQWACKgAqAIIKCiCACoiwBBQBAFQERQUBEAUBBRBBYACogCoEEAUBBRAAFQAEQBQAAUBAggAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD//Z');
+    background-size: 100%;
+    background-position: 50% 50%;
+    filter: hue-rotate($rot);
     &::before {
-      background: linear-gradient(to top right, rgba($color,0) 0%, rgba($color,.2) 30%, rgba($color,.6) 100%),
-                  linear-gradient(to bottom, rgba(black,0) 0%, rgba(black,.6) 70%, rgba(black,.9) 100%);
+      background: linear-gradient(to top right, rgba($color,0) 0%, rgba($color,.2) 30%, rgba($color,.5) 100%),
+                  linear-gradient(to bottom, rgba(white,0) 0%, rgba(white,.3), rgba(black,.5) 70%, rgba(black,.8) 100%);
     }
   }
-  @include hero-particulars(all, black);
-  background-image: url('data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBAQFBAYFBQYJBgUGCQsIBgYICwwKCgsKCgwQDAwMDAwMEAwODxAPDgwTExQUExMcGxsbHB8fHx8fHx8fHx//2wBDAQcHBw0MDRgQEBgaFREVGh8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx//wAARCAABB30DAREAAhEBAxEB/8QAFgABAQEAAAAAAAAAAAAAAAAAAAEC/8QAFRABAQAAAAAAAAAAAAAAAAAAAAH/xAAZAQEBAQEBAQAAAAAAAAAAAAAAAQIDBgf/xAAVEQEBAAAAAAAAAAAAAAAAAAAAAf/aAAwDAQACEQMRAD8Aw9i+TgCKIKCoogCqgICKoKiiAiqgIogqKqAKqAiqiqgIogqKIKiqgIqxlVQEVUUQWIqoCKsRRBUVWVEUQVFVFIgqKqKRFVkEVUVUBFVFVARRFWIqsgigqsqqAiqKRlVQEVUURQVWRUUFVFEUQVFEUFVFEBFUURRBUUFVFGWosStQZbistwRuCNRWW4I6QRuCNwRuCNwRuCOkRG4DcEbgjpBG4DcEbiI3AagjcEbgjUBuCNRUagjUBoRVRoQBVQBQBFUBABUUBQEAFQAAVAAiCgQBBYAIRBQEFARAFQAUQQWACKgAqAIIKCiCACoiwBBQBAFQERQUBEAUBBRBBYACogCoEEAUBBRAAFQAEQBQAAUBAggAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD//Z');
-  background-size: 100%;
-  background-position: 50% 50%;
-  &.tactic { @include hero-particulars(tactic, $tactic); }
-  &.theory { @include hero-particulars(theory, $theory); }
-  &.story { @include hero-particulars(story, $story); }
-  &.principle { @include hero-particulars(principle, $principle); }
-  &.methodology { @include hero-particulars(methodology, $methodology); }
+  @include hero-particulars(all, white, 0deg);
+  &.story { @include hero-particulars(story, $story, 52deg); }
+  &.tactic { @include hero-particulars(tactic, $tactic, 357deg); }
+  &.principle { @include hero-particulars(principle, $principle, 153deg); }
+  &.theory { @include hero-particulars(theory, $theory, 340deg); }
+  &.methodology { @include hero-particulars(methodology, $methodology, 265deg); }
   color: white !important;
   display: flex;
   flex-direction: column;
