@@ -143,13 +143,11 @@
 </template>
 
 <script>
-import Search from './Search'
 import ToolTile from './ToolTile'
 import sets from './sets'
 
 
 const ALL = 'all'
-  /* eslint-disable */
 
 
 export default {
@@ -170,7 +168,6 @@ export default {
   }),
   components: {
     ToolTile,
-    Search,
   },
   computed: {
     text() {
