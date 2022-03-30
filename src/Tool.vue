@@ -270,8 +270,11 @@ export default {
     },
     randomRelated() {
       // TODO use keySlugs
-      let tbs = this.$store.state.toolsBySlug
+      let toolsBySlug = this.$store.state.toolsBySlug
 
+      if (!(this.tool && toolsBySlug.length)) {
+        return {}
+      }
       return Object.fromEntries(
         Object.keys(this.types)
           .filter(T => (this.tool[this.types[T]] || []).length)
@@ -281,8 +284,8 @@ export default {
             return [T, slugs
                         .map((s, i) => [s, chosenIndices.has(i)])
                         .sort((a, b) => {
-                          if (tbs[a[0]].title > tbs[b[0]].title) return 1
-                          if (tbs[a[0]].title < tbs[b[0]].title) return -1
+                          if (toolsBySlug[a[0]].title > toolsBySlug[b[0]].title) return 1
+                          if (toolsBySlug[a[0]].title < toolsBySlug[b[0]].title) return -1
                           return 0
                         })]
           })
