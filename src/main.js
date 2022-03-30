@@ -69,6 +69,7 @@ router.beforeEach((to, from, next) => {
     next({path: to.hash.slice(1)})
   }
 
+  // TODO 2022: REVISIT THIS RATIONALE NOW THAT WE ARE USING SIMPLER ROUTES AND PUSHSTATE
   // NAVIGATION GUARD TO SELECT A LANGUAGE FOR THE USER
   //
   // Capture language prefixes like /en and /ar/tool/civil-disobedience, remove them, and set the
@@ -82,10 +83,10 @@ router.beforeEach((to, from, next) => {
   // Why not a route like... `/:lang(${config.langs.join("|")})/`... I couldn't find a way to match
   // arbitrary paths against a prefix without a lot of extra boilerplate (extra paths and aliases).
 
-  if (languageSelectionPrefix.test(to.path)) {
-    let lang = to.path.slice(1,3)
+  if (languageSelectionPrefix.test(to.redirectedFrom)) {
+    let lang = to.redirectedFrom.slice(1,3)
     store.dispatch('LANG_SET', [lang, false])
-    next({path: to.path.slice(3)})
+    next({path: to.redirectedFrom.slice(3)})
   } else if (!store.state.lang) {
     store.dispatch('LANG_SET', [null, false])
     next()
