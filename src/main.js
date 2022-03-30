@@ -1,6 +1,7 @@
 import Vue from 'vue'
 
-// TODO: Axios requires promise polyfill for IE11
+import Autocomplete from '@trevoreyre/autocomplete-vue'
+import '@trevoreyre/autocomplete-vue/dist/style.css'
 import Axios from 'axios'
 import Router from 'vue-router'
 import Showdown from 'showdown'
@@ -16,8 +17,9 @@ import All from './All'
 import Tool from './Tool'
 import Toolbox from './Toolbox'
 
-import { store } from './store'
 import config from './config'
+import { store } from './store'
+import textByLang from './text'
 
 
 // ROUTER
@@ -27,20 +29,26 @@ const router = new Router({
   mode: 'history',
   base: '/toolbox/',
   routes: [
-    // Tool pages
-    {path: '/tool',               redirect: {name: 'toolbox'}},
-    {path: '/tool/:slug',         name: 'tool', component: Tool},
-    // Toolbox filtering
-    {path: '/all',                  name: 'toolbox-all', component: All},
-    {path: '/story/:region?/:tag?', name: 'toolbox-story', component: Toolbox},
-    {path: '/tactic/:tag?',         name: 'toolbox-tactic', component: Toolbox},
-    {path: '/principle/:tag?',      name: 'toolbox-principle', component: Toolbox},
-    {path: '/theory/:tag?',         name: 'toolbox-theory', component: Toolbox},
-    {path: '/methodology/:tag?',    name: 'toolbox-methodology', component: Toolbox},
-    {path: '/saved',                name: 'toolbox-saved', component: Toolbox},
-    {path: '/search/:query?',       name: 'toolbox-search', component: Toolbox},
-    {path: '/set/:set?',            name: 'toolbox-set', component: Toolbox},
-    {path: '/:tag?',                name: 'toolbox', component: Toolbox},
+    {path: '/tool',         redirect: {name: 'toolbox'}},
+    {path: '/tool/:slug',   name: 'tool', component: Tool},
+    {path: '/all',          name: 'toolbox-all', component: All},
+    // Match only the valid collections, and everything else will fall through
+    {path: '/:collection(story|tactic|principle|theory|methodology|saved|set)?',
+                            name: 'toolbox', component: Toolbox},
+    {path: '/*',            redirect: {name: 'toolbox'}},
+
+    /* Routes to be merged
+    {path: '/story',        name: 'toolbox-story', component: Toolbox},
+    {path: '/tactic',       name: 'toolbox-tactic', component: Toolbox},
+    {path: '/principle',    name: 'toolbox-principle', component: Toolbox},
+    {path: '/theory',       name: 'toolbox-theory', component: Toolbox},
+    {path: '/methodology',  name: 'toolbox-methodology', component: Toolbox},
+    {path: '/saved',        name: 'toolbox-saved', component: Toolbox},
+    {path: '/set',          name: 'toolbox-set', component: Toolbox},
+    */
+
+    //{path: '/search/:query?',       name: 'toolbox-search', component: Toolbox},
+    //{path: '/:query?',      name: 'toolbox', component: Toolbox},
   ],
   scrollBehavior(to, from, savedPosition) {
     if (to.hash) {
@@ -49,6 +57,7 @@ const router = new Router({
       )
     }
     // TODO: https://forum.vuejs.org/t/vue-router-page-position-when-navigating-pages/32885/4
+    if (to.name == 'toolbox' && from.name == 'toolbox') return
     return savedPosition ? savedPosition : {x: 0, y: 0}
   },
 })
@@ -60,6 +69,7 @@ router.beforeEach((to, from, next) => {
     next({path: to.hash.slice(1)})
   }
 
+  // TODO 2022: REVISIT THIS RATIONALE NOW THAT WE ARE USING SIMPLER ROUTES AND PUSHSTATE
   // NAVIGATION GUARD TO SELECT A LANGUAGE FOR THE USER
   //
   // Capture language prefixes like /en and /ar/tool/civil-disobedience, remove them, and set the
@@ -73,10 +83,10 @@ router.beforeEach((to, from, next) => {
   // Why not a route like... `/:lang(${config.langs.join("|")})/`... I couldn't find a way to match
   // arbitrary paths against a prefix without a lot of extra boilerplate (extra paths and aliases).
 
-  if (languageSelectionPrefix.test(to.path)) {
-    let lang = to.path.slice(1,3)
+  if (languageSelectionPrefix.test(to.redirectedFrom)) {
+    let lang = to.redirectedFrom.slice(1,3)
     store.dispatch('LANG_SET', [lang, false])
-    next({path: to.path.slice(3)})
+    next({path: to.redirectedFrom.slice(3)})
   } else if (!store.state.lang) {
     store.dispatch('LANG_SET', [null, false])
     next()
@@ -118,7 +128,6 @@ const showdown = new Showdown.Converter({
 Vue.config.productionTip = false
 Vue.prototype.$http = Axios
 
-// TODO: Use IE shim for Intersection Observer API
 // This lazy-loader loads images on scroll (v-lazy directive)
 Vue.use(VueLazyload, {
   observer: true,
@@ -141,11 +150,14 @@ Vue.use(BackToTop)
 Vue.mixin({
   data: () => ({
     config,
+    textByLang,
   }),
-  methods: {
-    capitalize([first, ...rest], locale = navigator.language) {
-      return [first.toLocaleUpperCase(locale), ...rest].join('')
+  computed: {
+    text() {
+      return this.textByLang[this.$store.state.lang] || {}
     },
+  },
+  methods: {
     downloadPDF(tools) {
       tools = typeof(tools) == "string" ? [tools] : tools
       this.openTab(`${config.pdf}/download?tools=${[...tools].join(',')}&lang=${this.$store.state.lang}`)
@@ -165,6 +177,8 @@ Vue.mixin({
   },
 })
 
+// autocomplete-vue
+Vue.use(Autocomplete)
 
 // VueMeta
 Vue.use(VueMeta)

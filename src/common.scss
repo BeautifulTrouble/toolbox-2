@@ -21,9 +21,12 @@ $bglight: lighten($bggray, 20%);
 $bgdark1: darken($bggray, 5%);
 $bgdark2: darken($bggray, 20%);
 $bgdark3: darken($bggray, 30%);
-$set: #005577;
+$bgdark4: #2b2b2b;
+$bgdark5: darken($bgdark4, 10%);
+$set: $bgdark1;
 
 $ztop: 10;
+$imagePrefix: "https://beautifulrising.org";
 
 
 // Breakpoints (based on Squarespace 7.1 template)
@@ -56,6 +59,9 @@ $ss-mobile-header: "only screen and (pointer: coarse) and (max-width: 1024px), s
   @include breakpoint($sm) {
     display: none !important;
   }
+}
+.hidden {
+  display: none !important;
 }
 // Grid system (here if needed, but so far not needed)
 //$outer-margin: 0;
@@ -99,7 +105,7 @@ $ss-mobile-header: "only screen and (pointer: coarse) and (max-width: 1024px), s
     border: 1px dotted white;
     position: fixed;
     bottom: 0; left: 0;
-    z-index: 10000;
+    z-index: 5;
     color: white;
   }
 }
@@ -122,6 +128,16 @@ $ss-mobile-header: "only screen and (pointer: coarse) and (max-width: 1024px), s
     @include breakpoint($lg) { @include debug($story, 'lg'); }
     @include breakpoint($xl) { @include debug($principle, 'xl'); }
     @include breakpoint($xxl) { @include debug($methodology, 'xxl'); }
+  }
+  #app {
+    &::before {
+      content: "";
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: 7.75rem;
+      background: black;
+      z-index: 5;
+    }
   }
   .langs {
     background-color: black;
@@ -147,6 +163,7 @@ html {
 }
 *, *::before, *::after {
   box-sizing: border-box;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, .1);
 }
 body {
   margin: 0;
@@ -311,7 +328,7 @@ input{
 // fade
 .fade-enter-active, .fade-leave-active {
   position: relative;
-  transition: all .2s;
+  transition: all .1s;
   opacity: 1;
 }
 .fade-enter, .fade-leave-to {

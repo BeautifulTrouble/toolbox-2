@@ -1,9 +1,5 @@
 <template>
   <div id="app" :class="{rtl: this.$store.state.lang == 'ar'}">
-    <!-- TODO: loading animation
-    <div v-if="$store.state.langRequested">Loading...</div>
-    -->
-
     <transition name="fade" mode="out-in">
       <router-view/>
     </transition>
@@ -11,7 +7,7 @@
     <div class="langs">
       <span v-for="lang in config.langs" :key="lang"
         :class="{'router-link-active': lang == $store.state.lang}"
-        @click="$store.dispatch('LANG_SET', [lang, false])">{{ lang.toUpperCase() }}</span>
+        @click="$store.dispatch('LANG_SET', [lang, false])">{{ textByLang[lang]['site.language'] }}</span>
     </div>
 
     <back-to-top bottom="1rem" right="1rem">
@@ -23,18 +19,10 @@
 </template>
 
 <script>
-
 export default {
-  components: {
-  },
   data: () => ({
-    showSearch: false,
   }),
   methods: {
-    toggleSearch() {
-      this.showSearch = !this.showSearch
-      this.$refs.search.focus()
-    },
   },
 };
 </script>
@@ -45,7 +33,7 @@ export default {
 #app {
   min-height: 50vh;
   // Squarespace makes this complicated (additional spacing is added to the toolbox)
-  margin-top: 6vmax;
+  //margin-top: 6vmax;
 }
 .header-announcement-bar-wrapper::after {
   display: none; // Hide fake Squarespace language button
@@ -59,9 +47,10 @@ export default {
   top: 0; right: 0;
   z-index: 10;
   span {
-    padding: 0 .5rem;
+    padding: .4rem .6rem;
     color: white;
-    &.router-link-active {
+    @include breakpoint($sm) {
+      padding: .4rem .3rem;
     }
   }
 }

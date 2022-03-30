@@ -7,7 +7,7 @@
 
     <header slot="content">
       <div class="upper">
-        <router-link :to="{name: `toolbox-${tool.type}`}">
+        <router-link :to="{name: 'toolbox', params: {collection: tool.type}}">
           <img svg-inline v-if="tool.type == 'tactic'" class="bt-icon" src="./assets/tactic.svg">
           <img svg-inline v-else-if="tool.type == 'theory'" class="bt-icon" src="./assets/theory.svg">
           <img svg-inline v-else-if="tool.type == 'story'" class="bt-icon" src="./assets/story.svg">
@@ -31,8 +31,8 @@
       <div class="breadcrumbs">
         <div class="inner">
           <div :class="tool.type">
-            <router-link to="/toolbox">{{ text['site.toolbox'] }}</router-link><span class="bullet">&bullet;</span>
-            <router-link :to="{name: `toolbox-${tool.type}`}">{{ text[`type.${tool.type}`] }}</router-link><span class="bullet">&bullet;</span>
+            <router-link :to="{name: 'toolbox'}">{{ text['site.toolbox'] }}</router-link><span class="bullet">&bullet;</span>
+            <router-link :to="{name: 'toolbox', params: {collection: tool.type}}">{{ text[`type.${tool.type}.plural`] }}</router-link><span class="bullet">&bullet;</span>
             <router-link :to="{name: 'tool', params: {slug: tool.slug}}">{{ tool.title }}</router-link>
           </div>
         </div>
@@ -160,7 +160,7 @@
           <div class="h4">{{ text['meta.related'] }}</div>
           <div v-for="T in Object.keys(randomRelated)" :key="T" :class="T">
             <div class="type">
-              <router-link :to="{name: `toolbox-${T}`}">
+              <router-link :to="{name: 'toolbox', params: {collection: T}}">
                 <img svg-inline v-if="T == 'tactic'" class="bt-icon" src="./assets/tactic.svg">
                 <img svg-inline v-else-if="T == 'theory'" class="bt-icon" src="./assets/theory.svg">
                 <img svg-inline v-else-if="T == 'story'" class="bt-icon" src="./assets/story.svg">
@@ -191,7 +191,8 @@
           <div class="h4">{{ text[`meta.contributor${authors.length > 1 ? '.plural' : ''}`] }}</div>
           <div v-for="a in authors" :key="a.slug">
             <div class="upper">
-              <router-link :to="{name: 'toolbox-search', params: {query: `@${a.title}`}}">
+              <!-- TODO set search for name -->
+              <router-link :to="{name: 'toolbox'}">
                 <img :src="`${config.imagePrefix}/icon-${a.image}`">
                 <div>
                   <div class="h3">{{ a.title }}</div>
@@ -211,7 +212,6 @@
 import Expander from './Expander'
 import Popup from './Popup'
 import Youtube from './Youtube'
-import textByLang from './text'
 
 
 const crlf = '%0d%0a'
@@ -237,9 +237,6 @@ export default {
     },
     moreThanASnapshotInEnglish() {
       return (this.tool['module-type-effective'] == 'snapshot' && (this.tool['full-write-up'] || this.tool['short-write-up']))
-    },
-    text() {
-      return textByLang[this.$store.state.lang]
     },
     keySlugs() {
       let slugs = new Set()
@@ -357,7 +354,7 @@ export default {
     document.querySelectorAll('link[rel=canonical], link[rel=image_src], meta[itemprop], meta[name=description], meta[name^="twitter:"], meta[property^="og:"]')
       .forEach(el => el.remove())
     return {
-      title: `${this.tool.title}`,
+      title: `${this.tool.title} — Beautiful Trouble`,
       link: [
         {rel: 'canonical', href: `${this.config.siteUrl}/toolbox${this.$route.path}`},
       ],
@@ -399,7 +396,7 @@ $sidebar: 18rem;
   }
   .lazy-background-image {
     background: black;
-    transition: opacity .4s linear;
+    transition: opacity .2s linear;
     &::before {
       content: "";
       //transition: opacity .1s ease-in-out;
@@ -504,7 +501,7 @@ $sidebar: 18rem;
   }
   nav {
     .breadcrumbs .inner {
-      @extend .h3;
+      @extend .h2;
     }
     .bullet {
       margin: 0 .5rem;

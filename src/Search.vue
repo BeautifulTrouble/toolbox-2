@@ -1,5 +1,5 @@
 <template>
-  <input class="search" type="search" :placeholder="`${text} 🔍`" v-model="query" ref="input"
+  <input class="search" type="search" :placeholder="text" v-model="query" ref="input"
     @focus="debounceSearch">
 </template>
 
@@ -27,6 +27,10 @@ export default {
         console.debug('Unchanged search query')
         return
       }
+      /* eslint-disable */
+      console.warn('Not updating route')
+      return
+      console.log(this.$router)
       if (!this.query) {
         this.$store.dispatch('SEARCH_CLEAR')
         this.reroute && this.$router.push({name: 'toolbox-search'})
@@ -59,11 +63,14 @@ export default {
 @import 'common.scss';
 
 input[type=search].search {
+  font-family: ff-good-headline-web-pro-condensed, sans-serif;
+  text-transform: uppercase;
   cursor: pointer;
-  margin-top: .4rem;
+  margin: 0 .5rem;
+  padding: .5rem 1rem;
   width: unset;
   color: $text;
-  font-size: .9rem;
+  font-size: 1.4rem;
   border: 1px solid $bgdark3;
   border-radius: 3px;
   background: white;
@@ -78,7 +85,7 @@ input[type=search].search {
     max-width: 50%;
   }
   &::-webkit-input-placeholder {
-    color: $bgdark2;
+    color: $text;
   }
   &::-webkit-search-cancel-button {
     color: $text;
@@ -88,55 +95,5 @@ input[type=search].search {
     outline-offset: 0;
   }
 }
-
-/*
-.loader,
-.loader:before,
-.loader:after {
-  border-radius: 50%;
-  width: 2.5em;
-  height: 2.5em;
-  animation-fill-mode: both;
-  animation: load7 1.8s infinite ease-in-out;
-}
-.loader {
-  color: #ffffff;
-  font-size: 10px;
-  margin: 80px auto;
-  position: relative;
-  text-indent: -9999em;
-  transform: translateZ(0);
-  animation-delay: -0.16s;
-}
-.loader:before,
-.loader:after {
-  content: '';
-  position: absolute;
-  top: 0;
-}
-.loader:before {
-  left: -3.5em;
-  animation-delay: -0.32s;
-}
-.loader:after {
-  left: 3.5em;
-}
-@-webkit-keyframes load7 {
-  0%, 80%, 100% {
-    box-shadow: 0 2.5em 0 -1.3em;
-  }
-  40% {
-    box-shadow: 0 2.5em 0 0;
-  }
-}
-@keyframes load7 {
-  0%, 80%, 100% {
-    box-shadow: 0 2.5em 0 -1.3em;
-  }
-  40% {
-    box-shadow: 0 2.5em 0 0;
-  }
-}
-*/
 
 </style>

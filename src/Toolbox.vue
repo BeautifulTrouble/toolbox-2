@@ -1,70 +1,97 @@
 <template>
   <div class="toolbox">
-    <div class="filter-pane">
+    <div :class="['toolbox-hero', collection]">
+      <div class="inner">
+        <div class="h1">{{ collection != ALL ? (text[`type.${collection}.plural`] + ':') : text['site.toolbox'] }}</div>
+        <p>{{ text[`type.${collection}.description`] || '' }}</p>
+      </div>
+    </div>
 
-      <!-- SENTENCE -->
+    <div class="filter-pane">
+      <!-- SENTENCE (labels and tabs) -->
       <div class="sentence-wrapper">
         <div class="sentence">
           <div class="plain" @dblclick="$router.push({name: 'toolbox-all'})">
             {{ text['site.sentence.showme'] }}
           </div>
-          <div :class="{tab: true, active: activeTab == 'collection'}" @click="activeTab = 'collection'">
-            {{ collectionTab }}
+          <div :class="{tab: true, active: tab == 'collection'}" @click="tab = 'collection'">
+            {{ collectionTabText }}
           </div>
-          <!-- Extra tab for regions -->
-          <div v-if="routeCollection == 'story'" class="plain">
+
+          <!-- Label + tab for regions -->
+          <div v-if="collection == 'story'" class="plain">
             {{ text['site.sentence.from'] }}
           </div>
-          <div v-if="routeCollection == 'story'" :class="{tab: true, active: activeTab == 'region'}" @click="activeTab = 'region'">
-            {{ text[`type.story.region.${routeRegion}`] }}
+          <div v-if="collection == 'story'" :class="{tab: true, active: tab == 'story'}" @click="tab = 'story'">
+            {{ text[`type.story.region.${region}`] }}
           </div>
-          <!-- Tab visisble for all except saved -->
-          <div v-if="routeCollection != 'saved'" class="plain">
+
+          <!-- Label for all collection search + sets -->
+          <div v-if="collection != 'saved'" class="plain">
             {{ text['site.sentence.about'] }}
           </div>
-          <div v-if="routeCollection != 'saved'"
-            :class="{tab: true, active: ['tag', 'set'].includes(activeTab)}"
-            @click="clickTagTab">
-            {{ ($route.params.tag && text[`tag.${routeTag}`])
-              || (routeCollection == 'set' && text[`set.${routeSet}`])
-              || $route.params.query
-              || text['site.sentence.everything'] }} 🔍
-          </div>
-          <img v-if="routeCollection != ALL || routeTag != ALL" svg-inline class="bt-icon reset" src="./assets/reset.svg" :alt="text['site.sentence.reset']" @click="resetFilter">
+
+          <!-- When the active collection is set, switch tabs for clarity about what's going on -->
+          <autocomplete class="autocomplete-wrapper" v-show="collection != 'saved'" ref="search"
+            @click="tab = collection == 'set' ? 'set' : tab"
+            @submit="submitSearch"
+            :placeholder="text[collection == 'set' ? `set.${set}` : 'site.sentence.everything']"
+            :search="getAutocompletions"
+            :get-result-value="autocompletion => autocompletion.text"
+            >
+            <!-- Auto-select needs some thought. Otherwise lots of users will just get the #BlackLivesMatter set and be stuck
+            auto-select
+            -->
+            <template #result="{result, props}">
+              <li v-bind="props" :class="['autocomplete-result', result.icon]">
+                {{ result.text }}
+              </li>
+            </template>
+          </autocomplete>
+
+          <!-- Show reset when any filters are applied (set/region have default values and therefore don't count) -->
+          <img v-if="collection != ALL || tag || query"
+            svg-inline class="bt-icon reset" src="./assets/reset.svg"
+            :alt="text['site.sentence.reset']"
+            @click="reset">
         </div>
       </div>
 
-      <!-- FILTER WIDGET -->
-      <div :class="{'widget-wrapper': true, 'mobile-hidden': activeTab == 'tag' && hideTagsOnMobile}">
+      <!-- FILTER WIDGET (panels corresponding to tabs) -->
+      <div class="widget-wrapper">
         <div class="widget">
           <transition name="fade" mode="out-in">
 
-            <!-- BY COLLECTION -->
-            <div class="by by-collection" v-if="activeTab == 'collection'">
+            <!-- Collection panel -->
+            <div class="by by-collection" v-if="tab == 'collection'">
+              <div :class="{block: true, all: true, active: collection == ALL}" @click="selectCollection(ALL)">
+                <img svg-inline class="bt-icon" src="./assets/all.svg">
+                <div class="h3">{{ text['site.sentence.everything'] }}</div>
+              </div>
               <div v-for="type in types" :key="type"
-                 :class="{block: true, [type]: true, active: routeCollection == type}" @click="selectCollection(type)">
+                :class="{block: true, [type]: true, active: collection == type}" @click="selectCollection(type)">
+                <!-- svg-inline directive can't predict runtime :src binding -->
                 <img svg-inline v-if="type == 'tactic'" class="bt-icon" src="./assets/tactic.svg">
                 <img svg-inline v-if="type == 'theory'" class="bt-icon" src="./assets/theory.svg">
                 <img svg-inline v-if="type == 'story'" class="bt-icon" src="./assets/story.svg">
                 <img svg-inline v-if="type == 'principle'" class="bt-icon" src="./assets/principle.svg">
                 <img svg-inline v-if="type == 'methodology'" class="bt-icon" src="./assets/methodology.svg">
                 <div class="h3">{{ text[`type.${type}.plural`] }}</div>
-                <p>{{ text[`type.${type}.description`] }}</p>
               </div>
-              <div :class="{block: true, set: true, active: routeCollection == 'set'}" @click="selectCollection('set')">
+              <div :class="{block: true, set: true, active: collection == 'set'}" @click="selectCollection('set')">
                 <img svg-inline class="bt-icon" src="./assets/set.svg">
                 <div class="h3">{{ text['type.set.plural'] }}</div>
-                <p>{{ text['type.set.description'] }}</p>
               </div>
 
               <!-- mobile-only -->
-              <div :class="{block: true, saved: true, active: routeCollection == 'saved', 'mobile-only': true}"
+              <!--
+              <div :class="{block: true, saved: true, active: collection == 'saved', 'mobile-only': false}"
                 @click="selectCollection('saved')">
                 <img svg-inline class="bt-icon" src="./assets/favorite-active.svg">
                 <div class="h3">{{ text['type.saved'] }}</div>
               </div>
-              <div v-if="routeCollection == 'saved'"
-                :class="{block: true, saved: true, active: routeCollection == 'saved', 'mobile-only': true}">
+              <div v-if="collection == 'saved'"
+                :class="{block: true, saved: true, active: collection == 'saved', 'mobile-only': true}">
                 <span @click.stop="$store.state.savedTools.size && downloadPDF($store.state.savedTools)"
                   :class="{download: true, disabled: !$store.state.savedTools.size}"
                   :title="text[$store.state.savedTools.size ? 'site.downloadpdf' : 'site.saved.description']">
@@ -72,11 +99,12 @@
                   <div>{{ text['site.downloadpdf'] }}</div>
                 </span>
               </div>
+              -->
               <!-- mobile-hidden -->
-              <div :class="{block: true, saved: true, active: routeCollection == 'saved', 'mobile-hidden': true}" @click="selectCollection('saved')">
+              <div :class="{block: true, saved: true, active: collection == 'saved', 'mobile-hidden': false}" @click="selectCollection('saved')">
                 <img svg-inline class="bt-icon" src="./assets/favorite-active.svg">
                 <div class="h3">{{ text['type.saved'] }}</div>
-                <p>{{ text['type.saved.description'] }}
+                <p>
                   <span @click.stop="$store.state.savedTools.size && downloadPDF($store.state.savedTools)"
                     :class="{download: true, disabled: !$store.state.savedTools.size}"
                     :title="text[$store.state.savedTools.size ? 'site.downloadpdf' : 'site.saved.description']">
@@ -88,44 +116,37 @@
             </div>
 
             <!-- BY REGION -->
-            <div class="by by-region" v-if="activeTab == 'region'">
-              <div :class="{block: true, active: routeRegion == 'all'}" @click="selectRegion('all')">
+            <div class="by by-region" v-if="tab == 'story'">
+              <div :class="{block: true, active: region == ALL}" @click="selectRegion()">
                 <img svg-inline class="bt-icon" src="./assets/regions/world.svg">
                 <p>{{ text['type.story.region.all'] }}</p>
               </div>
-              <div v-for="region in regions" :key="region"
-                :class="{block: true, active: $route.params.region == region}" @click="selectRegion(region)">
-                <img svg-inline v-if="region == 'africa'" class="bt-icon" src="./assets/regions/africa.svg">
-                <img svg-inline v-if="region == 'asia'" class="bt-icon" src="./assets/regions/asia.svg">
-                <img svg-inline v-if="region == 'europe'" class="bt-icon" src="./assets/regions/europe.svg">
-                <img svg-inline v-if="region == 'latin-america-and-the-caribbean'" class="bt-icon" src="./assets/regions/latin-america-and-the-caribbean.svg">
-                <img svg-inline v-if="region == 'middle-east'" class="bt-icon" src="./assets/regions/middle-east.svg">
-                <img svg-inline v-if="region == 'north-america'" class="bt-icon" src="./assets/regions/north-america.svg">
-                <img svg-inline v-if="region == 'oceania'" class="bt-icon" src="./assets/regions/oceania.svg">
-                <p>{{ text[`type.story.region.${region}`] }}</p>
+              <div v-for="r in regions" :key="r"
+                :class="{block: true, active: region == r}" @click="selectRegion(r)">
+                <img svg-inline v-if="r == 'africa'" class="bt-icon" src="./assets/regions/africa.svg">
+                <img svg-inline v-if="r == 'asia'" class="bt-icon" src="./assets/regions/asia.svg">
+                <img svg-inline v-if="r == 'europe'" class="bt-icon" src="./assets/regions/europe.svg">
+                <img svg-inline v-if="r == 'latin-america-and-the-caribbean'" class="bt-icon" src="./assets/regions/latin-america-and-the-caribbean.svg">
+                <img svg-inline v-if="r == 'middle-east'" class="bt-icon" src="./assets/regions/middle-east.svg">
+                <img svg-inline v-if="r == 'north-america'" class="bt-icon" src="./assets/regions/north-america.svg">
+                <img svg-inline v-if="r == 'oceania'" class="bt-icon" src="./assets/regions/oceania.svg">
+                <p>{{ text[`type.story.region.${r}`] }}</p>
               </div>
             </div>
 
             <!-- BY SET -->
-            <div class="by by-set" v-if="activeTab == 'set'">
-              <div v-for="(set, slug) in sets" :key="slug"
-                :class="{block: true, set: true, [slug]: true, active: routeSet == slug}"
-                @click="selectSet(slug)">
+            <div class="by by-set" v-if="tab == 'set'">
+              <div v-for="(s, slug) in sets" :key="slug"
+                :class="{block: true, set: true, [slug]: true, active: set == slug}"
+                @click="selectSet(slug, ...arguments)">
+                <!--
                 <img svg-inline class="bt-icon set" src="./assets/set.svg">
+                -->
                 <div class="h3 set">{{ text[`set.${slug}`] }}</div>
                 <div v-html="markdown(text[`set.${slug}.description`])" />
               </div>
             </div>
 
-            <!-- BY TAG -->
-            <div v-if="activeTab == 'tag'" :key="'tag'" class="by by-tag">
-              <p v-for="(tag, i) in sortedTags" :key="i"
-                :class="{active: routeTag == tag, disabled: !tagsAvailable.has(tag)}"
-                @click="selectTag(tag)">
-                {{ text[`tag.${tag}`] }}
-              </p>
-              <search ref="search" :text="text['site.search']" />
-            </div>
           </transition>
         </div>
       </div>
@@ -133,18 +154,8 @@
 
     <transition-group name="tools-list" tag="div" class="tools">
       <tool-tile v-for="tool in filteredTools" :key="tool.slug" :tool="tool" :text="text" />
-      <tool-tile v-if="!['set', 'saved'].includes(routeCollection)" :key="1" :text="text" :alt="'suggest'" />
-      <tool-tile v-if="routeCollection == 'saved' && !$store.state.savedTools.size" :key="2" :text="text" :alt="'nosave'" />
-      <div class="filler-squares" :key="3">
-        <div class="filler-square tool-tile" />
-        <div class="filler-square tool-tile" />
-        <div class="filler-square tool-tile" />
-        <div class="filler-square tool-tile" />
-        <div class="filler-square tool-tile" />
-        <div class="filler-square tool-tile" />
-        <div class="filler-square tool-tile" />
-        <div class="filler-square tool-tile" />
-      </div>
+      <tool-tile v-if="!['set', 'saved'].includes(collection)" :key="1" :text="text" :alt="'suggest'" />
+      <tool-tile v-if="collection == 'saved' && !$store.state.savedTools.size" :key="2" :text="text" :alt="'nosave'" />
     </transition-group>
 
   </div>
@@ -154,10 +165,10 @@
 import Search from './Search'
 import ToolTile from './ToolTile'
 import sets from './sets'
-import textByLang from './text'
 
 
 const ALL = 'all'
+  /* eslint-disable */
 
 
 export default {
@@ -165,203 +176,302 @@ export default {
   data: () => ({
     ALL,
     activeTab: 'collection',
-    hideTagsOnMobile: true,
     regions: ['africa', 'asia', 'europe', 'latin-america-and-the-caribbean', 'middle-east', 'north-america', 'oceania'],
-    sets, // hard-coded in sets.json, GOTO: mise-en-place.py
+    sets, // hard-coded in sets.json, SEE: mise-en-place.py
     types: ['story', 'tactic', 'principle', 'theory', 'methodology'],
+
+    query: null,
+    region_: ALL,
+    set_: Object.keys(sets)[0],
+    tag: null,
+    tab: 'collection',
   }),
   components: {
     ToolTile,
     Search,
   },
   computed: {
-    filteredToolsAllTags() {
-      if (this.$route.name == 'toolbox-search' && this.$route.params.query) {
-        return this.$store.state.searchResults.map(k => this.$store.state.toolsBySlug[k])
-      }
-
-      //let tools = this.$store.state.tools.filter(t => /(full|gallery|snapshot)/.test(t['module-type-effective']))
-      let tools = this.$store.state.tools
-      if (this.routeCollection == 'saved') {
-        tools = tools.filter(t => this.$store.state.savedTools.has(t.slug))
-      } else if (this.routeCollection == 'set') {
-        tools = tools.filter(t => (this.sets[this.routeSet] || []).includes(t.slug))
-      } else if (this.config.toolTypes.includes(this.routeCollection)) {
-        tools = tools.filter(t => t.type == this.routeCollection)
-      }
-      if (this.routeCollection == 'story' && this.routeRegion != ALL) {
-        tools = tools.filter(t => {
-          let regionSlugs = t.regions.map(this.slugify) || []
-          return regionSlugs.includes(this.routeRegion) || regionSlugs.includes('worldwide')
-        })
-      }
-      return tools
-    },
-    filteredTools() {
-      // TODO: why does the toolbox in other languages show snapshots?
-      //       is it because some Array isn't triggering the re-compute of these propreties?
-      let tools = this.filteredToolsAllTags
-      if (this.routeTag != ALL)
-        tools = tools.filter(t => (t.tags || []).includes(this.routeTag))
-      return tools
-    },
-    routeSet() {
-      return this.$route.params.set || Object.keys(this.sets)[0]
-    },
-    routeCollection() {
-      return this.$route.name.replace(/^toolbox-?/, '') || ALL
-    },
-    routeRegion() {
-      return this.$route.params.region || ALL
-    },
-    routeTag() {
-      return this.$route.params.tag || ALL
-    },
-    sortedTags() {
-      return Object.keys(this.text)
-              .filter(k => /^tag\./.test(k))
-              .sort((a, b) => this.text[a].localeCompare(this.text[b]))
-              .map(t => t.slice(4))
-    },
-    collectionTab() {
-      if (this.$route.name == 'toolbox' || (this.$route.name == 'toolbox-search' && !this.$route.params.query)) {
-        return this.text['site.sentence.everything']
-      }
-      return this.text[`type.${this.routeCollection}${['saved', 'set', 'search'].includes(this.routeCollection) ? '' : '.plural'}`]
-    },
-    tagsAvailable() {
-      // Tags available for the current level of filtering
-      if (this.$route.name == 'toolbox-search' && this.$route.params.query) {
-        return this.validTags
-      }
-      return this.filteredToolsAllTags
-        .map(t => t.tags)
-        .reduce((a, c) => c !== undefined ? new Set([...a, ...c]) : a, new Set([]))
-    },
     text() {
-      return textByLang[this.$store.state.lang] || {}
+      return this.textByLang[this.$store.state.lang]
     },
-    validRegions() {
-      return new Set([ALL, ...this.regions])
+    collectionTabText() {
+      if (this.collection == ALL)
+        return this.text['site.sentence.everything']
+      return this.text[`type.${this.collection}${['saved', 'set', 'search'].includes(this.collection) ? '' : '.plural'}`]
     },
-    validSets() {
-      return new Set(Object.keys(this.sets))
+
+    // Filter functions for every collection type
+    filterFunctionsByCollection() {
+      return Object.assign(
+        Object.fromEntries(this.types.map(T => [T, t => t['module-type-effective'] != 'snapshot' && t.type == T])),
+        {
+          [ALL]: t => t['module-type-effective'] != 'snapshot',
+          'saved': t => this.$store.state.savedTools.has(t.slug),
+          'set': t => (this.sets[this.set] || []).includes(t.slug),
+          'story': t => {
+            let regionSlugs = (t.regions || []).map(this.slugify)
+            return t.type == 'story' && (
+              this.region == ALL ||
+              regionSlugs.includes('worldwide') ||
+              regionSlugs.includes(this.region)
+            )
+          }
+        })
     },
-    validTags() {
-      // Tags available in entire toolbox (for the sake of the route guard)
-      return new Set(
-        Object.keys(this.text)
-          .filter(k => /^tag\./.test(k))
-          .map(k => k.slice(4))
-      )
+    // Stage 1 tool filtering (before tag/query is applied)
+    filteredToolsByCollection() {
+      return (this.$store.state.tools || []).filter(this.filterFunctionsByCollection[this.collection])
+    },
+    // Stage 2 tool filtering (tag/query)
+    filteredTools() {
+      return this.filteredToolsByCollection
+        .filter(t => !this.tag || (t.tags || []).includes(this.tag))
+        //.filter(t => !this.$store.state.searchResults.length || this.$store.state.searchResults.includes(t.slug))
+        .filter(t => !this.query || this.$store.state.searchResults.includes(t.slug))
+    },
+
+    set() {
+      return this.set_ || Object.keys(this.sets)[0]
+    },
+    collection() {
+      return this.$route.params.collection || ALL
+    },
+    region() {
+      return this.region_ || ALL
+    },
+
+    autocompletionTags() {
+      return [...new Set(this.filteredToolsByCollection.map(t => t.tags).flat())]
+        .map(slug => ({
+          type: 'tag',
+          icon: 'tag',
+          value: slug,
+          text: this.text[`tag.${slug}`],
+        }))
+        .filter(t => t.text)
+    },
+    autocompletionTitles() {
+      return this.filteredToolsByCollection
+        .map(tool => ({
+          type: 'title',
+          icon: tool.type,
+          value: tool.slug,
+          text: tool.title
+        }))
+    },
+    autocompletionSets() {
+      return Object.keys(this.sets)
+        .map(set => ({
+          type: 'set',
+          icon: 'set',
+          value: set,
+          text: this.text[`set.${set}`],
+        }))
     },
   },
   methods: {
-    resetFilter() {
-      this.activeTab = 'collection'
-      this.$router.push({name: 'toolbox'})
-    },
-    clickTagTab() { // A minor kludge to support initially hidden tags on mobile
-      let oldActiveTab = this.activeTab
-      this.activeTab = this.routeCollection == 'set' ? 'set' : 'tag'
-      // If tab is already active, toggle it, otherwise make it visible
-      if (oldActiveTab == this.activeTab) {
-        this.hideTagsOnMobile = !this.hideTagsOnMobile
+    getAutocompletions(text) {
+      let autocompletions
+      // Start with autocompletions possible for: set tab, other tabs w/text entered, and fall back to tags when field is blank
+      if (this.collection == 'set') {
+        autocompletions = this.autocompletionSets
+      } else if (text.length) {
+        autocompletions = [...this.autocompletionSets, ...this.autocompletionTags, ...this.autocompletionTitles]
       } else {
-        this.hideTagsOnMobile = false
+        autocompletions = [...this.autocompletionSets, ...this.autocompletionTags]
+      }
+      // Limit autocompletions to a lowercase exact match
+      let lowerText = text.toLocaleLowerCase()
+      autocompletions = autocompletions
+        .filter(i => i.text.toLocaleLowerCase().includes(lowerText))
+        .sort((a, b) => a.text > b.text ? 1 : -1)
+      /* This is only useful when auto-select is enabled
+      // If there's no exact match, add the user's text as a completion
+      if (text && !autocompletions.filter(i => i.text.toLocaleLowerCase() == lowerText).length) {
+        autocompletions.splice(0, 0, {
+          type: 'search',
+          icon: 'search',
+          value: text,
+          text: text,
+        })
+      }
+      */
+      // TODO: if auto-select prop is enabled, we may want to introduce a "do nothing" autocompletion first in the list
+      return autocompletions
+    },
+    submitSearch(autocompletion) {
+      let text = this.$refs.search.value
+      if (autocompletion) {
+        // Without the auto-select prop, it's possible to get a search with no autocompletion object
+        if (autocompletion.type == 'search') {
+          this.selectQuery(text)
+        } else {
+          this.selectQuery()
+          if (autocompletion.type == 'title') {
+            this.$router.push({name: 'tool', params: {slug: autocompletion.value}})
+            return // Don't preserve the input field
+          } else if (autocompletion.type == 'tag') {
+            this.selectTag(autocompletion.value)
+          } else if (autocompletion.type == 'set') {
+            this.selectCollection('set')
+            this.selectSet(autocompletion.value)
+          }
+        }
+      } else {
+        // No autocompletion was given, but we can still do/clear a query (this is only reached if auto-select is disabled)
+        this.selectQuery(text)
+      }
+      // Preserve the text
+      this.$nextTick(() => { this.$refs.search.value = autocompletion && autocompletion.text || text })
+    },
+
+    // Methods to mutate the current filtering
+    reset(reroute = true) {
+      this.selectQuery()
+      this.selectRegion()
+      this.selectSet()
+      this.selectTag()
+      // TODO: ensure this handles all cases where we might want to reset
+      if (reroute && this.collection != ALL) {
+        this.tab = 'collection'
+        this.$router.push({name: 'toolbox'})
       }
     },
     selectCollection(collection) {
-      let name = `toolbox-${collection}`
-      if (this.$route.name != name)
-        this.$router.push({name: `toolbox-${collection}`})
-      else
-        this.$router.push({name: 'toolbox'})
+      let switchToSecondaryTab = ['story', 'set'].includes(collection)
+      if (collection != this.collection) {
+        // Change the active collection
+        this.tab = switchToSecondaryTab ? collection : 'collection'
+        this.reset(false)
+        this.$router.push({
+          name: 'toolbox',
+          params: collection == ALL ? {} : {collection},
+        })
+      } else if (switchToSecondaryTab) {
+        // The collection is already active, but we should switch to its secondary tab
+        this.tab = collection
+      }
     },
     selectRegion(region) {
-      if (this.$route.params.region != region)
-        this.$router.push({name: this.$route.name, params: {region}})
+      this.region_ = region == this.region_ ? null : region
     },
-    selectSet(set) {
-      if (this.$route.params.set != set)
-        this.$router.push({name: this.$route.name, params: {set}})
+    selectSet(set, $event) {
+      if ($event !== undefined && this.set_ != set) {
+        // Don't open links accidentally
+        $event.preventDefault()
+      }
+      this.set_ = set
+      this.$refs.search.setValue('')
     },
     selectTag(tag) {
-      tag = this.$route.params.tag != tag ? tag : undefined
-      delete this.$route.params.query
-      this.$router.push({
-        name: [ALL, 'search'].includes(this.routeCollection) ? 'toolbox' : this.$route.name,
-        params: {...this.$route.params, tag}
-      })
+      this.tag = tag || null
     },
-    guardRoute(route, next) { // eslint-disable-next-line
-      let { query, region, set, tag } = route.params
-
-      // Reject invalid regions, tags, or sets. Fall back to top-level toolbox.
-      if ((region && !this.validRegions.has(region)) ||
-          (tag && !this.validTags.has(tag)) ||
-          (set && !this.validSets.has(set)))
-        return next({name: 'toolbox', replace: true})
-
-      // Set an appropriate activeTab (one of: collection, region, set, tag)
-      // When activeTab is set by the route guard, tags are ALWAYS hidden
-      if (region || tag) { // Why is region here? (used to be: query||region||tag)
-        this.activeTab = 'tag'
-        this.hideTagsOnMobile = true
-      } else if (route.name == 'toolbox-search') {
-        this.activeTab = 'tag'
-      } else if (this.routeCollection == 'set') {
-        this.activeTab = 'set'
-      } else if (this.routeCollection == 'story') {
-        this.activeTab = 'region'
-      } else if ([ALL, 'saved'].includes(this.routeCollection)) {
-        this.activeTab = 'collection'
-      } else {
-        this.activeTab = 'tag'
-        this.hideTagsOnMobile = true
+    selectQuery(query) {
+      this.query = query || null
+      this.$refs.search.setValue(query || '')
+      if (query) {
+        this.$store.dispatch('SEARCH', this.query)
       }
-      next()
-    },
+    }
   },
-  beforeRouteUpdate(to, from, next) {
-    this.guardRoute(to, next)
-  },
-  beforeRouteEnter(to, from, next) {
-    next(vm => vm.guardRoute(to, next))
-  },
-  created() {
-    // TODO: Determine whether this is needed in production (it's needed for the webpack dev server)
-    this.guardRoute(this.$route, () => {})
+  metaInfo() {
+    return { title: `${this.text['site.toolbox'] || 'Toolbox'} — Beautiful Trouble` }
   },
 };
 </script>
 
 <style lang="scss">
 @import 'common.scss';
-.toolbox {
-  padding-top: 4rem;
-  width: 100%;
+@import 'icons.scss';
 
-  // Mobile header adjustments for the Squarespace theme
-  @media #{$ss-mobile-header} {
-    padding-top: 10rem;
+.toolbox-hero {
+  height: 18vw;
+  min-height: 20.5rem;
+  @include breakpoint($md) {
+    height: 30vh;
+    min-height: 19.5rem;
   }
   @include breakpoint($sm) {
-    padding-top: 7.5rem;
+    min-height: 16rem;
   }
+  // Mobile header adjustments for the Squarespace theme
+  @media #{$ss-mobile-header} {
+    height: 30vh;
+  }
+
+  @mixin hero-particulars($type, $color) {
+    //background-image: url(#{$imagePrefix}/hero-pattern-all.jpg);
+    background-image: url(#{$imagePrefix}/hero-pattern-#{$type}.jpg);
+    background-size: cover;
+    background-position: 50% 20%;
+    &::before {
+      background: linear-gradient(to top right, rgba($color,0) 0%, rgba($color,.2) 30%, rgba($color,.6) 100%),
+                  linear-gradient(to bottom, rgba(black,0) 0%, rgba(black,.6) 70%, rgba(black,.9) 100%);
+    }
+  }
+  @include hero-particulars(all, black);
+  &.tactic { @include hero-particulars(tactic, $tactic); }
+  &.theory { @include hero-particulars(theory, $theory); }
+  &.story { @include hero-particulars(story, $story); }
+  &.principle { @include hero-particulars(principle, $principle); }
+  &.methodology { @include hero-particulars(methodology, $methodology); }
+  color: white !important;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+  position: relative;
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0;
+    bottom: 0; right: 0;
+  }
+  .inner {
+    padding: 13.2vmax 3vw 1vw 3vw;
+    width: 100%;
+    max-width: 1200px;
+    div, p {
+      position: relative;
+      color: white !important;
+    }
+    p {
+      margin: 0 0 .5rem 0;
+      max-width: 40%;
+      text-shadow: 0px 0px 3rem rgba(black, .6), 0 0 2px rgba(white, .4);
+      line-height: 1.2;
+    }
+    .h1 {
+      margin: 0;
+      font-size: calc(3.8 * 1rem);
+      text-transform: uppercase;
+    }
+    @include breakpoint($sm) {
+      p {
+        max-width: unset;
+      }
+    }
+  }
+}
+.toolbox {
+  width: 100%;
+  background-color: $bgdark4;
+  min-height: 100vh;
 }
 .filter-pane {
   display: flex;
   flex-direction: column;
   align-items: center; // horizontally center
+  color: $bggray;
 }
 .sentence-wrapper {
-  min-height: 6rem;
+  min-height: 4rem;
   display: flex;
   flex-direction: column;
   justify-content: flex-end; // align to bottom of flex row
   @include breakpoint($sm) {
     width: 100%;
+    min-height: unset;
   }
 }
 .sentence {
@@ -382,8 +492,9 @@ export default {
   }
   .plain {
     flex: 1 1 auto;
+    text-align: center;
     @include breakpoint($md-up) {
-      margin-bottom: .25rem;
+      margin-bottom: .4rem;
     }
     @include breakpoint($sm) {
       flex: 0 0 27%;
@@ -402,69 +513,153 @@ export default {
     font-weight: bold;
 
     flex: 1 1 auto;
-    padding: .5rem 1rem .5rem 1rem;
-    margin: 0 .5rem -2px .5rem;
-
+    padding: .5rem 1rem .7rem 1rem;
+    margin: 0 .75rem 0 .75rem;
+    border-top: .5rem solid black;
     border-radius: 5px 5px 0 0;
-    border-right: 1px solid $bgdark1;
-    background: linear-gradient(180deg, $bggray 75%, darken($bggray, 1%) 95%, darken($bggray, 8%) 100%);
+
+    background: black;
     color: $bgdark3;
 
-    transition: all .1s linear;
+    &.active {
+      color: white;
+      border-top: .5rem solid $bgdark3;
+    }
+    @include breakpoint($upper) {
+      transition: all .1s linear;
+    }
     @include breakpoint($md) {
       padding: .5rem .5rem;
     }
     @include breakpoint($sm) {
-      border-radius: 5px;
       flex: 0 0 73%;
       margin: 0;
-    }
-    &.active {
-      color: $text;
-      background: $bggray;
-      border-right: 1px solid $bgdark2;
-      z-index: 1;
-      @include breakpoint($sm) {
-        background: linear-gradient(180deg, $bggray 75%, darken($bggray, 1%) 95%, darken($bggray, 8%) 100%);
+      text-align: start;
+      border: none;
+      border-inline-start: .75rem solid black;
+      border-radius: 0;
+      &.active {
+        border: none;
+        border-inline-start: .75rem solid $bgdark3;
       }
     }
   }
-  .bt-icon {
+  .reset {
     flex: 0 0 2.5rem; // width + margin
-    margin: .5rem 0;
-    margin-inline-start: .5rem;
-    width: 1.5rem;
-    height: 1.5rem;
+    margin: .65rem 0;
+    width: 1.7rem;
+    height: 1.7rem;
     cursor: pointer;
-    fill: $text;
+    fill: $bggray;
+    transform: rotate(-32deg);
+    .rtl & {
+      transform: scaleX(-1);
+    }
     @include breakpoint($upper) {
-      transition: fill .2s linear;
+      transition: transform .2s linear;
       &:hover {
-        fill: black;
+        transform: scale(1.25) rotate(-60deg);
+        fill: white;
       }
     }
     @include breakpoint($sm) {
       position: absolute;
-      right: 1rem;
-      top: -2.5rem;
+      width: 3rem;
+      height: 3rem;
+      padding: .5rem;
+      margin: 0;
+      right: .25rem;
+      top: 0;
+      .rtl & {
+        right: unset;
+        left: .25rem;
+      }
+    }
+  }
+}
+.autocomplete-wrapper {
+  flex: 1 5 auto;
+  margin: 0 .5rem;
+  z-index: 3;
+  position: relative;
+  @include breakpoint($sm) {
+    margin: 0;
+  }
+  &::after {
+    content: "";
+    width: 3rem;
+    top: .5rem; right: 0;
+    bottom: .5rem;
+    background: linear-gradient(to right, transparent, black);
+    position: absolute;
+  }
+}
+.autocomplete {
+  .autocomplete-input {
+    // SEE icons.scss for background-image icons
+    font-family: ff-good-headline-web-pro-condensed, sans-serif;
+    font-size: 1.4rem;
+    text-transform: uppercase;
+    color: $bgdark3;
+    padding: .1rem 1rem .4rem 3rem;
+    background-color: black;
+
+    position: relative;
+    border: none;
+    border-top: .5rem solid black;
+    border-radius: .5rem .5rem 0 0;
+    &[aria-expanded=true], &:focus {
+      color: white;
+      border-top: .5rem solid $bgdark3;
+      box-shadow: 0 0 .5rem rgba(0,0,0,.16) inset;
+    }
+    &::-webkit-input-placeholder {
+      color: $text;
+    }
+    @include breakpoint($sm) {
+      border: none;
+      border-radius: 0;
+      border-inline-start: .75rem solid black;
+      &[aria-expanded=true], &:focus {
+        border: none;
+        border-radius: 0;
+        border-inline-start: .75rem solid $bgdark3;
+      }
+    }
+  }
+
+  .autocomplete-result {
+    background-size: 1.5rem;
+  }
+  .autocomplete-result:hover, .autocomplete-result[aria-selected="true"] {
+    background-color: $bgdark4;
+  }
+  .autocomplete-result-list {
+    overflow-x: hidden;
+    background: black;
+    max-height: 50vh;
+    &::-webkit-scrollbar {
+      background-color: $bgdark4;
+    }
+    &::-webkit-scrollbar-thumb {
+      background-color: $bgdark3;
+    }
+    @include breakpoint($lower) {
+      box-shadow: 0 1rem 2rem 0rem rgba(black, .5);
     }
   }
 }
 .widget-wrapper {
-  border: 1px solid $bgdark1;
-  border-radius: 5px;
   width: 100%;
-  max-width: 78rem;
+  max-width: 65rem;
+  position: relative;
+  border-radius: .5rem .5rem 0 0 ;
+  background-color: black;
+  padding: .5rem;
 }
 .widget {
-  background-color: $bggray;
-
-  border-left: 1px solid white;
-  border-top: 1px solid white;
-
-  border-radius: 5px;
-  border-right: 1px solid $bgdark2;
   line-height: 1.1;
+  font-size: .8rem;
 
   @include breakpoint($lg) {
     font-size: .9rem;
@@ -477,25 +672,21 @@ export default {
   }
 
   .block {
-    border-right: 1px solid white;
-    border-bottom: 1px solid white;
-    height: 20rem;
-
+    height: 9rem;
     cursor: pointer;
-    flex: 2 0 14%;
+    flex: 2 0 12%;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    overflow-x: hidden;
-    padding: 1rem;
-
+    overflow: hidden;
+    border: 0px solid $bgdark4;
+    border-radius: .5rem;
+    transition: .1s linear all;
     @include breakpoint($lg) {
-      padding: .75rem;
     }
     @include breakpoint($md) {
-      height: 12rem;
-      flex: 0 0 20%;
+      height: 8rem;
     }
     @include breakpoint($sm) {
       padding: .5rem 1rem;
@@ -503,31 +694,47 @@ export default {
       overflow: hidden;
       flex: 0 0 20%;
     }
+    a {
+      text-decoration: underline;
+    }
     &.active {
-      background: $bgdark1;
+      border: .5rem solid $bgdark4;
     }
     &.set {
-      fill: $set;
+      svg {
+        fill: $set;
+      }
       .h3 {
         color: $set;
       }
+      @include breakpoint($md) {
+        flex: 0 0 20%;
+      }
     }
     &.saved {
-      position: relative;
+      svg {
+        fill: white;
+        max-height: 2rem;
+      }
+      p {
+        margin: 0;
+      }
+      @include breakpoint($md) {
+      }
       @include breakpoint($sm) {
-        &.active {
-          border-right: unset;
+        .h3 {
+          flex: 0 0 40% !important;
         }
       }
       .download {
-        margin-top: 1rem;
+        margin: 0 0 0 .5rem;
         display: flex;
+        flex: 2 0 60%;
         flex-direction: row;
         align-items: center;
         justify-content: flex-start;
-        fill: $text;
+        //fill: $text;
         @include breakpoint($sm) {
-          margin-top: .5rem;
         }
         &.disabled {
           cursor: default;
@@ -548,20 +755,25 @@ export default {
     .blacklivesmatter {
       word-break: break-all; // Sets have editor-made names #BlackLivesMatter
     }
-    p {
-      margin-inline-start: .5rem; // Subtly offset the left-aligned text
-      min-height: 45%;
-      @include breakpoint($md) {
-        margin-top: .25rem;
-      }
-      @include breakpoint($sm) {
-        min-height: 35%;
-        margin-top: .25rem;
-      }
-    }
     .h3 {
-      margin: 0;
+      margin: 0 0 .5rem 0;
       text-align: center;
+    }
+  }
+  .bt-icon {
+    width: 5.5rem;
+    max-height: 6rem;
+    margin: .5rem;
+    @include breakpoint($xl) {
+      width: 6rem;
+    }
+    @include breakpoint($md) {
+      margin: .25rem;
+      max-height: 4rem;
+    }
+    @include breakpoint($sm) {
+      max-height: 3rem;
+      margin: .25rem .5rem;
     }
   }
   .by {
@@ -580,33 +792,21 @@ export default {
         display: flex;
         flex-direction: row;
         padding: 0 1rem;
-        p {
-          display: none;
-        }
         .h3 {
           flex: 0 0 65%;
           text-align: left;
         }
-        /* Before hiding the paragraphs
-        &:nth-of-type(5) {
-          flex: 1 0 100%;
-          p {
-            max-width: 65%;
-          }
-        }
-        */
       }
     }
   }
   .by-region {
     .bt-icon {
-      height: 8rem;
-      max-height: 8rem;
+      height: 6rem;
+      max-height: 4rem;
       width: 7rem;
       margin: 0;
     }
     .block {
-      flex: 1 2 12.5%;
       @include breakpoint($md) {
         flex: 0 0 25%;
       }
@@ -618,82 +818,30 @@ export default {
         }
       }
       p {
-        min-height: 15%;
         text-align: center;
-      }
-    }
-  }
-  .by-tag {
-    padding: 1rem 3rem;
-    flex-wrap: wrap;
-    flex-direction: column;
-    height: 20rem;
-    justify-content: flex-start;
-    align-items: flex-start; // Don't expand to fill width (avoids stray taps)
-
-    @include breakpoint($md) {
-      height: 24rem;
-    }
-    @include breakpoint($sm) {
-      height: 30rem;
-      padding: 1rem 1rem;
-    }
-    p {
-      cursor: pointer;
-      min-height: 1.25rem;
-      padding: 0 1rem;
-      margin: 0;
-      //display: inline-flex; // For the x buttons maybe?
-      &.active {
-        font-weight: bold;
-      }
-      &.disabled {
-        color: $bgdark2;
-        pointer-events: none;
-      }
-      @include breakpoint($sm) {
-        padding: 0;
-        font-size: .9rem;
-        min-height: 1.1rem;
+        margin-bottom: 0;
       }
     }
   }
   .by-set {
     flex-wrap: wrap;
     .block {
+      align-items: flex-start;
+      justify-content: flex-start;
+      padding: .25rem .5rem;
+      .h3 {
+        margin: .25rem;
+        text-align: start;
+        line-height: .9;
+      }
       p {
-        font-size: .9rem;
-        margin-top: .25rem;
-      }
-      .bt-icon {
-        max-height: 2rem;
-        margin: 0;
-      }
-      flex: 0 0 25%;
-      height: 10rem;
-      @include breakpoint($md) {
-        height: 12rem;
+        font-size: .7rem;
+        margin: 0 .25rem .25rem .25rem;
       }
       @include breakpoint($sm) {
-        height: 8rem;
+        height: 7rem;
         flex: 0 0 50%;
       }
-    }
-  }
-  .bt-icon {
-    width: 4rem;
-    max-height: 4rem;
-    margin: .5rem;
-    @include breakpoint($xl) {
-      width: 6rem;
-    }
-    @include breakpoint($md) {
-      margin: .25rem;
-      max-height: 3rem;
-    }
-    @include breakpoint($sm) {
-      max-height: 3rem;
-      margin: .25rem .5rem;
     }
   }
 }
@@ -702,7 +850,8 @@ export default {
   flex-wrap: wrap;
   flex-direction: row;
   position: relative; // For transition animation
-  margin: 2px -2px; // For toolbox margins
+  margin: 2px -2px -.25rem -2px; // For toolbox margins
+  padding-bottom: .5rem;
 
   // These styles override the ones defined in ToolTile.vue
   .tool-tile {
@@ -726,27 +875,15 @@ export default {
     @include breakpoint($sm) {
       flex: 0 0 50%;
       height: 50vw;
-      border: 1px solid transparent;
     }
   }
-}
-.filler-squares {
-  z-index: -1;
-  position: absolute;
-  bottom: 0;
-  display: flex;
-  width: 100%;
-  overflow-x: hidden;
-  .filler-square {
-    border: 2px solid white;
-    box-shadow: 0 0 0 1px $bggray inset;
-  }
-
 }
 
 // Transition-group animation
 .tool-tile {
-  transition: opacity .1s linear;
+  @include breakpoint($upper) {
+    transition: opacity .1s linear;
+  }
 }
 .tools-list-leave-active {
   // Absolute positioning causes existing tiles to stretch which is slow
