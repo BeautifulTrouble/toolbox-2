@@ -272,9 +272,6 @@ export default {
       // TODO use keySlugs
       let toolsBySlug = this.$store.state.toolsBySlug
 
-      if (!(this.tool && toolsBySlug.length)) {
-        return {}
-      }
       return Object.fromEntries(
         Object.keys(this.types)
           .filter(T => (this.tool[this.types[T]] || []).length)
@@ -284,8 +281,9 @@ export default {
             return [T, slugs
                         .map((s, i) => [s, chosenIndices.has(i)])
                         .sort((a, b) => {
-                          if (toolsBySlug[a[0]].title > toolsBySlug[b[0]].title) return 1
-                          if (toolsBySlug[a[0]].title < toolsBySlug[b[0]].title) return -1
+                          let A = toolsBySlug[a[0]] || {}, B = toolsBySlug[b[0]] || {}
+                          if (A.title > B.title) return 1
+                          if (A.title < B.title) return -1
                           return 0
                         })]
           })
