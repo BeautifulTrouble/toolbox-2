@@ -64,10 +64,13 @@
       <!-- Tool -->
       <article>
         <div class="inner">
+          <div v-html="markdown(tool['snapshot'])" :class="['box', tool.type, 'snapshot']" />
           <!-- Snapshot-only write up -->
+          <!-- TODO: clean up these classes
           <div v-if="!writeUp || moreThanASnapshotInEnglish">
             <div :class="[moreThanASnapshotInEnglish ? 'snapshot' : 'snapshot-only']" v-html="markdown(tool['snapshot'])" />
           </div>
+          -->
 
 
           <div class="epigraphs" v-if="tool.epigraphs">
@@ -645,11 +648,11 @@ $sidebar: 18rem;
     .breadcrumbs.methodology { color: $methodology; }
     .snapshot-only {
       p {
-        @extend .h1;
-        width: 80%;
+        @extend .h2;
         line-height: .9;
         color: $text;
         margin: 2rem 0;
+        padding: 1rem 2rem 1rem 2rem;
         @include breakpoint($lg) {
           width: unset;
         }
@@ -663,12 +666,7 @@ $sidebar: 18rem;
       }
     }
     .snapshot {
-      p {
-        @extend .h2;
-        line-height: .9;
-        color: $text;
-        margin: 1.5rem 0;
-      }
+      margin-bottom: 2.5rem;
     }
     .epigraphs {
       margin: 0 1rem 1.5rem 1rem;
