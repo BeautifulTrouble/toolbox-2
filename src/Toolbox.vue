@@ -184,7 +184,7 @@ export default {
       return Object.assign(
         Object.fromEntries(this.types.map(T => [T, t => t['module-type-effective'] != 'snapshot' && t.type == T])),
         {
-          [ALL]: t => t['module-type-effective'] != 'snapshot',
+          [ALL]: t => !!(t['image']),
           'saved': t => this.$store.state.savedTools.has(t.slug),
           'set': t => (this.sets[this.set] || []).includes(t.slug),
           'story': t => {
