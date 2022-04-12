@@ -156,7 +156,7 @@
           <div v-html="markdown(tool['why-it-failed'])" />
           <hr>
         </section>
-        <section class="related">
+        <section v-if="Object.keys(randomRelated).length" class="related">
           <div class="h4">{{ text['meta.related'] }}</div>
           <div v-for="T in Object.keys(randomRelated)" :key="T" :class="T">
             <div class="type">
