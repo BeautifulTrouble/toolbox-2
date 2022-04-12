@@ -1,3 +1,6 @@
+// Fonts
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Myanmar:wght@300;700&display=swap');
+
 // Utilities
 @function tint($color, $percentage) {
   @return mix(white, $color, $percentage);
@@ -168,7 +171,7 @@ html {
 body {
   margin: 0;
   color: $text;
-  font-family: aktiv-grotesk, sans-serif;
+  font-family: aktiv-grotesk, 'Noto Sans Myanmar', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -191,7 +194,7 @@ hr {
   font-weight: 700;
 }
 .h1, .h2, .h3 {
-  font-family: ff-good-headline-web-pro-condensed, sans-serif; 
+  font-family: ff-good-headline-web-pro-condensed, 'Noto Sans Myanmar', sans-serif; 
   line-height: 1;
 }
 .h1 {

@@ -3,7 +3,7 @@ export default {
   api: 'https://api.beautifulrising.org/api/v1',
   cacheLifespan: 60 * 60 * 4 * 1000, // ms until toolbox api data is reloaded
   imagePrefix: 'https://beautifulrising.org',
-  langs: ['ar', 'en', 'es', 'fr', 'it', 'pt'],
+  langs: ['ar', 'en', 'es', 'fr', 'it', 'pt', 'my'],
   linkPrefix: '/toolbox',
   mountPoint: '#page',
   pdf: 'https://api.beautifulrising.org/pdf',
