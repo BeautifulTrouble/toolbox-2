@@ -1,12 +1,12 @@
 <template>
-  <div id="app" :class="{rtl: this.$store.state.lang == 'ar'}">
+  <div id="app" :class="{rtl: $store.state.lang == 'ar', [$store.state.lang]: true}">
     <transition name="fade" mode="out-in">
       <router-view/>
     </transition>
 
     <div class="langs">
       <span v-for="lang in config.langs" :key="lang"
-        :class="{'router-link-active': lang == $store.state.lang}"
+        :class="{'router-link-active': lang == $store.state.lang, [lang]: true}"
         @click="$store.dispatch('LANG_SET', [lang, false])">{{ textByLang[lang]['site.language'] }}</span>
     </div>
 
@@ -39,18 +39,26 @@ export default {
   display: none; // Hide fake Squarespace language button
 }
 .langs {
-  font-family: 'ff-good-headline-web-pro-condensed';
+  font-family: 'ff-good-headline-web-pro-condensed', "Noto Sans Myanmar", sans-serif;
   font-size: 1.1rem;
   font-weight: 300;
   cursor: pointer;
   position: fixed;
   top: 0; right: 0;
   z-index: 10;
+  display: flex;
+  flex-wrap: wrap;
   span {
     padding: .4rem .6rem;
     color: white;
+    &.my {
+      font-size: .8rem;
+    }
     @include breakpoint($sm) {
-      padding: .4rem .3rem;
+      padding: .4rem .6rem 0 .6rem;
+      &.my {
+        padding: 0 .6rem;
+      }
     }
   }
 }

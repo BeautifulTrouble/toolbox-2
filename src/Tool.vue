@@ -433,7 +433,6 @@ $sidebar: 18rem;
     .h1 {
       color: white;
       margin: 0 3rem;
-      line-height: 1;
       @include breakpoint($sm) {
         margin: 0 1rem;
       }
