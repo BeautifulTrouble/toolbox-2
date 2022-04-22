@@ -39,6 +39,7 @@ export default {
   display: none; // Hide fake Squarespace language button
 }
 .langs {
+  // TODO: This probably breaks small screens
   font-family: 'ff-good-headline-web-pro-condensed', "Noto Sans Myanmar", sans-serif;
   font-size: 1.1rem;
   font-weight: 300;
@@ -48,17 +49,19 @@ export default {
   z-index: 10;
   display: flex;
   flex-wrap: wrap;
+  justify-content: flex-end;
   span {
-    padding: .4rem .6rem;
+    padding: .1rem .4rem;
+    //flex: 0 0 25%;
     color: white;
     &.my {
-      font-size: .8rem;
+      font-size: .7rem;
+      position: relative;
+      top: .2rem;
+      //padding: .1rem .4rem 0 .4rem;
     }
     @include breakpoint($sm) {
-      padding: .4rem .6rem 0 .6rem;
-      &.my {
-        padding: 0 .6rem;
-      }
+      padding: .1rem .2rem;
     }
   }
 }
