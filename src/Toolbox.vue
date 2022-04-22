@@ -587,7 +587,7 @@ export default {
 .autocomplete {
   .autocomplete-input {
     // SEE icons.scss for background-image icons
-    font-family: ff-good-headline-web-pro-condensed, "Noto Sans Myanmar", sans-serif;
+    font-family: ff-good-headline-web-pro-condensed, sans-serif;
     font-size: 1.4rem;
     text-transform: uppercase;
     color: $bgdark3;

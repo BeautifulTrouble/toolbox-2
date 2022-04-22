@@ -40,7 +40,7 @@ export default {
 }
 .langs {
   // TODO: This probably breaks small screens
-  font-family: 'ff-good-headline-web-pro-condensed', "Noto Sans Myanmar", sans-serif;
+  font-family: 'ff-good-headline-web-pro-condensed', sans-serif;
   font-size: 1.1rem;
   font-weight: 300;
   cursor: pointer;
