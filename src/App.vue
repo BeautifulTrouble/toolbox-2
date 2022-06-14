@@ -6,8 +6,11 @@
 
     <div class="langs">
       <span v-for="lang in config.langs" :key="lang"
-        :class="{'router-link-active': lang == $store.state.lang, [lang]: true}"
+        :class="{'router-link-active': lang == $store.state.lang, [lang]: true, 'mobile-hidden': true}"
         @click="$store.dispatch('LANG_SET', [lang, false])">{{ textByLang[lang]['site.language'] }}</span>
+      <span v-for="lang in config.langs" :key="lang"
+        :class="{'router-link-active': lang == $store.state.lang, [lang]: true, 'mobile-only': true}"
+        @click="$store.dispatch('LANG_SET', [lang, false])">{{ lang }}</span>
     </div>
 
     <back-to-top bottom="1rem" right="1rem">
@@ -52,16 +55,17 @@ export default {
   justify-content: flex-end;
   span {
     padding: .1rem .4rem;
-    //flex: 0 0 25%;
     color: white;
+    /*
     &.my {
       font-size: .7rem;
       position: relative;
       top: .2rem;
-      //padding: .1rem .4rem 0 .4rem;
     }
+    */
     @include breakpoint($sm) {
-      padding: .1rem .2rem;
+      text-transform: uppercase;
+      padding: .1rem .75rem;
     }
   }
 }
