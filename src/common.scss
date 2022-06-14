@@ -64,37 +64,6 @@ $ss-mobile-header: "only screen and (pointer: coarse) and (max-width: 1024px), s
 .hidden {
   display: none !important;
 }
-// Grid system (here if needed, but so far not needed)
-//$outer-margin: 0;
-//$gutter-width: 8px;
-//$breakpoints:
-//    sm 0px $md-width - 1px,
-//    md $md-width $lg-width - 1px,
-//    lg $lg-width $xl-width - 1px,
-//    xl $xl-width 10000px;
-//$flexboxgrid-max-width: $xl-width - $gutter-width;
-//@import 'flexboxgrid-sass/flexboxgrid.scss';
-//
-//// Augment the grid system with a couple missing features
-//@each $breakpoint in $breakpoints {
-//  $name: nth($breakpoint, 1);
-//  $size: nth($breakpoint, 2);
-//  $container: nth($breakpoint, 3);
-//  @media only screen and (min-width: $size) {
-//    .hide-#{$name}-up {
-//      display: none !important;
-//    }
-//    .col-#{$name}-offset-0 {
-//      @include flexboxgrid-sass-col-common;
-//      margin-left: 0;
-//    }
-//  }
-//}
-//.hide-sm {
-//  @media only screen and (max-width: $md-width - 1px) {
-//    display: none !important;
-//  }
-//}
 
 
 // Development styles
