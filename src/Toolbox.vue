@@ -433,12 +433,15 @@ export default {
     }
     .h1 {
       margin: 0;
-      font-size: calc(3.8 * 1rem);
+      font-size: 3.8rem;
       text-transform: uppercase;
     }
     @include breakpoint($sm) {
       p {
         max-width: unset;
+      }
+      .h1 {
+        font-size: 2rem;
       }
     }
   }
