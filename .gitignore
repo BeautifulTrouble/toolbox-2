@@ -23,6 +23,3 @@ yarn-error.log*
 *.njsproj
 *.sln
 *.sw?
-
-# Don't commit fonts
-*.woff2
