@@ -1,10 +1,7 @@
 <template>
-  <div class="all-modules">
+  <div class="all-tools">
     <div>
       <div class="toolbar">
-        <search :reroute="false" ref="search" class="toolbox-search" :text="text['site.search']" />
-        <button v-if="searchResults.length" @click="downloadPDF(searchResults)">
-          PDF of {{ searchResults.length }} search results</button>
         <button v-if="$store.state.savedTools.size" @click="downloadPDF($store.state.savedTools)">
           PDF of {{ $store.state.savedTools.size }} saved tools</button>
       </div>
@@ -43,36 +40,17 @@
 </template>
 
 <script>
-import Search from './Search'
 
 export default {
-  name: 'All',
+  name: 'AllTools',
   data: () => ({
     types: ['story', 'tactic', 'principle', 'theory', 'methodology'],
     expand: {story: true, tactic: true, principle: true, theory: true, methodology: true},
   }),
-  components: {
-    Search,
-  },
-  watch: {
-    searchResults() {
-      this.expand = Object.fromEntries(this.types.map(T => [T, !!this.filteredToolsByType[T].length]))
-    }
-  },
   computed: {
-    searchResults() {
-      return this.$store.state.searchResults
-    },
     filteredToolsByType() {
       let obj = Object.fromEntries(this.types.map(T => [T, []]))
-      if (this.searchResults.length) {
-        this.searchResults.forEach(slug => {
-          let tool = this.$store.state.toolsBySlug[slug]
-          obj[tool.type].push(tool)
-        })
-      } else {
-        this.$store.state.tools.forEach(tool => obj[tool.type].push(tool))
-      }
+      this.$store.state.tools.forEach(tool => obj[tool.type].push(tool))
       return obj
     },
   },
@@ -83,7 +61,7 @@ export default {
 
 <style lang="scss">
 @import 'common.scss';
-.all-modules {
+.all-tools {
   padding-top: 4rem;
 
   // Mobile header adjustments for the Squarespace theme
@@ -108,10 +86,6 @@ export default {
     display: flex;
     flex-direction: column;
     align-items: center;
-  }
-  .toolbox-search {
-    width: 20rem !important;
-    margin-inline-end: 2rem;
   }
 }
 .column-wrapper {

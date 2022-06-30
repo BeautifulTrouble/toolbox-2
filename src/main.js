@@ -1,41 +1,48 @@
-import Vue from 'vue'
+import { createApp, h } from 'vue'
 
-import Autocomplete from '@trevoreyre/autocomplete-vue'
-import '@trevoreyre/autocomplete-vue/dist/style.css'
-import Axios from 'axios'
-import Router from 'vue-router'
+import { createRouter, createWebHistory } from 'vue-router'
 import Showdown from 'showdown'
 import ShowdownTargetBlank from 'showdown-target-blank'
 import BackToTop from 'vue-backtotop'
-import VueLazyload from 'vue-lazyload'
-import VueLazyImageLoading from 'vue-lazy-image-loading'
-import VueMeta from 'vue-meta'
+import VueLazyload from 'vue3-lazyload'
+import { createMetaManager } from 'vue-meta'
 import VueScollTo from 'vue-scrollto'
 
 import App from './App'
-import All from './All'
-import Tool from './Tool'
-import Toolbox from './Toolbox'
+import AllTools from './AllTools'
+import ToolPage from './ToolPage'
+import ToolboxPage from './ToolboxPage'
 
 import config from './config'
 import { store } from './store'
 import textByLang from './text'
 
+window.fetchJSON = (url) => {
+  return fetch(url, {headers: {"Content-Type": "application/json"}, method: 'GET'})
+  .then(async r => {
+    if (!r.ok) {
+      r.data = await r.json()
+      throw new Error(r.statusText)
+    }
+    return r
+  })
+  .then(r => r.json())
+}
 
-// ROUTER
-Vue.use(Router)
+const app = createApp({
+  render: () => h(App)
+})
 
-const router = new Router({
-  mode: 'history',
-  base: '/toolbox/',
+const router = createRouter({
+  history: createWebHistory('/toolbox/'),
   routes: [
-    {path: '/tool',         redirect: {name: 'toolbox'}},
-    {path: '/tool/:slug',   name: 'tool', component: Tool},
-    {path: '/all',          name: 'toolbox-all', component: All},
+    {path: '/tool',           redirect: {name: 'toolbox'}},
+    {path: '/tool/:slug',     name: 'tool', component: ToolPage},
+    {path: '/all',            name: 'toolbox-all', component: AllTools},
     // Match only the valid collections, and everything else will fall through
     {path: '/:collection(story|tactic|principle|theory|methodology|saved|set)?',
-                            name: 'toolbox', component: Toolbox},
-    {path: '/*',            redirect: {name: 'toolbox'}},
+                              name: 'toolbox', component: ToolboxPage},
+    {path: '/:pathMatch(.*)', redirect: {name: 'toolbox'}},
 
     /* Routes to be merged
     {path: '/story',        name: 'toolbox-story', component: Toolbox},
@@ -58,9 +65,10 @@ const router = new Router({
     }
     // TODO: https://forum.vuejs.org/t/vue-router-page-position-when-navigating-pages/32885/4
     if (to.name == 'toolbox' && from.name == 'toolbox') return
-    return savedPosition ? savedPosition : {x: 0, y: 0}
+    return savedPosition ? savedPosition : {left: 0, top: 0}
   },
 })
+app.use(router)
 
 const languageSelectionPrefix = new RegExp('^/[^/]{2}(/|$)')
 router.beforeEach((to, from, next) => {
@@ -105,7 +113,7 @@ router.afterEach((to) => {
 })
 
 
-// EXTEND VUE
+
 const showdown = new Showdown.Converter({
   noHeaderId: true,
   simpleLineBreaks: true,
@@ -125,29 +133,7 @@ const showdown = new Showdown.Converter({
   ],
 })
 
-Vue.config.productionTip = false
-Vue.prototype.$http = Axios
-
-// This lazy-loader loads images on scroll (v-lazy directive)
-Vue.use(VueLazyload, {
-  observer: true,
-  observerOptions: {
-    rootMargin: '0px',
-    threshold: 0.1,
-  },
-})
-// This lazy-loader only provides placeholders and image loading transitions (lazy-* components)
-Vue.use(VueLazyImageLoading, {
-  cache: true, // Don't animate already-loaded images
-})
-
-// Smooth scroll to element
-Vue.use(VueScollTo)
-
-// Scroll to top button
-Vue.use(BackToTop)
-
-Vue.mixin({
+app.mixin({
   data: () => ({
     config,
     textByLang,
@@ -177,16 +163,25 @@ Vue.mixin({
   },
 })
 
-// autocomplete-vue
-Vue.use(Autocomplete)
+// This lazy-loader loads images on scroll (v-lazy directive)
+app.use(VueLazyload, {
+  observer: true,
+  observerOptions: {
+    rootMargin: '0px',
+    threshold: 0.1,
+  },
+})
 
-// VueMeta
-Vue.use(VueMeta)
+// Smooth scroll to element
+app.use(VueScollTo)
 
+// Scroll to top button
+app.use(BackToTop)
 
-// START VUE
-new Vue({
-  router,
-  store,
-  render: h => h(App),
-}).$mount(config.mountPoint)
+//app.use(Autocomplete)
+
+app.use(createMetaManager())
+
+app.use(store)
+
+app.mount('#page')

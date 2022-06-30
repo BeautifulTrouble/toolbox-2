@@ -32,24 +32,26 @@
           </div>
 
           <!-- When the active collection is set, switch tabs for clarity about what's going on -->
-          <autocomplete class="autocomplete-wrapper" v-show="collection != 'saved'" ref="search"
-            @click="tab = collection == 'set' ? 'set' : tab"
-            @submit="submitSearch"
-            @focus="searchTabActive = true"
-            @blur="searchTabActive = false"
-            :placeholder="text[collection == 'set' ? `set.${set}` : 'site.sentence.everything']"
-            :search="getAutocompletions"
-            :get-result-value="autocompletion => autocompletion.text"
-            >
-            <!-- Auto-select needs some thought. Otherwise lots of users will just get the #BlackLivesMatter set and be stuck
-            auto-select
-            -->
-            <template #result="{result, props}">
-              <li v-bind="props" :class="['autocomplete-result', result.icon]">
-                {{ result.text }}
-              </li>
-            </template>
-          </autocomplete>
+          <!-- auto-select prop needs some thought, otherwise users will just get the #BlackLivesMatter set and be stuck -->
+          <div class="autocomplete-wrapper">
+            <div class="autocomplete">
+              <auto-complete v-show="collection != 'saved'" ref="search"
+                @click="tab = collection == 'set' ? 'set' : tab"
+                @submit="submitSearch"
+                @focus="searchTabActive = true"
+                @blur="searchTabActive = false"
+                :placeholder="text[collection == 'set' ? `set.${set}` : 'site.sentence.everything']"
+                :search="getAutocompletions"
+                :get-result-value="autocompletion => autocompletion.text"
+                >
+                <template #result="{result, props}">
+                  <li v-bind="props" :class="['autocomplete-result', result.icon]">
+                    {{ result.text }}
+                  </li>
+                </template>
+              </auto-complete>
+            </div>
+          </div>
 
           <!-- Show reset when any filters are applied (set/region have default values and therefore don't count) -->
           <img v-if="collection != ALL || tag || query"
@@ -100,7 +102,7 @@
             </div>
 
             <!-- BY REGION -->
-            <div class="by by-region" v-if="tab == 'story'">
+            <div class="by by-region" v-else-if="tab == 'story'">
               <div :class="{block: true, active: region == ALL}" @click="selectRegion()">
                 <img svg-inline class="bt-icon" src="./assets/regions/world.svg">
                 <p>{{ text['type.story.region.all'] }}</p>
@@ -119,10 +121,10 @@
             </div>
 
             <!-- BY SET -->
-            <div class="by by-set" v-if="tab == 'set'">
+            <div class="by by-set" v-else-if="tab == 'set'">
               <div v-for="(s, slug) in sets" :key="slug"
                 :class="{block: true, set: true, [slug]: true, active: set == slug}"
-                @click="selectSet(slug, ...arguments)">
+                @click="selectSet(slug, $event)">
                 <div class="h3 set">{{ text[`set.${slug}`] }}</div>
                 <div v-html="markdown(text[`set.${slug}.description`])" />
               </div>
@@ -143,6 +145,8 @@
 </template>
 
 <script>
+import AutoComplete from './AutoComplete.vue'
+import '@trevoreyre/autocomplete-vue/dist/style.css'
 import ToolTile from './ToolTile'
 import sets from './sets'
 
@@ -151,7 +155,7 @@ const ALL = 'all'
 
 
 export default {
-  name: 'Toolbox',
+  name: 'ToolboxPage',
   data: () => ({
     ALL,
     activeTab: 'collection',
@@ -167,6 +171,7 @@ export default {
     searchTabActive: false,
   }),
   components: {
+    AutoComplete,
     ToolTile,
   },
   computed: {
@@ -386,10 +391,6 @@ export default {
   }
 
   @mixin hero-particulars($type, $color, $rot) {
-    //background-image: url('data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEASABIAAD/4QCiRXhpZgAASUkqAAgAAAAGABoBBQABAAAAVgAAABsBBQABAAAAXgAAACgBAwABAAAAAgAAADEBAgANAAAAZgAAADIBAgAUAAAAdAAAAGmHBAABAAAAiAAAAAAAAABIAAAAAQAAAEgAAAABAAAAR0lNUCAyLjEwLjE4AAAyMDIwOjA2OjE1IDAwOjA2OjQ3AAEAAaADAAEAAAABAAAAAAAAAP/iArBJQ0NfUFJPRklMRQABAQAAAqBsY21zBDAAAG1udHJSR0IgWFlaIAfkAAYADwAGADoACWFjc3BBUFBMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD21gABAAAAANMtbGNtcwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADWRlc2MAAAEgAAAAQGNwcnQAAAFgAAAANnd0cHQAAAGYAAAAFGNoYWQAAAGsAAAALHJYWVoAAAHYAAAAFGJYWVoAAAHsAAAAFGdYWVoAAAIAAAAAFHJUUkMAAAIUAAAAIGdUUkMAAAIUAAAAIGJUUkMAAAIUAAAAIGNocm0AAAI0AAAAJGRtbmQAAAJYAAAAJGRtZGQAAAJ8AAAAJG1sdWMAAAAAAAAAAQAAAAxlblVTAAAAJAAAABwARwBJAE0AUAAgAGIAdQBpAGwAdAAtAGkAbgAgAHMAUgBHAEJtbHVjAAAAAAAAAAEAAAAMZW5VUwAAABoAAAAcAFAAdQBiAGwAaQBjACAARABvAG0AYQBpAG4AAFhZWiAAAAAAAAD21gABAAAAANMtc2YzMgAAAAAAAQxCAAAF3v//8yUAAAeTAAD9kP//+6H///2iAAAD3AAAwG5YWVogAAAAAAAAb6AAADj1AAADkFhZWiAAAAAAAAAknwAAD4QAALbEWFlaIAAAAAAAAGKXAAC3hwAAGNlwYXJhAAAAAAADAAAAAmZmAADypwAADVkAABPQAAAKW2Nocm0AAAAAAAMAAAAAo9cAAFR8AABMzQAAmZoAACZnAAAPXG1sdWMAAAAAAAAAAQAAAAxlblVTAAAACAAAABwARwBJAE0AUG1sdWMAAAAAAAAAAQAAAAxlblVTAAAACAAAABwAcwBSAEcAQv/bAEMAAwICAwICAwMDAwQDAwQFCAUFBAQFCgcHBggMCgwMCwoLCw0OEhANDhEOCwsQFhARExQVFRUMDxcYFhQYEhQVFP/bAEMBAwQEBQQFCQUFCRQNCw0UFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFP/CABEIAAEHfQMBEQACEQEDEQH/xAAXAAEBAQEAAAAAAAAAAAAAAAAAAQIF/8QAGQEBAQEBAQEAAAAAAAAAAAAAAAECAwYH/9oADAMBAAIQAxAAAAHs+t+cBgUJERdZCFTUIZqAE0yCEouSBRDJKjWbUk0lZahDIairME0LKyCWtWJgjWbYWs6rLOktijLK6zrWUitJdZhpAyu+ayxqkVlZQb1DJFbCLmljVys2zuzZtnTOzozuzcbNpu56SdDdbk6Vs3M7OhpNps0bZ3qaNGgm2RdQUGqJkVoABkBqAKCxYzc6yohdJkWBWRSGshqZiAUA1FGVCAJnQCAWCXLQLMihkBKANAZgAFBWYAAAAAAAAAAAAAAD/8QAFBABAAAAAAAAAAAAAAAAAAAAcP/aAAgBAQABBQJw/8QAFxEBAQEBAAAAAAAAAAAAAAAAAQAQYP/aAAgBAwEBPwHniMIiIwiIiIjCIiMMI7f/xAAUEQEAAAAAAAAAAAAAAAAAAABw/9oACAECAQE/AXD/xAAUEAEAAAAAAAAAAAAAAAAAAABw/9oACAEBAAY/AnD/xAAaEAEAAwEBAQAAAAAAAAAAAAABECAwQEFQ/9oACAEBAAE/IfgFSTAkyMDoI8r5DVho08o9BBBBkaG5U4Dv/9oADAMBAAIAAwAAABD/AP8A6f8A9ltsJIn/APv9XRbvb7Svfw0f8u9L424aS/sl/wDy3tP8RoC52iXk7L03KU9/N22tbJJNskspr203bIIl/wD/APJ/23bbdmS/62ttJSSWx/8A/wD/AP8A/wD/AP8A/wD/AP8A/wD/xAAbEQACAgMBAAAAAAAAAAAAAAABECAxAEBQYP/aAAgBAwEBPxDgHinYFZRBIAmRRBGLYEDB7b//xAAZEQACAwEAAAAAAAAAAAAAAAABUCBAQQD/2gAIAQIBAT8QQB8YDsjq0pzVN/8A/8QAHBAAAQQDAQAAAAAAAAAAAAAAMQABMEEQIEBQ/9oACAEBAAE/EPArqWQgDJRBAHQSYsnRzpZOGQaMEWATHdRVklfPXATBSBPXlF3/AP/Z');
-    //background-image: url(#{$imagePrefix}/hero-pattern-#{$type}.jpg);
-    //background-size: cover;
-    //background-position: 50% 20%;
     background-image: url('data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBAQFBAYFBQYJBgUGCQsIBgYICwwKCgsKCgwQDAwMDAwMEAwODxAPDgwTExQUExMcGxsbHB8fHx8fHx8fHx//2wBDAQcHBw0MDRgQEBgaFREVGh8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx//wAARCAABB30DAREAAhEBAxEB/8QAFgABAQEAAAAAAAAAAAAAAAAAAAEC/8QAFRABAQAAAAAAAAAAAAAAAAAAAAH/xAAZAQEBAQEBAQAAAAAAAAAAAAAAAQIDBgf/xAAVEQEBAAAAAAAAAAAAAAAAAAAAAf/aAAwDAQACEQMRAD8Aw9i+TgCKIKCoogCqgICKoKiiAiqgIogqKqAKqAiqiqgIogqKIKiqgIqxlVQEVUUQWIqoCKsRRBUVWVEUQVFVFIgqKqKRFVkEVUVUBFVFVARRFWIqsgigqsqqAiqKRlVQEVUURQVWRUUFVFEUQVFEUFVFEBFUURRBUUFVFGWosStQZbistwRuCNRWW4I6QRuCNwRuCNwRuCOkRG4DcEbgjpBG4DcEbiI3AagjcEbgjUBuCNRUagjUBoRVRoQBVQBQBFUBABUUBQEAFQAAVAAiCgQBBYAIRBQEFARAFQAUQQWACKgAqAIIKCiCACoiwBBQBAFQERQUBEAUBBRBBYACogCoEEAUBBRAAFQAEQBQAAUBAggAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD//Z');
     background-size: 100%;
     background-position: 50% 50%;
@@ -886,7 +887,7 @@ export default {
 .tools-list-enter-active, .tools-list-leave-active {
   opacity: 1;
 }
-.tools-list-enter, .tools-list-leave-to {
+.tools-list-enter-from, .tools-list-leave-to {
   opacity: 0;
 }
 </style>

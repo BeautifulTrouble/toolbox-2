@@ -1,7 +1,5 @@
-import Axios from 'axios'
 import Storage from 'local-storage-fallback'
-import Vue from 'vue'
-import Vuex from 'vuex'
+import { createStore } from 'vuex'
 
 import lunr from 'lunr'
 import lunrStemmer from 'lunr-languages/lunr.stemmer.support'
@@ -48,7 +46,6 @@ const storageSetCache = (lang, data, nestedCall = false) => {
   try {
     Storage.setItem(keyNameAPICache(lang), JSON.stringify({'timestamp': (new Date).getTime(), data: data}))
   } catch(e) {
-    console.debug(e)
     if (!nestedCall) {
       console.debug("Trying to make room for localStorage cache...")
       config.langs.forEach(lang => Storage.removeItem(keyNameAPICache(lang)))
@@ -95,19 +92,18 @@ const englishNourmalisation = builder => {
 }
 
 
-// VUEX
-Vue.use(Vuex)
-
-export const store = new Vuex.Store({
-  state: {
-    debug: 'Ready.',
-    lang: null,
-    langRequested: null,
-    savedTools: storageGetSavedTools(),
-    tools: [],
-    toolsBySlug: {},
-    searchIndices: {},
-    searchResults: [],
+export const store = createStore({
+  state () {
+    return {
+      debug: 'Ready.',
+      lang: null,
+      langRequested: null,
+      savedTools: storageGetSavedTools(),
+      tools: [],
+      toolsBySlug: {},
+      searchIndices: {},
+      searchResults: [],
+    }
   },
   actions: {
     // API TOOLS
@@ -129,13 +125,13 @@ export const store = new Vuex.Store({
         } else {
           console.debug('fetching fresh tools')
           context.commit('setLangRequested', lang)
-          Axios.get(`${config.api}/modules?lang=${lang}`)
-            .then(r => {
+          window.fetchJSON(`${config.api}/modules?lang=${lang}`)
+            .then(json => {
               // TODO: although this clears the search RESULTS after a lang change, the search FIELD
               //       remains populated, and this could be confusing to a user
               context.dispatch('SEARCH_CLEAR')
               context.commit('deleteSearchIndex', lang)
-              context.commit('setLang', [r.data, lang, true])
+              context.commit('setLang', [json, lang, true])
             })
             .catch(e => {
               console.error("Couldn't get API tools!", e)

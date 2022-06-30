@@ -309,7 +309,7 @@ input{
   transition: all .1s;
   opacity: 1;
 }
-.fade-enter, .fade-leave-to {
+.fade-enter-from, .fade-leave-to {
   opacity: 0;
 }
 // slide
@@ -320,7 +320,7 @@ input{
    max-height: 100vh;
    overflow: hidden;
 }
-.slide-enter, .slide-leave-to {
+.slide-enter-from, .slide-leave-to {
    overflow: hidden;
    max-height: 0;
 }
@@ -333,7 +333,7 @@ input{
    max-height: 100vh;
    overflow: hidden;
 }
-.slide-fade-enter, .slide-fade-leave-to {
+.slide-fade-enter-from, .slide-fade-leave-to {
    overflow: hidden;
    max-height: 0;
    opacity: 0;

@@ -1,59 +1,61 @@
 <template>
-  <router-link class="tool-tile" :to="tool && tool.slug ? {name: 'tool', params: {slug: tool.slug}} : {}">
-    <!-- Use VueLazyLoad for loading images on scroll -->
-    <div v-if="tool"
-      :class="{'tool-tile-image': true, [`hover-${tool.type}`]: true}"
-      v-lazy:background-image="tool['tile-image']">
-      <div :class="['upper', `bg-${tool.type}`]">
-        <div>
-          <img svg-inline v-if="tool.type == 'tactic'" class="bt-icon" src="./assets/tactic-inverse.svg">
-          <img svg-inline v-else-if="tool.type == 'theory'" class="bt-icon" src="./assets/theory-inverse.svg">
-          <img svg-inline v-else-if="tool.type == 'story'" class="bt-icon" src="./assets/story-inverse.svg">
-          <img svg-inline v-else-if="tool.type == 'principle'" class="bt-icon" src="./assets/principle-inverse.svg">
-          <img svg-inline v-else-if="tool.type == 'methodology'" class="bt-icon" src="./assets/methodology-inverse.svg">
-          <div class="h3">{{ text[`type.${tool.type}`] }}</div>
-        </div>
-        <div>
-          <img svg-inline v-if="tool.video" class="bt-icon video" src="./assets/video.svg">
-          <!-- .stop avoids calling other click handlers and .prevent avoids the same within a link -->
-          <div @click.stop.prevent="$store.dispatch('TOOL_SAVE_TOGGLE', tool.slug)">
-            <img svg-inline v-if="$store.state.savedTools.has(tool.slug)" class="bt-icon favorite active" src="./assets/favorite-active.svg">
-            <img svg-inline v-else class="bt-icon favorite" src="./assets/favorite.svg">
+  <div class="tool-tile">
+    <router-link :to="tool && tool.slug ? {name: 'tool', params: {slug: tool.slug}} : {}">
+      <!-- Use VueLazyLoad for loading images on scroll -->
+      <div v-if="tool"
+        :class="{'tool-tile-image': true, [`hover-${tool.type}`]: true}"
+        v-lazy:background-image="tool['tile-image']">
+        <div :class="['upper', `bg-${tool.type}`]">
+          <div>
+            <img svg-inline v-if="tool.type == 'tactic'" class="bt-icon" src="./assets/tactic-inverse.svg">
+            <img svg-inline v-else-if="tool.type == 'theory'" class="bt-icon" src="./assets/theory-inverse.svg">
+            <img svg-inline v-else-if="tool.type == 'story'" class="bt-icon" src="./assets/story-inverse.svg">
+            <img svg-inline v-else-if="tool.type == 'principle'" class="bt-icon" src="./assets/principle-inverse.svg">
+            <img svg-inline v-else-if="tool.type == 'methodology'" class="bt-icon" src="./assets/methodology-inverse.svg">
+            <div class="h3">{{ text[`type.${tool.type}`] }}</div>
+          </div>
+          <div>
+            <img svg-inline v-if="tool.video" class="bt-icon video" src="./assets/video.svg">
+            <!-- .stop avoids calling other click handlers and .prevent avoids the same within a link -->
+            <div @click.stop.prevent="$store.dispatch('TOOL_SAVE_TOGGLE', tool.slug)">
+              <img svg-inline v-if="$store.state.savedTools.has(tool.slug)" class="bt-icon favorite active" src="./assets/favorite-active.svg">
+              <img svg-inline v-else class="bt-icon favorite" src="./assets/favorite.svg">
+            </div>
           </div>
         </div>
-      </div>
-      <div class="lower">
-        <div class="h2 title">{{ tool.title }}</div>
-        <div class="snapshot" v-html="markdown(tool.snapshot)" />
-      </div>
-    </div>
-
-    <div v-else-if="alt == 'suggest'" @click="openTab(config.submissionForm)" class="suggest alt">
-      <div class="upper">
-        <div>
-          <div class="add">+</div>
-          <div class="h3">{{ text['site.suggest'] }}</div>
+        <div class="lower">
+          <div class="h2 title">{{ tool.title }}</div>
+          <div class="snapshot" v-html="markdown(tool.snapshot)" />
         </div>
       </div>
-      <div class="lower">
-        <div class="h2 title">{{ text['site.suggest.description'] }}</div>
-        <div class="snapshot">{{ text['site.suggest.help'] }}</div>
-      </div>
-    </div>
 
-    <div v-else-if="alt == 'nosave'" @click="$router.push({name: 'toolbox'})" class="nosave alt">
-      <div class="upper">
-        <div>
-          <img svg-inline class="bt-icon favorite" src="./assets/favorite.svg">
-          <div class="h3">{{ text['site.saved'] }}</div>
+      <div v-else-if="alt == 'suggest'" @click="openTab(config.submissionForm)" class="suggest alt">
+        <div class="upper">
+          <div>
+            <div class="add">+</div>
+            <div class="h3">{{ text['site.suggest'] }}</div>
+          </div>
+        </div>
+        <div class="lower">
+          <div class="h2 title">{{ text['site.suggest.description'] }}</div>
+          <div class="snapshot">{{ text['site.suggest.help'] }}</div>
         </div>
       </div>
-      <div class="lower">
-        <div class="h2 title">{{ text['site.saved.description'] }}</div>
-        <div class="snapshot">{{ text['site.saved.help'] }}</div>
+
+      <div v-else-if="alt == 'nosave'" @click="$router.push({name: 'toolbox'})" class="nosave alt">
+        <div class="upper">
+          <div>
+            <img svg-inline class="bt-icon favorite" src="./assets/favorite.svg">
+            <div class="h3">{{ text['site.saved'] }}</div>
+          </div>
+        </div>
+        <div class="lower">
+          <div class="h2 title">{{ text['site.saved.description'] }}</div>
+          <div class="snapshot">{{ text['site.saved.help'] }}</div>
+        </div>
       </div>
-    </div>
-  </router-link>
+    </router-link>
+  </div>
 </template>
 
 <script>
@@ -76,9 +78,8 @@ export default {
   flex: 0 0 18rem;
   height: 18rem;
   border-radius: .5rem;
-  text-decoration: none;
-  >div {
-    height: 100%;
+  a {
+    text-decoration: none;
   }
 
   @include breakpoint($sm) {
@@ -164,7 +165,6 @@ export default {
       left: 0; right: 0;
       top: 0; bottom: 0;
       opacity: 0;
-      //transition: opacity .1s linear;
     }
     // TODO: reorder layering so that the hover keeps the dark gradient
     &:hover::after { // Text fade gradient
@@ -198,7 +198,6 @@ export default {
   background-repeat: no-repeat;
   background-position: top left;
   background-size: cover;
-  //transition: opacity .1s linear;
   height: 100%;
   position: relative;
   &::after { // Dark gradient
@@ -207,16 +206,7 @@ export default {
     top: 0; left: 0;
     bottom: 0; right: 0;
     background: linear-gradient(0deg, rgba(0,0,0,0) 0%, rgba(0,0,0,.7) 90%, rgba(0,0,0,1) 100%);
-    //transition: background .1 linear;
     pointer-events: none; // Allow the heart icon to work
   }
-  /*
-  &[lazy="loading"] {
-    opacity: .50;
-  }
-  &[lazy="loaded"] {
-    opacity: 1;
-  }
-  */
 }
 </style>

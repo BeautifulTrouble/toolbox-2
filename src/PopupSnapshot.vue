@@ -19,7 +19,7 @@
 <script>
 
 export default {
-  name: 'Popup',
+  name: 'PopupSnapshot',
   props: {
     light: {type: Boolean, default: false},
     tools: {type: Array, default: () => []},

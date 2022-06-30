@@ -1,8 +1,10 @@
 <template>
   <div id="app" :class="{rtl: $store.state.lang == 'ar', [$store.state.lang]: true}">
-    <transition name="fade" mode="out-in">
-      <router-view/>
-    </transition>
+    <router-view v-slot="{ Component }">
+      <transition name="fade" mode="out-in">
+        <component :is="Component" />
+      </transition>
+    </router-view>
 
     <div class="langs">
       <span v-for="lang in config.langs" :key="lang"

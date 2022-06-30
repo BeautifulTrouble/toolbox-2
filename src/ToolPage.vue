@@ -1,11 +1,6 @@
 <template>
   <div v-if="tool" :class="['tool', tool.type]" @click="handleLink">
-    <!-- Use VueLazyImageLoading for fade-in effect on load -->
-    <lazy-background position="50% 0%" no-ratio :blur="0" :src="tool['hero-image']"
-      placeholder="data:image/gif;base64,R0lGODlhAQABAIAAAAUEBAAAACwAAAAAAQABAAACAkQBADs=">
-    </lazy-background>
-
-    <header slot="content">
+    <header slot="content" :style="'background-image: url(' + tool['hero-image'] + ')'">
       <div class="upper">
         <router-link :to="{name: 'toolbox', params: {collection: tool.type}}">
           <img svg-inline v-if="tool.type == 'tactic'" class="bt-icon" src="./assets/tactic.svg">
@@ -89,7 +84,7 @@
           <!-- Write up -->
           <div v-if="tool.video && /youtube/.test(tool.video)">
             <div class="write-up" v-html="writeUpSplit[0]" />
-            <youtube id="video" ref="video" :videoId="tool.video" />
+            <youtube-component id="video" ref="video" :videoId="tool.video" />
             <div class="write-up" v-html="writeUpSplit[1]" />
           </div>
           <div v-else class="write-up" v-html="writeUp" />
@@ -97,7 +92,7 @@
 
 
           <div v-if="tool['key-modules']" class="key-tools">
-            <expander v-for="(v, k) of tool['key-modules']" :key="k" :open="true" :name="k" :class="keyType[k]">
+            <content-expander v-for="(v, k) of tool['key-modules']" :key="k" :open="true" :name="k" :class="keyType[k]">
               <template v-slot:title>
                 <img svg-inline v-if="k == 'key-tactics'" class="bt-icon" src="./assets/tactic.svg">
                 <img svg-inline v-else-if="k == 'key-theories'" class="bt-icon" src="./assets/theory.svg">
@@ -108,13 +103,13 @@
               <div v-for="(each, i) in v" :key="i">
                 <div v-html="markdown(`[**${each[0]}**](/tool/${each[2]}) – ${each[1]}`)"/>
               </div>
-            </expander>
+            </content-expander>
           </div>
-          <expander :key="`how-${tool.slug}`" :open="true" class="methodology" :name="'how-to-use'" v-if="tool['how-to-use']">
+          <content-expander :key="`how-${tool.slug}`" :open="true" class="methodology" :name="'how-to-use'" v-if="tool['how-to-use']">
           <template v-slot:title>{{ text['meta.howtouse'] }}</template>
             <div v-html="markdown(tool['how-to-use'])" />
-          </expander>
-          <expander :key="`rwe-${tool.slug}`" :open="true" :name="'real-world-examples'"
+          </content-expander>
+          <content-expander :key="`rwe-${tool.slug}`" :open="true" :name="'real-world-examples'"
             v-if="tool['real-world-examples'] && tool['real-world-examples'].length">
             <template v-slot:title>{{ text['meta.rwe'] }}</template>
             <div v-for="(rwe, i) in tool['real-world-examples']" :key="i" class="rwe">
@@ -124,8 +119,8 @@
                 <img v-if="rwe.image" :src="`${config.imagePrefix}/${rwe.image}`">
               </a>
             </div>
-          </expander>
-          <expander :key="`learn-${tool.slug}`" :open="true" :name="'learn-more'"
+          </content-expander>
+          <content-expander :key="`learn-${tool.slug}`" :open="true" :name="'learn-more'"
             v-if="tool['learn-more'] && tool['learn-more'].length">
             <template v-slot:title>{{ text['meta.learnmore'] }}</template>
             <div v-for="(lm, i) in tool['learn-more']" :key="i">
@@ -133,11 +128,11 @@
                 <div class="h5">{{ lm.title }}</div><span v-if="lm.source">&nbsp; | &nbsp;{{ lm.source }}</span><span v-if="lm.year">, {{ lm.year }}</span>
               </a>
             </div>
-          </expander>
+          </content-expander>
           <!-- TODO: Add this "have you seen" section
-          <expander :open="false" :name="'contribute'">
+          <content-expander :open="false" :name="'contribute'">
             <template v-slot:title>{{ text['site.contribute'] }}</template>
-          </expander>
+          </content-expander>
           -->
         </div>
       </article>
@@ -181,7 +176,7 @@
                     <router-link :to="{name: 'tool', params: {slug: s}}"
                       :class="{'key-related': keySlugs.has(s)}">
                       {{ $store.state.toolsBySlug[s].title }}
-                      <popup :tools="[s]" light class="tool-popup" />
+                      <popup-snapshot :tools="[s]" light class="tool-popup" />
                     </router-link>
                   </div>
                 </transition>
@@ -212,16 +207,16 @@
 </template>
 
 <script>
-import Expander from './Expander'
-import Popup from './Popup'
-import Youtube from './Youtube'
+import ContentExpander from './ContentExpander'
+import PopupSnapshot from './PopupSnapshot'
+import YoutubeComponent from './YoutubeComponent'
 
 
 const crlf = '%0d%0a'
 
 
 export default {
-  name: 'Tool',
+  name: 'BTTool',
   data: () => ({
     authors: null,
     types: {story: 'stories', tactic: 'tactics', theory: 'theories', principle: 'principles', methodology: 'methodologies'},
@@ -230,9 +225,9 @@ export default {
     moduleType: 'full',
   }),
   components: {
-    Expander,
-    Popup,
-    Youtube,
+    ContentExpander,
+    PopupSnapshot,
+    YoutubeComponent,
   },
   computed: {
     tool() {
@@ -334,15 +329,16 @@ export default {
       this.authors = []
       if (this.tool && this.tool.authors) {
         this.tool.authors.map(
-          a => this.$http.get(`${this.config.api}/person/${a}?lang=${this.$store.state.lang}`
-        ).then(r => this.authors.push(r.data)))
+          author => {
+            window.fetchJSON(`${this.config.api}/person/${author}?lang=${this.$store.state.lang}`)
+              .then(json => this.authors.push(json))
+          }
+        )
       }
-      // For non-existent tools, attempt a slug search (it's all we've got)
-      // TODO: when search is pre-calculated on the server, perform an english search of the slug mapped to active lang
-      if (this.$store.state.tools.length && !this.tool) this.$router.push({
-          name: 'toolbox-search',
-          params: {query: this.$route.params.slug.replace(/-/g, ' ')},
-        })
+      if (this.$store.state.tools.length && !this.tool) {
+        this.$router.push({path: '/'})
+        console.warn('missing tool')
+      }
     },
   },
   watch: {
@@ -389,28 +385,9 @@ $image-height-max: 60rem;
 $sidebar: 18rem;
 
 .tool {
-  .lazy-background {
-    position: absolute;
-    z-index: 0;
-    height: $image-height;
-    max-height: $image-height-max;
-    @include breakpoint($sm) {
-      height: calc(100vh - 9rem);
-    }
-  }
-  .lazy-background-image {
-    background: black;
-    transition: opacity .2s linear;
-    &::before {
-      content: "";
-      //transition: opacity .1s ease-in-out;
-      background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,.3) 80%, rgba(0,0,0,.7) 100%);
-      position: absolute;
-      top: 0; left: 0;
-      bottom: 0; right: 0;
-    }
-  }
   header {
+    background-size: cover;
+    background-position: 50% 10%;
     color: white;
     display: flex;
     flex-direction: column;
@@ -444,6 +421,9 @@ $sidebar: 18rem;
     .bt-icon {
       margin-bottom: .5rem;
       filter: drop-shadow(0px 0px 20px rgba(black, .2));
+    }
+    .upper, .lower {
+      z-index: 1;
     }
     .upper {
       height: 80%;
@@ -489,6 +469,14 @@ $sidebar: 18rem;
       fill: white;
       max-width: 2.5rem;
       max-height: 3.5rem;
+    }
+    &::before {
+      content: "";
+      background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,.3) 80%, rgba(0,0,0,.7) 100%);
+      position: absolute;
+      top: 0; left: 0;
+      bottom: 0; right: 0;
+      z-index: 0;
     }
   }
   // Notice the linkage between main + nav, and article + .breadcrumbs (for horizontal placement)
@@ -551,7 +539,7 @@ $sidebar: 18rem;
       color: $text;
       margin: .5rem 0;
     }
-    .expander {
+    .content-expander {
       .h4 {
         text-transform: uppercase;
       }
@@ -915,7 +903,7 @@ $sidebar: 18rem;
 .list-enter-active, .list-leave-active {
   transition: all 1s;
 }
-.list-enter, .list-leave-to /* .list-leave-active below version 2.1.8 */ {
+.list-enter-from, .list-leave-to /* .list-leave-active below version 2.1.8 */ {
   opacity: 0;
   transform: translateY(30px);
 }

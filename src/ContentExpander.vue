@@ -1,5 +1,5 @@
 <template>
-  <section :class="['box', 'expander', name]">
+  <section :class="['box', 'content-expander', name]">
     <div :class="{open: isOpen, h4: true}" @click="isOpen = !isOpen">
       <slot name="title" />
     </div>
@@ -14,7 +14,7 @@
 <script>
 
 export default {
-  name: 'Expander',
+  name: 'ContentExpander',
   data: () => ({
     isOpen: false,
   }),
@@ -31,7 +31,7 @@ export default {
 <style lang="scss">
 @import 'common.scss';
 
-.box.expander {
+.box.content-expander {
   padding: 3.5rem 2rem 1rem 2rem; // padding-top assumes a padded h4 title
   .h4 {
     cursor: pointer;
