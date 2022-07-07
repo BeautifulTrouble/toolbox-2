@@ -167,7 +167,7 @@
                 <div class="h2">{{ text[`type.${T}.plural`] }}</div>
               </router-link>
               <span :class="{T: true, open: expandRelated[T]}" v-if="randomRelated[T].length > 5"
-                @click="$set(expandRelated, T, !expandRelated[T])" />
+                @click="expandRelated[T] = !expandRelated[T]" />
             </div>
             <div class="titles">
               <div class="related-link" v-for="[s, show] in randomRelated[T]" :key="s">
