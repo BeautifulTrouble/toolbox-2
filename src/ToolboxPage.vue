@@ -394,9 +394,12 @@ export default {
     background-image: url('data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBAQFBAYFBQYJBgUGCQsIBgYICwwKCgsKCgwQDAwMDAwMEAwODxAPDgwTExQUExMcGxsbHB8fHx8fHx8fHx//2wBDAQcHBw0MDRgQEBgaFREVGh8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx//wAARCAABB30DAREAAhEBAxEB/8QAFgABAQEAAAAAAAAAAAAAAAAAAAEC/8QAFRABAQAAAAAAAAAAAAAAAAAAAAH/xAAZAQEBAQEBAQAAAAAAAAAAAAAAAQIDBgf/xAAVEQEBAAAAAAAAAAAAAAAAAAAAAf/aAAwDAQACEQMRAD8Aw9i+TgCKIKCoogCqgICKoKiiAiqgIogqKqAKqAiqiqgIogqKIKiqgIqxlVQEVUUQWIqoCKsRRBUVWVEUQVFVFIgqKqKRFVkEVUVUBFVFVARRFWIqsgigqsqqAiqKRlVQEVUURQVWRUUFVFEUQVFEUFVFEBFUURRBUUFVFGWosStQZbistwRuCNRWW4I6QRuCNwRuCNwRuCOkRG4DcEbgjpBG4DcEbiI3AagjcEbgjUBuCNRUagjUBoRVRoQBVQBQBFUBABUUBQEAFQAAVAAiCgQBBYAIRBQEFARAFQAUQQWACKgAqAIIKCiCACoiwBBQBAFQERQUBEAUBBRBBYACogCoEEAUBBRAAFQAEQBQAAUBAggAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD//Z');
     background-size: 100%;
     background-position: 50% 50%;
-    filter: hue-rotate($rot);
+    // NO major hue shift
+    // filter: hue-rotate($rot);
     &::before {
-      background: linear-gradient(to top right, rgba($color,0) 0%, rgba($color,.2) 30%, rgba($color,.5) 100%),
+      // background: linear-gradient(to top right, rgba($color,0) 0%, rgba($color,.2) 30%, rgba($color,.5) 100%),
+      // Make gradients extremely subtle
+      background: linear-gradient(to top right, rgba($color,0) 0%, rgba($color,.2) 30%, rgba(white,.5) 100%),
                   linear-gradient(to bottom, rgba(white,0) 0%, rgba(white,.3), rgba(black,.5) 70%, rgba(black,.8) 100%);
     }
   }

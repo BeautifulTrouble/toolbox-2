@@ -754,6 +754,9 @@ $sidebar: 18rem;
         display: flex;
         position: relative;
         flex-direction: row;
+        a:first-of-type {
+          margin-bottom: .5rem;
+        }
         svg, .h2 {
           display: inline-block;
         }
