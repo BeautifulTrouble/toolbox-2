@@ -12,8 +12,8 @@
     >
       <div v-bind="rootProps">
         <input
-          ref="input"
           v-bind="inputProps"
+          ref="input"
           @input="handleInput"
           @keydown="core.handleKeyDown"
           @focus="core.handleFocus"
@@ -21,8 +21,8 @@
           v-on="$attrs"
         />
         <ul
-          ref="resultList"
           v-bind="resultListProps"
+          ref="resultList"
           v-on="resultListListeners"
         >
           <template v-for="(result, index) in results">
