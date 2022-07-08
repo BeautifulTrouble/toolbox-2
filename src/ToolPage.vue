@@ -359,8 +359,8 @@ export default {
     },
   },
   watch: {
-    $route() {
-      this.initPage()
+    $route(newRoute) {
+      if (newRoute.name == 'tool') this.initPage()
     },
   },
   created() {
