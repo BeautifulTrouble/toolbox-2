@@ -6,14 +6,16 @@
       </transition>
     </router-view>
 
-    <div class="langs">
-      <span v-for="lang in config.langs" :key="lang"
-        :class="{'router-link-active': lang == $store.state.lang, [lang]: true, 'mobile-hidden': true}"
-        @click="$store.dispatch('LANG_SET', [lang, false])">{{ textByLang[lang]['site.language'] }}</span>
-      <span v-for="lang in config.langs" :key="lang"
-        :class="{'router-link-active': lang == $store.state.lang, [lang]: true, 'mobile-only': true}"
-        @click="$store.dispatch('LANG_SET', [lang, false])">{{ lang }}</span>
-    </div>
+    <Teleport to=".header-announcement-bar-wrapper">
+      <div class="langs">
+        <span v-for="lang in config.langs" :key="lang"
+          :class="{'router-link-active': lang == $store.state.lang, [lang]: true, 'mobile-hidden': true}"
+          @click="$store.dispatch('LANG_SET', [lang, false])">{{ textByLang[lang]['site.language'] }}</span>
+        <span v-for="lang in config.langs" :key="lang"
+          :class="{'router-link-active': lang == $store.state.lang, [lang]: true, 'mobile-only': true}"
+          @click="$store.dispatch('LANG_SET', [lang, false])">{{ lang }}</span>
+      </div>
+    </Teleport>
 
     <back-to-top bottom="1rem" right="1rem">
       <button type="button" class="btn-to-top">
@@ -40,9 +42,6 @@ export default {
   // Squarespace makes this complicated (additional spacing is added to the toolbox)
   //margin-top: 6vmax;
 }
-.header-announcement-bar-wrapper::after {
-  display: none; // Hide fake Squarespace language button
-}
 .langs {
   // TODO: This probably breaks small screens
   font-family: 'ff-good-headline-web-pro-condensed', sans-serif;
@@ -51,20 +50,16 @@ export default {
   cursor: pointer;
   position: fixed;
   top: 0; right: 0;
-  z-index: 10;
+  left: 0;
+  height: 1.5rem;
+  background: black;
+  z-index: 2;
   display: flex;
   flex-wrap: wrap;
   justify-content: flex-end;
   span {
     padding: .1rem .4rem;
     color: white;
-    /*
-    &.my {
-      font-size: .7rem;
-      position: relative;
-      top: .2rem;
-    }
-    */
     @include breakpoint($sm) {
       text-transform: uppercase;
       padding: .1rem .75rem;
