@@ -1,5 +1,22 @@
 <template>
   <div class="toolbox">
+    <Teleport v-if="text" to="head">
+      <title>{{ text['site.toolbox'] }} — Beautiful Trouble</title>
+      <link rel="canonical" :href="`${config.siteUrl}/toolbox`">
+      <meta name="meta" :content="text['site.tagline']">
+      <meta property="og:title" name="meta" :content="text['site.toolbox']">
+      <meta property="og:site_name" name="meta" content="Beautiful Trouble">
+      <meta property="og:description" name="meta" :content="text['site.tagline']">
+      <meta property="og:type" name="meta" content="website">
+      <meta property="og:url" name="meta" :content="`${config.siteUrl}/toolbox`">
+      <meta property="og:image" name="meta" :content="config.metaImageUrl">
+      <meta itemprop="name" name="meta" :content="`Beautiful Trouble — ${text['site.toolbox']}`">
+      <meta itemprop="url" name="meta" :content="`${config.siteUrl}/toolbox`">
+      <meta itemprop="thumbnailUrl" name="meta" :content="config.metaImageUrl">
+      <meta itemprop="description" name="meta" :content="text['site.tagline']">
+      <meta itemprop="image" name="meta" :content="config.metaImageUrl">
+    </Teleport>
+
     <div :class="['toolbox-hero', collection]">
       <div class="inner">
         <div class="h1">{{ (collection != ALL ? text[`type.${collection}.plural`] : text['site.toolbox']) + ':' }}</div>

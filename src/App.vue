@@ -31,6 +31,11 @@ export default {
   }),
   methods: {
   },
+  beforeCreate() {
+    console.debug("removing site metadata external to toolbox vue app...")
+    document.querySelectorAll('title, link[rel=canonical], link[rel=image_src], meta[itemprop], meta[name=description], meta[name^="twitter:"], meta[property^="og:"]')
+      .forEach(el => el.remove())
+  },
 };
 </script>
 

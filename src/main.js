@@ -5,7 +5,6 @@ import Showdown from 'showdown'
 import ShowdownTargetBlank from 'showdown-target-blank'
 import BackToTop from 'vue-backtotop'
 import VueLazyload from 'vue3-lazyload'
-import { createMetaManager } from 'vue-meta'
 import VueScollTo from 'vue-scrollto'
 
 import App from './App'
@@ -179,8 +178,6 @@ app.use(VueScollTo)
 app.use(BackToTop)
 
 //app.use(Autocomplete)
-
-app.use(createMetaManager())
 
 app.use(store)
 

@@ -1,5 +1,22 @@
 <template>
   <div v-if="tool" :class="['tool', tool.type]" @click="handleLink">
+    <Teleport to="head">
+      <title>{{ tool.title }} — Beautiful Trouble</title>
+      <link rel="canonical" :href="`${config.siteUrl}/toolbox/tool/${tool.slug}`">
+      <meta name="meta" :content="tool.snapshot">
+      <meta property="og:title" name="meta" :content="tool.title">
+      <meta property="og:site_name" name="meta" content="Beautiful Trouble">
+      <meta property="og:description" name="meta" :content="tool.snapshot">
+      <meta property="og:type" name="meta" content="article">
+      <meta property="og:url" name="meta" :content="`${config.siteUrl}/toolbox/tool/${tool.slug}`">
+      <meta property="og:image" name="meta" :content="`${config.imagePrefix}/${tool.image}`">
+      <meta itemprop="name" name="meta" :content="tool.title">
+      <meta itemprop="url" name="meta" :content="`${config.siteUrl}/toolbox/tool/${tool.slug}`">
+      <meta itemprop="thumbnailUrl" name="meta" :content="`${config.imagePrefix}/thumbnail-${tool.image}`">
+      <meta itemprop="description" name="meta" :content="tool.snapshot">
+      <meta itemprop="image" name="meta" :content="`${config.imagePrefix}/${tool.image}`">
+    </Teleport>
+
     <header slot="content" :style="'background-image: url(' + tool['hero-image'] + ')'">
       <div class="upper">
         <router-link :to="{name: 'toolbox', params: {collection: tool.type}}">
@@ -348,31 +365,6 @@ export default {
   },
   created() {
     this.initPage()
-  },
-  metaInfo() {
-    if (!this.tool) return { }
-    document.querySelectorAll('link[rel=canonical], link[rel=image_src], meta[itemprop], meta[name=description], meta[name^="twitter:"], meta[property^="og:"]')
-      .forEach(el => el.remove())
-    return {
-      title: `${this.tool.title} — Beautiful Trouble`,
-      link: [
-        {rel: 'canonical', href: `${this.config.siteUrl}/toolbox${this.$route.path}`},
-      ],
-      meta: [
-        {name: 'description', content: this.tool.snapshot},
-        {property: 'og:title', content: this.tool.title},
-        {property: 'og:site_name', content: 'Beautiful Trouble'},
-        {property: 'og:description', content: this.tool.snapshot},
-        {property: 'og:type', content: 'article'},
-        {property: 'og:url', content: `${this.config.siteUrl}/toolbox${this.$route.path}`},
-        {property: 'og:image', content: `${this.config.imagePrefix}/${this.tool.image}`},
-        {itemprop: 'name', content: this.tool.title},
-        {itemprop: 'url', content: `${this.config.siteUrl}/toolbox${this.$route.path}`},
-        {itemprop: 'thumbnailUrl', content: `${this.config.imagePrefix}/thumbnail-${this.tool.image}`},
-        {itemprop: 'description', content: this.tool.snapshot},
-        {itemprop: 'image', content: `${this.config.imagePrefix}/${this.tool.image}`},
-      ],
-    }
   },
 };
 </script>
