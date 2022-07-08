@@ -99,16 +99,6 @@ $ss-mobile-header: "only screen and (pointer: coarse) and (max-width: 1024px), s
     @include breakpoint($xl) { @include debug($principle, 'xl'); }
     @include breakpoint($xxl) { @include debug($methodology, 'xxl'); }
   }
-  #app {
-    &::before {
-      content: "";
-      position: fixed;
-      top: 0; left: 0; right: 0;
-      height: 7.75rem;
-      background: black;
-      z-index: 5;
-    }
-  }
   .langs {
     background-color: black;
   }
@@ -154,8 +144,8 @@ blockquote {
 }
 hr {
   border: none;
-  border-top: 1px solid darken($bggray, 15%);
-  margin: 1.5rem 0;
+  border-top: 3px solid darken($bggray, 15%);
+  margin: 3rem 0;
 }
 .h1, .h2, .h3, .h4, .h5, .h6 {
   font-weight: 700;
@@ -169,25 +159,25 @@ hr {
   }
 }
 .h1 {
-  font-size: 3.125rem;
+  font-size: 3.9rem;
 }
 .h2 {
-  font-size: 1.6rem;
+  font-size: 1.9rem;
   .my & {
-    font-size: 1.3rem;
+    font-size: 1.7rem;
   }
 }
 .h3 {
-  font-size: 1.375rem;
+  font-size: 1.5rem;
 }
 .h4 {
-  font-size: 1rem;
+  font-size: 1.1rem;
   font-weight: normal;
   margin: .25rem 0;
   color: $text;
 }
 .h5 {
-  font-size: .9rem;
+  font-size: 1rem;
   margin: 0;
   display: inline;
 }
@@ -249,17 +239,18 @@ input{
 
 .box {
   position: relative;
-  margin: 1rem 0;
-  border: 1px solid $bgdark3;
+  margin: 1.25rem 0;
+  //border: 1px solid $bgdark3;
+  border-radius: .5rem;
   padding: 1rem 2rem;
   background-color: $bggray;
   .h1, .h2, .h3, .h4, .h5, .h6, p { color: $text; }
   @mixin type-box($color) {
-    border: 1px solid $color;
-    background-color: tint($color, 95%);
+    //border: 1px solid $color;
+    background-color: tint($color, 90%);
     a:link, a:visited, .h1, .h2, .h3, .h4, .h5, .h6 { color: $color; }
     .h4::after { // Specific to expanders
-      border-bottom-color: shade($color, 10%);
+      border-bottom-color: $color;
     }
   }
   &.tactic { @include type-box($tactic); }
@@ -314,7 +305,7 @@ input{
 }
 // slide
 .slide-enter-active, .slide-leave-active {
-  transition: all .2s ease-out;
+  transition: all .1s ease-out;
 }
 .slide-enter-to, .slide-leave {
    max-height: 100vh;
@@ -326,7 +317,7 @@ input{
 }
 // slide-fade
 .slide-fade-enter-active, .slide-fade-leave-active {
-  transition: all .2s ease-out;
+  transition: all .1s ease-out;
   opacity: 1;
 }
 .slide-fade-enter-to, .slide-fade-leave {

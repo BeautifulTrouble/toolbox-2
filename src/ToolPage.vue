@@ -191,7 +191,7 @@
             <div class="upper">
               <!-- TODO set search for name -->
               <router-link :to="{name: 'toolbox'}">
-                <img :src="`${config.imagePrefix}/icon-${a.image}`">
+                <img :src="`${config.imagePrefix}/tile-${a.image}`">
                 <div>
                   <div class="h3">{{ a.title }}</div>
                   <div>{{ a['team-title'] }}</div>
@@ -385,6 +385,7 @@ $image-height-max: 60rem;
 $sidebar: 18rem;
 
 .tool {
+  font-size: 1.1rem;
   header {
     background-size: cover;
     background-position: 50% 10%;
@@ -396,7 +397,7 @@ $sidebar: 18rem;
     position: relative;
     height: $image-height;
     max-height: $image-height-max;
-    margin-top: 9rem;
+    margin-top: 8.8rem;
     @include breakpoint($sm) {
       height: calc(100vh - 9rem);
     }
@@ -447,20 +448,21 @@ $sidebar: 18rem;
       padding: 0 1rem;
       margin: 2rem 3rem;
       border-style: solid;
-      border-width: 0 0 0 .3rem;
+      border-width: 0 0 0 .5rem;
       transition: all .1s ease-in-out;
+      font-size: 1rem;
       @include breakpoint($sm) {
-        font-size: .8rem;
+        //font-size: .8rem;
       }
       .rtl & {
-        border-width: 0 .3rem 0 0;
+        border-width: 0 .5rem 0 0;
       }
       p {
         margin: 0;
       }
       @include breakpoint($upper) {
         &:hover {
-          border-width: 0 0 0 .6rem;
+          border-width: 0 0 0 .9rem;
         }
       }
     }
@@ -550,7 +552,7 @@ $sidebar: 18rem;
     display: flex;
     flex-direction: row;
     justify-content: flex-end;
-    padding: 2rem;
+    padding: 2rem 3rem;
 
     @include breakpoint($sm) {
       flex: 0 0 100%;
@@ -566,7 +568,7 @@ $sidebar: 18rem;
         max-width: 100%;
       }
       @include breakpoint($lg) {
-        flex: 0 0 75%;
+        flex: 0 0 90%;
       }
       @include breakpoint($xl) {
         flex: 0 0 70%;
@@ -603,9 +605,9 @@ $sidebar: 18rem;
       color: $text;
       font-size: 1.25rem;
       user-select: none;
-      margin: 3rem 1rem 3rem -20%;
+      margin: 3rem 1rem 3rem -10%;
       padding: 0 1rem;
-      border-width: .3rem;
+      border-width: .5rem;
       border-left-style: solid;
       width: 25rem;
       max-width: 50%;
@@ -621,7 +623,7 @@ $sidebar: 18rem;
       }
       @include breakpoint($upper) {
         &:hover {
-          border-width: .6rem;
+          border-width: .9rem;
         }
       }
     }
@@ -658,14 +660,18 @@ $sidebar: 18rem;
     }
     .epigraphs {
       margin: 0 1rem 1.5rem 1rem;
-      p {
-        font-size: .9rem;
-        font-style: italic;
-      }
       .quote {
+        p {
+          font-style: italic;
+          margin-bottom: 0;
+        }
       }
       .attribution {
         color: $bgdark3;
+        p {
+          //margin: 0;
+          margin-top: 0;
+        }
         margin-bottom: 1rem;
       }
     }
@@ -679,14 +685,15 @@ $sidebar: 18rem;
       img {
         max-height: 20rem;
         margin: 1rem 0 1.5rem 0;
-        border: 1px solid $bgdark3;
+        //border: 1px solid $bgdark3;
+        border-radius: 1rem;
         background-color: $bgdark1;
         padding: .5rem;
       }
       p {
         margin: 0;
       }
-      font-size: .9rem;
+      //font-size: .9rem;
     }
     .real-world-examples {
       .h5 {
@@ -702,16 +709,13 @@ $sidebar: 18rem;
       margin-bottom: 1rem;
     }
     .key-tools {
-      p:first-of-type {
-        margin-top: .5rem;
-      }
       .bt-icon {
         display: inline;
-        max-height: 1.5rem;
-        max-width: 1.5rem;
-        margin: 0 .25rem -.4rem 0;
+        max-height: 2rem;
+        max-width: 2rem;
+        margin: -.4rem .5rem -.5rem 0;
         .rtl & {
-          margin: .25rem 0 -.4rem .5rem;
+          margin: -.4rem 0 -.5rem .5rem;
         }
       }
     }
@@ -732,16 +736,9 @@ $sidebar: 18rem;
     }
     .h2 {
       margin: 0;
-      font-size: 1.5rem;
     }
     .h4 {
       text-transform: uppercase;
-    }
-    hr {
-      max-width: 10rem;
-      @include breakpoint($sm) {
-        max-width: unset;
-      }
     }
     .risks, .worked, .failed {
       max-width: $sidebar;
@@ -755,30 +752,32 @@ $sidebar: 18rem;
         position: relative;
         flex-direction: row;
         a:first-of-type {
-          margin-bottom: .5rem;
+          margin-bottom: .3rem;
         }
         svg, .h2 {
           display: inline-block;
         }
+        .h2 {
+          vertical-align: top;
+        }
         span {
-          padding: .25rem .5rem;
+          padding: .25rem .25rem;
           width: 3rem;
           cursor: pointer;
           &.open::after {
-            //transform: scaleY(-1);
             transform: rotate(180deg);
             top: .6rem;
           }
           &::after {
             transform: rotate(90deg);
-            transition: all .2s ease-out;
+            transition: all .1s ease-out;
             position: absolute;
             top: .5rem;
             content: "";
-            border-bottom-width: .6rem;
+            border-bottom-width: 1rem;
             border-bottom-style: solid;
-            border-left: .5rem solid transparent;
-            border-right: .5rem solid transparent;
+            border-left: .75rem solid transparent;
+            border-right: .75rem solid transparent;
           }
         }
       }
@@ -786,9 +785,9 @@ $sidebar: 18rem;
         margin-bottom: 1rem;
       }
       .bt-icon {
-        max-height: 1.5rem;
-        max-width: 1.5rem;
-        margin: 0 .25rem 0 0;
+        max-height: 2rem;
+        max-width: 2rem;
+        margin: 0 .5rem 0 0;
         margin-bottom: -.2rem;
         .rtl & {
           margin: .25rem 0 0 .5rem;
@@ -806,7 +805,7 @@ $sidebar: 18rem;
               text-decoration: underline;
               &::before {
                 // Module name highlighting disabled until a better design emerges
-                //content: "";
+                // content: "";
                 top: -1px; bottom: -3px;
                 left: -2rem; right: -1rem;
                 background: white;
@@ -838,8 +837,10 @@ $sidebar: 18rem;
         a, .h2, .h3 { color: $color; }
         span::after { border-bottom-color: $color; }
         .tool-popup {
-          border: 1px solid $color;
-          background: tint($color, 95%);
+          //border: 1px solid $color;
+          border-radius: .5rem;
+          background: tint($color, 90%);
+          box-shadow: 0 0 .5rem .25rem $shadow;
         }
       }
       .tactic { @include type-related($tactic); }
@@ -855,11 +856,7 @@ $sidebar: 18rem;
         margin: 0 1rem 0 0;
         display: none;
         .content {
-          padding: 1rem;
-        }
-        .bt-icon {
-          max-width: 3rem;
-          margin: 0;
+          //padding: 1rem;
         }
         .rtl & {
           right: unset;
@@ -875,9 +872,10 @@ $sidebar: 18rem;
       }
       img {
         border-radius: 50%;
-        margin: 0 1rem 0 0;
+        margin: 0 1rem .5rem 0;
+        width: 75%;
         .rtl & {
-          margin: 0 0 0 1rem;
+          margin: 0 0 .5rem 1rem;
         }
       }
       .upper {
@@ -887,7 +885,7 @@ $sidebar: 18rem;
         .h3 {
           font-weight: normal;
           color: $text;
-          margin: 0 0 .1rem 0;
+          margin: 0 0 .2rem 0;
         }
         div {
           color: $text;

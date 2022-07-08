@@ -83,11 +83,8 @@ export default {
   }
 
   @include breakpoint($sm) {
-    .h3 {
-      font-size: 1.1rem;
-    }
     .h2 {
-      font-size: 1.4rem;
+      font-size: 1.6rem;
     }
   }
   .upper {
@@ -113,10 +110,10 @@ export default {
   .snapshot {
     opacity: 0;
     padding: 0 1rem;
-    //transition: opacity .1s;
     p {
       margin: 0;
-      //line-height: 1.1;
+      line-height: 1.2;
+      font-size: 1.1rem;
     }
   }
   .title {
@@ -136,6 +133,9 @@ export default {
     }
     &.video {
       margin: 0 !important;
+      @include breakpoint($lower) {
+        display: none;
+      }
     }
   }
   // Alt

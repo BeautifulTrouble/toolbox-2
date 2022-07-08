@@ -434,10 +434,11 @@ export default {
       max-width: 40%;
       text-shadow: 0px 0px 3rem rgba(black, .6), 0 0 2px rgba(white, .4);
       line-height: 1.2;
+      font-size: 1.1rem;
     }
     .h1 {
       margin: 0;
-      font-size: 3.8rem;
+      margin-bottom: .25rem;
       text-transform: uppercase;
     }
     @include breakpoint($sm) {

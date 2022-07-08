@@ -7,9 +7,9 @@
         <img svg-inline v-else-if="$store.state.toolsBySlug[t].type == 'story'" class="bt-icon" src="./assets/story-inverse.svg">
         <img svg-inline v-else-if="$store.state.toolsBySlug[t].type == 'principle'" class="bt-icon" src="./assets/principle-inverse.svg">
         <img svg-inline v-else-if="$store.state.toolsBySlug[t].type == 'methodology'" class="bt-icon" src="./assets/methodology-inverse.svg">
+        <div class="h3">{{ $store.state.toolsBySlug[t].title }}</div>
       </div>
       <div :class="['content', $store.state.toolsBySlug[t].type]">
-        <div class="h3">{{ $store.state.toolsBySlug[t].title }}</div>
         <div v-html="markdown($store.state.toolsBySlug[t].snapshot)" />
       </div>
     </div>
@@ -55,21 +55,25 @@ export default {
     color: white;
     flex: 1 0 auto;
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     align-items: stretch;
     .type {
+      padding: .75rem 1.5rem;
       display: flex;
       align-items: center;
     }
+    .h3 {
+      color: white !important;
+    }
     .bt-icon {
-      max-height: 2.5rem;
-      max-width: 2.5rem;
+      max-height: 2rem;
+      max-width: 2rem;
     }
     p {
-      margin: 1rem 0 0 0;
+      margin: 0;
     }
     .content {
-      padding: .5rem 1rem;
+      padding: 1rem 1.5rem;
     }
   }
 }
