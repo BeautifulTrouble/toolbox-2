@@ -9,7 +9,7 @@ import requests_cache
 from requests_cache.backends import base
 from lxml import etree
 
-TOOLS = "https://api.beautifulrising.org/api/v1/modules"
+TOOLS = "https://api.beautifultrouble.org/api/v1/modules"
 SITEMAP = "https://beautifultrouble.org/sitemap.xml"
 
 
@@ -66,7 +66,7 @@ def sitemap():
                 image = addsub(url, "image:image")
                 addsub(
                     image, "image:loc"
-                ).text = f"https://beautifulrising.org/{t['image']}"
+                ).text = f"https://beautifultrouble.org/{t['image']}"
                 addsub(image, "image:title").text = t["title"]
 
             # Disable alternates until google crawls these
