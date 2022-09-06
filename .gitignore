@@ -2,7 +2,8 @@
 node_modules
 bt
 
-# local env files
+# local environment
+.python-version
 .env.local
 .env.*.local
 
