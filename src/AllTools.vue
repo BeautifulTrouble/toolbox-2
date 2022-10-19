@@ -77,6 +77,7 @@ export default {
   justify-content: space-around;
   .toolbar {
     display: flex;
+    padding-top: 7rem;
     padding-bottom: 1rem;
     align-items: center;
     justify-content: center;
