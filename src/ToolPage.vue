@@ -118,7 +118,8 @@
                 {{ text[`type.${keyType[k]}.key${v.length > 1 ? 's' : ''}`] }}
               </template>
               <div v-for="(each, i) in v" :key="i">
-                <div v-html="markdown(`[**${each[0]}**](/tool/${each[2]}) – ${each[1]}`)"/>
+                <div v-if="each[2]" v-html="markdown(`[**${each[0]}**](/tool/${each[2]}) – ${each[1]}`)"/>
+                <div v-else v-html="markdown(`**${each[0]}** – ${each[1]}`)"/>
               </div>
             </content-expander>
           </div>
