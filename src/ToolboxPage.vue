@@ -1,6 +1,6 @@
 <template>
-  <div class="toolbox">
-    <Teleport v-if="text" to="head">
+  <div v-if="text" class="toolbox">
+    <Teleport to="head">
       <title>{{ text['site.toolbox'] }} — Beautiful Trouble</title>
       <link rel="canonical" :href="`${config.siteUrl}/toolbox`">
       <meta name="meta" :content="text['site.tagline']">
@@ -383,7 +383,7 @@ export default {
     }
   },
   metaInfo() {
-    return { title: `${this.text['site.toolbox'] || 'Toolbox'} — Beautiful Trouble` }
+    return { title: `${this.text && this.text['site.toolbox'] || 'Toolbox'} — Beautiful Trouble` }
   },
 };
 </script>
