@@ -695,7 +695,7 @@ export default {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    overflow: hidden;
+    //overflow: hidden;
     border: 0px solid $bgdark4;
     border-radius: .5rem;
     transition: .1s linear all;
