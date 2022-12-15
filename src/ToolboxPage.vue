@@ -19,8 +19,11 @@
 
     <div :class="['toolbox-hero', collection]">
       <div class="inner">
-        <div class="h1">{{ (collection != ALL ? text[`type.${collection}.plural`] : text['site.toolbox']) + ':' }}</div>
-        <p>{{ text[`type.${collection}.description`] || text['site.tagline'] }}</p>
+        <div>
+          <div class="h1">{{ (collection != ALL ? text[`type.${collection}.plural`] : text['site.toolbox']) + ':' }}</div>
+          <p>{{ text[`type.${collection}.description`] || text['site.tagline'] }}</p>
+          <a href="/toolbox-guide"><div class="h2 how-to-use">?</div></a>
+        </div>
       </div>
     </div>
 
@@ -465,6 +468,22 @@ export default {
       .h1 {
         font-size: 2rem;
       }
+    }
+  }
+  .how-to-use {
+    position: absolute !important;
+    top: 0;
+    right: 0;
+    border: .35rem solid white;
+    border-radius: 50%;
+    padding: 0 .7rem;
+    a {
+      text-decoration: none;
+      color: white;
+    }
+    .ar & {
+      right: unset;
+      left: 0;
     }
   }
 }
