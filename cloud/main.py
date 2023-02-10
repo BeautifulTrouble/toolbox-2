@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import sys
+import traceback
 from datetime import datetime
 
 from flask import Flask, Response
@@ -9,8 +10,8 @@ import requests_cache
 from requests_cache.backends import base
 from lxml import etree
 
-TOOLS = "https://api.beautifultrouble.org/api/v1/modules"
-SITEMAP = "https://beautifultrouble.org/sitemap.xml"
+TOOLS = "https://api.beautifultrouble.org/v2/en/toolbox-all.json"
+SITEMAP = "https://beautifultrouble.squarespace.com/sitemap.xml"
 
 
 app = Flask(__name__)
@@ -49,34 +50,28 @@ def sitemap():
         tree = addns(orig, "xhtml", "http://www.w3.org/1999/xhtml")
         root = tree.getroot()
 
-        for i, t in enumerate(tools):
-            url = etree.SubElement(root, "url")
-            root.insert(i, root[-1])
+        for i, (slug, tool) in enumerate(tools["tools"].items()):
+            url_el = etree.SubElement(root, "url")
 
-            etree.SubElement(
-                url, "loc"
-            ).text = f"https://beautifultrouble.org/toolbox/tool/{t['slug']}"
-            etree.SubElement(url, "changefreq").text = "monthly"
-            etree.SubElement(url, "priority").text = "1.0"
-            etree.SubElement(url, "lastmod").text = datetime.fromtimestamp(
-                t["timestamp"] // 1000
-            ).strftime("%F")
+            url = f"https://beautifultrouble.org/toolbox/tool/{tool['slug']}"
+            etree.SubElement(url_el, "loc").text = url
 
-            if t.get("image"):
-                image = addsub(url, "image:image")
-                addsub(
-                    image, "image:loc"
-                ).text = f"https://beautifultrouble.org/{t['image']}"
-                addsub(image, "image:title").text = t["title"]
+            date = datetime.fromtimestamp(tool["lastmod"]).strftime("%F")
+            etree.SubElement(url_el, "lastmod").text = date
+
+            if image := tool.get("image"):
+                image_el = addsub(url_el, "image:image")
+                image_url = f"https://assets.beautifultrouble.org/{image}"
+                addsub(image_el, "image:loc").text = image_url
 
             # Disable alternates until google crawls these
-            # for lang in t.get("langs-available", []):
-            #    link = addsub(url, "xhtml:link")
+            # for lang in tool.get("langs-available", []):
+            #    link = addsub(url_el, "xhtml:link")
             #    link.attrib.update(
             #        {
             #            "hreflang": lang,
             #            "rel": "alternate",
-            #            "href": f"https://beautifultrouble.org/toolbox/{lang}/tool/{t['slug']}",
+            #            "href": f"https://beautifultrouble.org/toolbox/{lang}/tool/{tool['slug']}",
             #        }
             #    )
 
@@ -86,7 +81,7 @@ def sitemap():
             doctype="""<?xml version="1.0" encoding="UTF-8"?>""",
         )
     except Exception as e:
-        print(e)
+        traceback.print_tb(e)
 
     return Response(sitemap, mimetype="text/xml")
 
