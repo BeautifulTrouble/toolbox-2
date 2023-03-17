@@ -7,7 +7,7 @@
     </router-view>
 
     <Teleport to=".header-announcement-bar-wrapper">
-      <div class="langs">
+      <div class="langs" @dblclick="$store.dispatch('LANG_SET', [$store.state.lang, true])">
         <span v-for="lang in config.langs" :key="lang"
           :class="{'router-link-active': lang == $store.state.lang, [lang]: true, 'mobile-hidden': true}"
           @click="$store.dispatch('LANG_SET', [lang, false])">{{ textByLang[lang]['site.language'] }}</span>
@@ -62,6 +62,7 @@ export default {
   display: flex;
   flex-wrap: wrap;
   justify-content: flex-end;
+  user-select: none;
   span {
     padding: .1rem .4rem;
     color: white;
