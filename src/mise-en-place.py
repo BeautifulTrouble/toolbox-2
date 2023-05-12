@@ -109,6 +109,10 @@ with open(JSON, "w") as f:
             "make-new-folks-welcome",
             "be-careful-with-each-other-so-we-can-be-dangerous-together",
             "foster-safer-spaces",
+            "ladder-of-engagement",
+            "perception-box",
+            "hardship-to-grievance",
+            "create-many-points-of-entry",
         ],
         "digital-activism": [
             "hacking-apartheid",
