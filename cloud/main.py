@@ -10,7 +10,7 @@ import requests_cache
 from requests_cache.backends import base
 from lxml import etree
 
-TOOLS = "https://api.beautifultrouble.org/v2/en/toolbox-all.json"
+TOOLS = "https://api.beautifultrouble.org/v2/en/toolbox.json"
 SITEMAP = "https://beautifultrouble.squarespace.com/sitemap.xml"
 
 
