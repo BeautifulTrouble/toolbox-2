@@ -390,7 +390,7 @@ $sidebar: 18rem;
     position: relative;
     height: $image-height;
     max-height: $image-height-max;
-    margin-top: 8.8rem;
+    margin-top: 5rem;
     @include breakpoint($sm) {
       margin-top: 6rem;
       height: calc(100vh - 9rem);
