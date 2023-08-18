@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { createApp, h } from 'vue'
 
 import { createRouter, createWebHistory } from 'vue-router'
@@ -35,13 +36,18 @@ const app = createApp({
 const router = createRouter({
   history: createWebHistory('/toolbox/'),
   routes: [
-    {path: '/tool',           redirect: {name: 'toolbox'}},
+    // Tool pages
+    {path: '/:lang([a-z]{2})/tool/:slug',     name: 'tool-langswitch', component: ToolPage},
     {path: '/tool/:slug',     name: 'tool', component: ToolPage},
+    {path: '/tool',           redirect: {name: 'toolbox'}},
+    // Internal use
     {path: '/all',            name: 'toolbox-all', component: AllTools},
     // Match only the valid collections, and everything else will fall through
-    {path: '/:collection(story|tactic|principle|theory|methodology|saved|set)?',
-                              name: 'toolbox', component: ToolboxPage},
+    {path: '/:lang([a-z]{2})/:collection(story|tactic|principle|theory|methodology|saved|set)?', name: 'toolbox-langswitch', component: ToolboxPage},
+    {path: '/:collection(story|tactic|principle|theory|methodology|saved|set)?', name: 'toolbox', component: ToolboxPage},
+    // Catch-all
     {path: '/:pathMatch(.*)', redirect: {name: 'toolbox'}},
+
 
     /* Routes to be merged
     {path: '/story',        name: 'toolbox-story', component: Toolbox},
@@ -90,10 +96,13 @@ router.beforeEach((to, from, next) => {
   // Why not a route like... `/:lang(${config.langs.join("|")})/`... I couldn't find a way to match
   // arbitrary paths against a prefix without a lot of extra boilerplate (extra paths and aliases).
 
-  if (languageSelectionPrefix.test(to.redirectedFrom)) {
-    let lang = to.redirectedFrom.slice(1,3)
+
+  console.log(to, to.redirectedFrom)
+  if (to && languageSelectionPrefix.test(to.path)) {
+    console.log('lang detected')
+    let lang = to.path.slice(1,3)
     store.dispatch('LANG_SET', [lang, false])
-    next({path: to.redirectedFrom.slice(3)})
+    next({path: to.path.slice(3)})
   } else if (!store.state.lang) {
     store.dispatch('LANG_SET', [null, false])
     next()
